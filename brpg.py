@@ -126,6 +126,23 @@ def clearScreen():
 		os.system("clear")
 
 
+# Formats text based on alignment and length.
+def formatText(text, alignment, length):
+	text = str(text)
+
+	if (alignment == 0):
+		alignment = "<"
+	elif (alignment == 1):
+		alignment = "^"
+	elif (alignment == 2):
+		alignment = ">"
+
+	if (len(str(text)) > length):
+		text = text[0:(length - 3)] + "..."
+
+	return str("{:" + alignment + str(length) + "}").format(text)
+
+
 # Initialize classes #
 class Stats:
 	def __init__(self, maxHP=1, maxMP=1, meleeAttack=1, rangedAttack=1, meleeDefense=1, rangedDefense=1, accuracy=1, evade=1):
@@ -229,7 +246,7 @@ class StatusEffect:
 class Skill:
 	def __init__(self, forClass, name, maxPlayerLevel, skillType, statType, element, cost, targetingTypeA, targetingTypeB, basePowerA, basePowerB, accuracyMod, critChance, randomMod, statusEffect, statusEffectDuration):
 		self.forClass = playerClasses[forClass]
-		self.name = name
+		self.name = str(name)
 		self.currentLevel = 1
 		self.maxPlayerLevel = maxPlayerLevel
 		self.skillType = skillTypes[skillType]
@@ -288,15 +305,15 @@ class Skill:
 
 		return (
 			"+–––––––––––––––––––––––––––––––––––––––+"
-			+ "\n| " + str(self.name)
+			+ "\n| " + formatText(self.name, 0, 37) + " |"
 			+ "\n+–––––––+–––––––––––––––––––––––––––––––+"
-			+ "\n|Type\t| " + str(self.statType)
-			+ "\n|Element| " + str(self.element)
-			+ "\n|Target\t| " + targetingString
-			+ "\n|Power\t| " + powerString
-			+ "\n|Acc.\t| " + str(accuracyString)
-			+ "\n|Effects| " + effectsString
-			+ "\n|Cost\t| " + costString
+			+ "\n| " + formatText("Cost", 0, 5) + " | " + formatText(costString, 0, 29) + " |"
+			+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 29) + " |"
+			+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 29) + " |"
+			+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 29) + " |"
+			+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(superRound((self.basePowerA * 100), str) + "%", 0, 29) + " |"
+			+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 29) + " |"
+			+ "\n| " + formatText("Effct", 0, 5) + " | " + formatText(effectsString, 0, 29) + " |"
 			+ "\n+–––––––+–––––––––––––––––––––––––––––––+"
 		)
 
