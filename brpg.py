@@ -7,20 +7,23 @@ import pyperclip
 
 """
 todo:
+    main focus
+        - streamline combat
+
 	high priority
-	- implement alt skills
-	- implement skill leveling
-	- implement equipment leveling
-	- redo inventory and item system
-	- redo enemy class
-	- add more comments
-	- improve enemy ai
-	- balance damage, healing, and leveling
-	- add more things to the town menu
-	- implement saving/loading
-	- create more items, item types, skills, and status effects
-	- add more enemy/boss types
-	- improve title screen
+        - implement alt skills
+        - implement skill leveling
+        - implement equipment leveling
+        - redo inventory and item system
+        - redo enemy class
+        - add more comments
+        - improve enemy ai
+        - balance damage, healing, and leveling
+        - add more things to the town menu
+        - implement saving/loading
+        - create more items, item types, skills, and status effects
+        - add more enemy/boss types
+        - improve title screen
 	low priority
 """
 
@@ -32,22 +35,21 @@ def proceduralPrint(string, end):
 
 
 # Returns a bar based on a desired length, the alignment (0 for left align, 1 for right align), a character for the bar, a current value, and a max value.
-def standardBar(length, alignment, characterString, currentValue, maxValue):
+def generalUIBar(length, alignment, characterString, currentValue, maxValue):
 	if (len(characterString) > 1):
 		characterString = characterString[0]
 
-	if (alignment == 0):
-		placeholderValue = "{:<" + str(length) + "}"
-		borderStyle = "/"
-	else:
-		placeholderValue = "{:>" + str(length) + "}"
+	if (alignment == 1):
+		alignment = ">"
 		borderStyle = "\\"
+	else:
+		alignment = "<"
+		borderStyle = "/"
 
 	barPercentage = currentValue / maxValue
-
 	barDisplay = characterString * int(math.ceil((length * barPercentage)))
 
-	return (borderStyle + placeholderValue.format(barDisplay) + borderStyle)
+	return (borderStyle + ("{:" + alignment + str(length) + "}").format(barDisplay) + borderStyle)
 
 
 # Returns a row of the battle UI based on the provided string and the alignment (0 for left align, 1 for right align).
@@ -1684,9 +1686,9 @@ def renderBattleStatusMenu():
 	clearScreen()
 
 	if (partyCurrentFocus >= partyMaxFocus):
-		playerFocusBar = "❇  " + superRound(partyCurrentFocus, str) + " />> MAX " + standardBar(30, 0, ">", 1, 1)[8:32]
+		playerFocusBar = "❇  " + superRound(partyCurrentFocus, str) + " />> MAX " + generalUIBar(30, 0, ">", 1, 1)[8:32]
 	else:
-		playerFocusBar = "❇  " + superRound(partyCurrentFocus, str) + " " + standardBar(30, 0, ">", (partyCurrentFocus % 1), 1.00)
+		playerFocusBar = "❇  " + superRound(partyCurrentFocus, str) + " " + generalUIBar(30, 0, ">", (partyCurrentFocus % 1), 1.00)
 	playerProgressText = str(regions[gameRegion % 3]) + " \\ Battle " + str(regionBattle) + " \\ Turn " + str(battleTurn)
 
 	allPlayerTexts = []
@@ -1709,7 +1711,7 @@ def renderBattleStatusMenu():
 				currentPlayerText = "> " + currentPlayerText
 			else:
 				currentPlayerText = "  " + currentPlayerText
-			currentPlayerBar = standardBar(22, 0, "=", currentPlayerCHP, currentPlayerMHP) + standardBar(10, 0, "—", currentPlayerCMP, currentPlayerMMP)
+			currentPlayerBar = generalUIBar(22, 0, "=", currentPlayerCHP, currentPlayerMHP) + generalUIBar(10, 0, "—", currentPlayerCMP, currentPlayerMMP)
 		else:
 			currentPlayerText = ""
 			currentPlayerBar = ""
@@ -1727,7 +1729,7 @@ def renderBattleStatusMenu():
 				currentEnemyText += " <"
 			else:
 				currentEnemyText += "  "
-			currentEnemyBar = standardBar(34, 1, "=", currentEnemyCHP, currentEnemyMHP)
+			currentEnemyBar = generalUIBar(34, 1, "=", currentEnemyCHP, currentEnemyMHP)
 		else:
 			currentEnemyText = ""
 			currentEnemyBar = ""
