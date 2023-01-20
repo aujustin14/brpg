@@ -1435,9 +1435,13 @@ def startGame():
 
 # Create an enemy character for the player to fight. Also handles the battle system as well.
 def startBattle():
-	numOfEnemyCharacters = random.randint(1, 1)
+	global selectedPlayer
+	global selectedEnemy
+
+	# numOfEnemyCharacters = random.randint(1, 3)
+	numOfEnemyCharacters = 2
 	for i in range(numOfEnemyCharacters):
-		entityData = enemiesList[random.randint(3, 3)]
+		entityData = enemiesList[random.randint(1, 3)]
 		currentEnemies[i] = Enemy(entityData[0], entityData[1], entityData[2])
 		enemiesAlive[i] = True
 		enemiesHaveMoved[i] = False
@@ -1480,7 +1484,7 @@ def startBattle():
 		# Player turn on odd numbers.
 		if (battleTurn % 2 == 1):
 			# Select the next available player character.
-			while (playersHaveMoved.count(True) != (len(currentPlayers) - currentPlayers.count(None))):
+			while (playersHaveMoved.count(True) != (len(currentPlayers) - currentPlayers.count(None)) and enemiesAlive.count(True) > 0):
 				selectedPlayer = 0
 				while (selectedPlayer < (len(currentPlayers) - currentPlayers.count(None))):
 					if (playersHaveMoved[selectedPlayer] == True or playersHaveMoved[selectedPlayer] == None):
@@ -1493,7 +1497,7 @@ def startBattle():
 		# Enemy turn on even numbers.
 		elif (battleTurn % 2 == 0):
 			# Select the next available enemy character.
-			while (enemiesHaveMoved.count(True) != (len(currentEnemies) - currentEnemies.count(None))):
+			while (enemiesHaveMoved.count(True) != (len(currentEnemies) - currentEnemies.count(None)) and playersAlive.count(True) > 0):
 				selectedEnemy = 0
 				while (selectedEnemy < (len(currentEnemies) - currentEnemies.count(None))):
 					if (enemiesHaveMoved[selectedEnemy] == True or enemiesHaveMoved[selectedEnemy] == None):
