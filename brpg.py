@@ -82,12 +82,12 @@ def levelUpUIRow(value, mode):
 		currentRow += "|\tHP\tMP\tMA\tRA\tMD\tRD\tACC\tEVA\t\t|"
 	elif (mode == 2):
 		currentRow += "|"
-		currentRow += "\t " + "{:q>4}".format(str(value.maxHP))
-		currentRow += "\t " + "{:q>4}".format(str(value.maxMP))
-		currentRow += "\t " + "{:q>4}".format(str(value.meleeAttack))
-		currentRow += "\t " + "{:q>4}".format(str(value.rangedAttack))
-		currentRow += "\t " + "{:q>4}".format(str(value.meleeDefense))
-		currentRow += "\t " + "{:q>4}".format(str(value.rangedDefense))
+		currentRow += "\t " + "{:q>4}".format(str(value.hp))
+		currentRow += "\t " + "{:q>4}".format(str(value.mp))
+		currentRow += "\t " + "{:q>4}".format(str(value.ballisticAttack))
+		currentRow += "\t " + "{:q>4}".format(str(value.magicAttack))
+		currentRow += "\t " + "{:q>4}".format(str(value.ballisticDefense))
+		currentRow += "\t " + "{:q>4}".format(str(value.magicDefense))
 		currentRow += "\t " + "{:q>4}".format(str(value.accuracy))
 		currentRow += "\t " + "{:q>4}".format(str(value.evade))
 		currentRow += "\t\t|"
@@ -97,12 +97,12 @@ def levelUpUIRow(value, mode):
 				currentRow = currentRow[0:i] + " " + currentRow[i+1:len(currentRow)]
 	elif (mode == 3):
 		currentRow += "|"
-		currentRow += "\t+" + "{:q>4}".format(str(value.maxHP))
-		currentRow += "\t+" + "{:q>4}".format(str(value.maxMP))
-		currentRow += "\t+" + "{:q>4}".format(str(value.meleeAttack))
-		currentRow += "\t+" + "{:q>4}".format(str(value.rangedAttack))
-		currentRow += "\t+" + "{:q>4}".format(str(value.meleeDefense))
-		currentRow += "\t+" + "{:q>4}".format(str(value.rangedDefense))
+		currentRow += "\t+" + "{:q>4}".format(str(value.hp))
+		currentRow += "\t+" + "{:q>4}".format(str(value.mp))
+		currentRow += "\t+" + "{:q>4}".format(str(value.ballisticAttack))
+		currentRow += "\t+" + "{:q>4}".format(str(value.magicAttack))
+		currentRow += "\t+" + "{:q>4}".format(str(value.ballisticDefense))
+		currentRow += "\t+" + "{:q>4}".format(str(value.magicDefense))
 		currentRow += "\t+" + "{:q>4}".format(str(value.accuracy))
 		currentRow += "\t+" + "{:q>4}".format(str(value.evade))
 		currentRow += "\t\t|"
@@ -146,43 +146,52 @@ def formatText(text, alignment, length):
 
 # Initialize classes #
 class Stats:
-	def __init__(self, maxHP=1, maxMP=1, meleeAttack=1, rangedAttack=1, meleeDefense=1, rangedDefense=1, accuracy=1, evade=1):
-		self.maxHP = maxHP
-		self.maxMP = maxMP
-		self.meleeAttack = meleeAttack
-		self.rangedAttack = rangedAttack
-		self.meleeDefense = meleeDefense
-		self.rangedDefense = rangedDefense
+	def __init__(self, hp=1, mp=1, ballisticAttack=1, magicAttack=1, ballisticDefense=1, magicDefense=1, accuracy=1, evade=1):
+		self.hp = hp
+		self.mp = mp
+		self.ballisticAttack = ballisticAttack
+		self.magicAttack = magicAttack
+		self.ballisticDefense = ballisticDefense
+		self.magicDefense = magicDefense
 		self.accuracy = accuracy
 		self.evade = evade
 	
 	# def __repr__(self):
-	# 	return "HP: " + str(self.maxHP) + "\nMP: " + str(self.maxMP) + "\nM. Att.: " + str(self.meleeAttack) + "\nR. Att.: " + str(self.rangedAttack) + "\nM. Def.: " + str(self.meleeDefense) + "\nR. Def.: " + str(self.rangedDefense) + "\nAcc.: " + str(self.accuracy) + "\nEva.: " + str(self.evade)
+	# 	return "HP: " + str(self.hp) + "\nMP: " + str(self.mp) + "\nM. Att.: " + str(self.ballisticAttack) + "\nR. Att.: " + str(self.magicAttack) + "\nM. Def.: " + str(self.ballisticDefense) + "\nR. Def.: " + str(self.magicDefense) + "\nAcc.: " + str(self.accuracy) + "\nEva.: " + str(self.evade)
 
 	def __add__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalMeleeAttack = self.ballisticAttack
+		totalRangedAttack = self.magicAttack
+		totalMeleeDefense = self.ballisticDefense
+		totalRangedDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
 		if (type(other) is int):
-			totalMaxHP = self.maxHP + other
-			totalMaxMP = self.maxMP + other
-			totalMeleeAttack = self.meleeAttack + other
-			totalRangedAttack = self.rangedAttack + other
-			totalMeleeDefense = self.meleeDefense + other
-			totalRangedDefense = self.rangedDefense + other
-			totalAccuracy = self.accuracy + other
-			totalEvade = self.evade + other
+			totalHP += other
+			totalMP += other
+			totalMeleeAttack += other
+			totalRangedAttack += other
+			totalMeleeDefense += other
+			totalRangedDefense += other
+			totalAccuracy += other
+			totalEvade += other
 
 		elif (type(other) is Stats):
-			totalMaxHP = self.maxHP + other.maxHP
-			totalMaxMP = self.maxMP + other.maxMP
-			totalMeleeAttack = self.meleeAttack + other.meleeAttack
-			totalRangedAttack = self.rangedAttack + other.rangedAttack
-			totalMeleeDefense = self.meleeDefense + other.meleeDefense
-			totalRangedDefense = self.rangedDefense + other.rangedDefense
-			totalAccuracy = self.accuracy + other.accuracy
-			totalEvade = self.evade + other.evade
+			totalHP += other.hp
+			totalMP += other.mp
+			totalMeleeAttack += other.ballisticAttack
+			totalRangedAttack += other.magicAttack
+			totalMeleeDefense += other.ballisticDefense
+			totalRangedDefense += other.magicDefense
+			totalAccuracy += other.accuracy
+			totalEvade += other.evade
 
 		return Stats(
-			totalMaxHP,
-			totalMaxMP,
+			totalHP,
+			totalMP,
 			totalMeleeAttack,
 			totalRangedAttack,
 			totalMeleeDefense,
@@ -192,29 +201,38 @@ class Stats:
 		)
 
 	def __sub__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalMeleeAttack = self.ballisticAttack
+		totalRangedAttack = self.magicAttack
+		totalMeleeDefense = self.ballisticDefense
+		totalRangedDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
 		if (type(other) is int):
-			totalMaxHP = self.maxHP - other
-			totalMaxMP = self.maxMP - other
-			totalMeleeAttack = self.meleeAttack - other
-			totalRangedAttack = self.rangedAttack - other
-			totalMeleeDefense = self.meleeDefense - other
-			totalRangedDefense = self.rangedDefense - other
-			totalAccuracy = self.accuracy - other
-			totalEvade = self.evade - other
+			totalHP -= other
+			totalMP -= other
+			totalMeleeAttack -= other
+			totalRangedAttack -= other
+			totalMeleeDefense -= other
+			totalRangedDefense -= other
+			totalAccuracy -= other
+			totalEvade -= other
 
 		elif (type(other) is Stats):
-			totalMaxHP = self.maxHP - other.maxHP
-			totalMaxMP = self.maxMP - other.maxMP
-			totalMeleeAttack = self.meleeAttack - other.meleeAttack
-			totalRangedAttack = self.rangedAttack - other.rangedAttack
-			totalMeleeDefense = self.meleeDefense - other.meleeDefense
-			totalRangedDefense = self.rangedDefense - other.rangedDefense
-			totalAccuracy = self.accuracy - other.accuracy
-			totalEvade = self.evade - other.evade
+			totalHP -= other.hp
+			totalMP -= other.mp
+			totalMeleeAttack -= other.ballisticAttack
+			totalRangedAttack -= other.magicAttack
+			totalMeleeDefense -= other.ballisticDefense
+			totalRangedDefense -= other.magicDefense
+			totalAccuracy -= other.accuracy
+			totalEvade -= other.evade
 
 		return Stats(
-			totalMaxHP,
-			totalMaxMP,
+			totalHP,
+			totalMP,
 			totalMeleeAttack,
 			totalRangedAttack,
 			totalMeleeDefense,
@@ -369,12 +387,12 @@ class Player:
 		)
 
 		self.leveledUpStats = Stats(
-			round(self.baseStats.maxHP * (1.05 ** (partyLevel - 1))),
-			round(self.baseStats.maxMP * (1.01 ** (partyLevel - 1))),
-			round(self.baseStats.meleeAttack * (1.05 ** (partyLevel - 1))),
-			round(self.baseStats.rangedAttack * (1.05 ** (partyLevel - 1))),
-			round(self.baseStats.meleeDefense * (1.05 ** (partyLevel - 1))),
-			round(self.baseStats.rangedDefense * (1.05 ** (partyLevel - 1))),
+			round(self.baseStats.hp * (1.05 ** (partyLevel - 1))),
+			round(self.baseStats.mp * (1.01 ** (partyLevel - 1))),
+			round(self.baseStats.ballisticAttack * (1.05 ** (partyLevel - 1))),
+			round(self.baseStats.magicAttack * (1.05 ** (partyLevel - 1))),
+			round(self.baseStats.ballisticDefense * (1.05 ** (partyLevel - 1))),
+			round(self.baseStats.magicDefense * (1.05 ** (partyLevel - 1))),
 			round(self.baseStats.accuracy * (1.05 ** (partyLevel - 1))),
 			round(self.baseStats.evade * (1.05 ** (partyLevel - 1)))
 		)
@@ -399,12 +417,12 @@ class Player:
 		self.totalStats = Stats()
 		self.evaluateTotalStats()
 
-		self.currentHP = self.totalStats.maxHP
-		self.currentMP = self.totalStats.maxMP
+		self.currentHP = self.totalStats.hp
+		self.currentMP = self.totalStats.mp
 
 	def evaluateTotalStats(self):
-		healthRatio = self.currentHP / self.totalStats.maxHP
-		manaRatio = self.currentMP / self.totalStats.maxMP
+		healthRatio = self.currentHP / self.totalStats.hp
+		manaRatio = self.currentMP / self.totalStats.mp
 
 		self.statusEffectStats = Stats(
 			100,
@@ -420,27 +438,27 @@ class Player:
 			self.statusEffectStats += self.statusEffects[i].effect
 
 		self.totalStats = Stats(
-			round((self.leveledUpStats.maxHP + self.weapon.stats.maxHP + self.armor.stats.maxHP) * (self.statusEffectStats.maxHP / 100)),
-			round((self.leveledUpStats.maxMP + self.weapon.stats.maxMP + self.armor.stats.maxMP) * (self.statusEffectStats.maxMP / 100)),
-			round((self.leveledUpStats.meleeAttack + self.weapon.stats.meleeAttack + self.armor.stats.meleeAttack) * (self.statusEffectStats.meleeAttack / 100)),
-			round((self.leveledUpStats.rangedAttack + self.weapon.stats.rangedAttack + self.armor.stats.rangedAttack) * (self.statusEffectStats.rangedAttack / 100)),
-			round((self.leveledUpStats.meleeDefense + self.weapon.stats.meleeDefense + self.armor.stats.meleeDefense) * (self.statusEffectStats.meleeDefense / 100)),
-			round((self.leveledUpStats.rangedDefense + self.weapon.stats.rangedDefense + self.armor.stats.rangedDefense) * (self.statusEffectStats.rangedDefense / 100)),
+			round((self.leveledUpStats.hp + self.weapon.stats.hp + self.armor.stats.hp) * (self.statusEffectStats.hp / 100)),
+			round((self.leveledUpStats.mp + self.weapon.stats.mp + self.armor.stats.mp) * (self.statusEffectStats.mp / 100)),
+			round((self.leveledUpStats.ballisticAttack + self.weapon.stats.ballisticAttack + self.armor.stats.ballisticAttack) * (self.statusEffectStats.ballisticAttack / 100)),
+			round((self.leveledUpStats.magicAttack + self.weapon.stats.magicAttack + self.armor.stats.magicAttack) * (self.statusEffectStats.magicAttack / 100)),
+			round((self.leveledUpStats.ballisticDefense + self.weapon.stats.ballisticDefense + self.armor.stats.ballisticDefense) * (self.statusEffectStats.ballisticDefense / 100)),
+			round((self.leveledUpStats.magicDefense + self.weapon.stats.magicDefense + self.armor.stats.magicDefense) * (self.statusEffectStats.magicDefense / 100)),
 			round((self.leveledUpStats.accuracy + self.weapon.stats.accuracy + self.armor.stats.accuracy) * (self.statusEffectStats.accuracy / 100)),
 			round((self.leveledUpStats.evade + self.weapon.stats.evade + self.armor.stats.evade) * (self.statusEffectStats.evade / 100))
 		)
 
-		self.currentHP = int(self.totalStats.maxHP * healthRatio)
-		self.currentMP = int(self.totalStats.maxMP * manaRatio)
+		self.currentHP = int(self.totalStats.hp * healthRatio)
+		self.currentMP = int(self.totalStats.mp * manaRatio)
 
 	def evaluateCurrentPoints(self):
-		if (self.currentHP > self.totalStats.maxHP):
-			self.currentHP = self.totalStats.maxHP
+		if (self.currentHP > self.totalStats.hp):
+			self.currentHP = self.totalStats.hp
 		elif (self.currentHP < 0):
 			self.currentHP = 0
 
-		if (self.currentMP > self.totalStats.maxMP):
-			self.currentMP = self.totalStats.maxMP
+		if (self.currentMP > self.totalStats.mp):
+			self.currentMP = self.totalStats.mp
 		elif (self.currentMP < 0):
 			self.currentMP = 0
 
@@ -465,12 +483,12 @@ class Enemy:
 		)
 
 		self.leveledUpStats = Stats(
-			round(self.baseStats.maxHP * (1.05 ** (self.currentLevel - 1))),
+			round(self.baseStats.hp * (1.05 ** (self.currentLevel - 1))),
 			0,
-			round(self.baseStats.meleeAttack * (1.05 ** (self.currentLevel - 1))),
-			round(self.baseStats.rangedAttack * (1.05 ** (self.currentLevel - 1))),
-			round(self.baseStats.meleeDefense * (1.05 ** (self.currentLevel - 1))),
-			round(self.baseStats.rangedDefense * (1.05 ** (self.currentLevel - 1))),
+			round(self.baseStats.ballisticAttack * (1.05 ** (self.currentLevel - 1))),
+			round(self.baseStats.magicAttack * (1.05 ** (self.currentLevel - 1))),
+			round(self.baseStats.ballisticDefense * (1.05 ** (self.currentLevel - 1))),
+			round(self.baseStats.magicDefense * (1.05 ** (self.currentLevel - 1))),
 			round(self.baseStats.accuracy * (1.05 ** (self.currentLevel - 1))),
 			round(self.baseStats.evade * (1.05 ** (self.currentLevel - 1)))
 		)
@@ -498,10 +516,10 @@ class Enemy:
 		self.evaluateTotalStats()
 		# self.checkForLevelUp()
 
-		self.currentHP = self.totalStats.maxHP
+		self.currentHP = self.totalStats.hp
 
 	def evaluateTotalStats(self):
-		healthRatio = self.currentHP / self.totalStats.maxHP
+		healthRatio = self.currentHP / self.totalStats.hp
 
 		self.statusEffectStats = Stats(
 			100,
@@ -517,42 +535,42 @@ class Enemy:
 			self.statusEffectStats += self.statusEffects[i].effect
 
 		# self.totalStats = Stats(
-		# 	superRound(self.baseStats.maxHP * (self.statusEffectStats.maxHP / 100), int),
-		# 	superRound(self.baseStats.maxMP * (self.statusEffectStats.maxMP / 100), int),
-		# 	superRound(self.baseStats.meleeAttack * (self.statusEffectStats.meleeAttack / 100), int),
-		# 	superRound(self.baseStats.rangedAttack * (self.statusEffectStats.rangedAttack / 100), int),
-		# 	superRound(self.baseStats.meleeDefense * (self.statusEffectStats.meleeDefense / 100), int),
-		# 	superRound(self.baseStats.rangedDefense * (self.statusEffectStats.rangedDefense / 100), int),
+		# 	superRound(self.baseStats.hp * (self.statusEffectStats.hp / 100), int),
+		# 	superRound(self.baseStats.mp * (self.statusEffectStats.mp / 100), int),
+		# 	superRound(self.baseStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100), int),
+		# 	superRound(self.baseStats.magicAttack * (self.statusEffectStats.magicAttack / 100), int),
+		# 	superRound(self.baseStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100), int),
+		# 	superRound(self.baseStats.magicDefense * (self.statusEffectStats.magicDefense / 100), int),
 		# 	superRound(self.baseStats.accuracy * (self.statusEffectStats.accuracy / 100), int),
 		# 	superRound(self.baseStats.evade * (self.statusEffectStats.evade / 100), int)
 		# )
 
 		self.totalStats = Stats(
-			round(self.leveledUpStats.maxHP * (self.statusEffectStats.maxHP / 100)),
+			round(self.leveledUpStats.hp * (self.statusEffectStats.hp / 100)),
 			0,
-			round(self.leveledUpStats.meleeAttack * (self.statusEffectStats.meleeAttack / 100)),
-			round(self.leveledUpStats.rangedAttack * (self.statusEffectStats.rangedAttack / 100)),
-			round(self.leveledUpStats.meleeDefense * (self.statusEffectStats.meleeDefense / 100)),
-			round(self.leveledUpStats.rangedDefense * (self.statusEffectStats.rangedDefense / 100)),
+			round(self.leveledUpStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100)),
+			round(self.leveledUpStats.magicAttack * (self.statusEffectStats.magicAttack / 100)),
+			round(self.leveledUpStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100)),
+			round(self.leveledUpStats.magicDefense * (self.statusEffectStats.magicDefense / 100)),
 			round(self.leveledUpStats.accuracy * (self.statusEffectStats.accuracy / 100)),
 			round(self.leveledUpStats.evade * (self.statusEffectStats.evade / 100))
 		)
 
-		self.currentHP = superRound(self.totalStats.maxHP * healthRatio, int)
+		self.currentHP = superRound(self.totalStats.hp * healthRatio, int)
 
 	def evaluateCurrentPoints(self):
-		if (self.currentHP > self.totalStats.maxHP):
-			self.currentHP = self.totalStats.maxHP
+		if (self.currentHP > self.totalStats.hp):
+			self.currentHP = self.totalStats.hp
 		elif (self.currentHP < 0):
 			self.currentHP = 0
 
 	# def checkForLevelUp(self):
 	# 	self.baseStats = Stats(
-	# 		math.ceil(self.baseStats.maxHP * (self.levelUpStats.maxHP ** (self.currentLevel - 1))),
-	# 		math.ceil(self.baseStats.meleeAttack * (self.levelUpStats.meleeAttack ** (self.currentLevel - 1))),
-	# 		math.ceil(self.baseStats.rangedAttack * (self.levelUpStats.rangedAttack ** (self.currentLevel - 1))),
-	# 		math.ceil(self.baseStats.meleeDefense * (self.levelUpStats.meleeDefense ** (self.currentLevel - 1))),
-	# 		math.ceil(self.baseStats.rangedDefense * (self.levelUpStats.rangedDefense ** (self.currentLevel - 1))),
+	# 		math.ceil(self.baseStats.hp * (self.levelUpStats.hp ** (self.currentLevel - 1))),
+	# 		math.ceil(self.baseStats.ballisticAttack * (self.levelUpStats.ballisticAttack ** (self.currentLevel - 1))),
+	# 		math.ceil(self.baseStats.magicAttack * (self.levelUpStats.magicAttack ** (self.currentLevel - 1))),
+	# 		math.ceil(self.baseStats.ballisticDefense * (self.levelUpStats.ballisticDefense ** (self.currentLevel - 1))),
+	# 		math.ceil(self.baseStats.magicDefense * (self.levelUpStats.magicDefense ** (self.currentLevel - 1))),
 	# 		math.ceil(self.baseStats.accuracy * (self.levelUpStats.accuracy ** (self.currentLevel - 1))),
 	# 		math.ceil(self.baseStats.evade * (self.levelUpStats.evade ** (self.currentLevel - 1)))
 	# 	)
@@ -1558,8 +1576,8 @@ def checkForPartyLevelUp():
 	for i in range(len(currentPlayers)):
 		if (currentPlayers[i] != None):
 			initialStats.append(currentPlayers[i].totalStats)
-			healthRatio.append(currentPlayers[i].currentHP / currentPlayers[i].totalStats.maxHP)
-			manaRatio.append(currentPlayers[i].currentMP / currentPlayers[i].totalStats.maxMP)
+			healthRatio.append(currentPlayers[i].currentHP / currentPlayers[i].totalStats.hp)
+			manaRatio.append(currentPlayers[i].currentMP / currentPlayers[i].totalStats.mp)
 
 	while (partyCurrentXP >= partyNextXP and partyLevel < maxPlayerLevel):
 		partyLeveledUp = True
@@ -1569,12 +1587,12 @@ def checkForPartyLevelUp():
 		for i in range(len(currentPlayers)):
 			if (currentPlayers[i] != None):
 				currentPlayers[i].leveledUpStats = Stats(
-					round(currentPlayers[i].baseStats.maxHP * (1.05 ** (partyLevel - 1))),
-					round(currentPlayers[i].baseStats.maxMP * (1.01 ** (partyLevel - 1))),
-					round(currentPlayers[i].baseStats.meleeAttack * (1.05 ** (partyLevel - 1))),
-					round(currentPlayers[i].baseStats.rangedAttack * (1.05 ** (partyLevel - 1))),
-					round(currentPlayers[i].baseStats.meleeDefense * (1.05 ** (partyLevel - 1))),
-					round(currentPlayers[i].baseStats.rangedDefense * (1.05 ** (partyLevel - 1))),
+					round(currentPlayers[i].baseStats.hp * (1.05 ** (partyLevel - 1))),
+					round(currentPlayers[i].baseStats.mp * (1.01 ** (partyLevel - 1))),
+					round(currentPlayers[i].baseStats.ballisticAttack * (1.05 ** (partyLevel - 1))),
+					round(currentPlayers[i].baseStats.magicAttack * (1.05 ** (partyLevel - 1))),
+					round(currentPlayers[i].baseStats.ballisticDefense * (1.05 ** (partyLevel - 1))),
+					round(currentPlayers[i].baseStats.magicDefense * (1.05 ** (partyLevel - 1))),
 					round(currentPlayers[i].baseStats.accuracy * (1.05 ** (partyLevel - 1))),
 					round(currentPlayers[i].baseStats.evade * (1.05 ** (partyLevel - 1)))
 				)
@@ -1600,8 +1618,8 @@ def checkForPartyLevelUp():
 		for i in range(len(currentPlayers)):
 			if (currentPlayers[i] != None):
 				changeInStats.append(newStats[i] - initialStats[i])
-				currentPlayers[i].currentHP = superRound(currentPlayers[i].totalStats.maxHP * healthRatio[i], int)
-				currentPlayers[i].currentMP = superRound(currentPlayers[i].totalStats.maxMP * manaRatio[i], int)
+				currentPlayers[i].currentHP = superRound(currentPlayers[i].totalStats.hp * healthRatio[i], int)
+				currentPlayers[i].currentMP = superRound(currentPlayers[i].totalStats.mp * manaRatio[i], int)
 
 		print("\n+–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––+")
 		print(levelUpUIRow("Level Up! LVL " + str(initialPartyLevel) + " -> LVL " + str(newPartyLevel), 0))
@@ -1643,8 +1661,8 @@ def renderBattleStatusMenu():
 			currentPlayerName = currentPlayers[i].name
 			currentPlayerCHP = currentPlayers[i].currentHP
 			currentPlayerCMP = currentPlayers[i].currentMP
-			currentPlayerMHP = currentPlayers[i].totalStats.maxHP
-			currentPlayerMMP = currentPlayers[i].totalStats.maxMP
+			currentPlayerMHP = currentPlayers[i].totalStats.hp
+			currentPlayerMMP = currentPlayers[i].totalStats.mp
 
 			if (len(currentPlayerName) > 14):
 				currentPlayerName = currentPlayerName[0:11] + "..."
@@ -1662,7 +1680,7 @@ def renderBattleStatusMenu():
 		if (currentEnemies[i] != None and enemiesAlive[i]):
 			currentEnemyName = "LV " + str(currentEnemies[i].currentLevel) + " " + currentEnemies[i].currentClass
 			currentEnemyCHP = currentEnemies[i].currentHP
-			currentEnemyMHP = currentEnemies[i].totalStats.maxHP
+			currentEnemyMHP = currentEnemies[i].totalStats.hp
 
 			if (len(currentEnemyName) > 20):
 				currentEnemyName = currentEnemyName[0:17] + "..."
@@ -1767,7 +1785,7 @@ def renderAttackMenu():
 			count = i + 1
 			currentSkill = skillsList[currentPlayers[selectedPlayer].skills[i]]
 
-			currentSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
+			currentSkillResource = currentPlayers[selectedPlayer].totalStats.mp
 			resourceString = "MP"
 
 			currentSkillTotalCost = currentSkill.cost
@@ -1789,7 +1807,7 @@ def renderAttackMenu():
 					chosenSkill = skillsList[currentPlayers[selectedPlayer].skills[userInput]]
 
 					currentPlayerResource = currentPlayers[selectedPlayer].currentMP
-					chosenSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
+					chosenSkillResource = currentPlayers[selectedPlayer].totalStats.mp
 					resourceString = "MP"
 
 					chosenSkillCost = chosenSkill.cost
@@ -2239,11 +2257,11 @@ def progressBattleTurn():
 			for currentStatusEffect in currentPlayers[i].statusEffects:
 				if (currentStatusEffect in fireStatusEffects):
 					if (currentStatusEffect == fireStatusEffects[0]):
-						currentPlayers[i].currentHP -= (2/100) * currentPlayers[i].totalStats.maxHP
+						currentPlayers[i].currentHP -= (2/100) * currentPlayers[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[1]):
-						currentPlayers[i].currentHP -= (4/100) * currentPlayers[i].totalStats.maxHP
+						currentPlayers[i].currentHP -= (4/100) * currentPlayers[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[2]):
-						currentPlayers[i].currentHP -= (6/100) * currentPlayers[i].totalStats.maxHP
+						currentPlayers[i].currentHP -= (6/100) * currentPlayers[i].totalStats.hp
 		else:
 			continue
 
@@ -2252,11 +2270,11 @@ def progressBattleTurn():
 			for currentStatusEffect in currentEnemies[i].statusEffects:
 				if (currentStatusEffect in fireStatusEffects):
 					if (currentStatusEffect == fireStatusEffects[0]):
-						currentEnemies[i].currentHP -= (2/100) * currentEnemies[i].totalStats.maxHP
+						currentEnemies[i].currentHP -= (2/100) * currentEnemies[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[1]):
-						currentEnemies[i].currentHP -= (4/100) * currentEnemies[i].totalStats.maxHP
+						currentEnemies[i].currentHP -= (4/100) * currentEnemies[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[2]):
-						currentEnemies[i].currentHP -= (6/100) * currentEnemies[i].totalStats.maxHP
+						currentEnemies[i].currentHP -= (6/100) * currentEnemies[i].totalStats.hp
 		else:
 			continue
 
@@ -2300,8 +2318,8 @@ def renderTownStatusMenu():
 	print("| " + str(regions[gameRegion % 3]) + " | Town")
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 	print("| " + str(currentPlayers[0].name) + " | LV " + str(partyLevel))
-	print("| HP | " + str(currentPlayers[0].currentHP) + "/" + str(currentPlayers[0].totalStats.maxHP))
-	print("| MP | " + str(currentPlayers[0].currentMP) + "/" + str(currentPlayers[0].totalStats.maxMP))
+	print("| HP | " + str(currentPlayers[0].currentHP) + "/" + str(currentPlayers[0].totalStats.hp))
+	print("| MP | " + str(currentPlayers[0].currentMP) + "/" + str(currentPlayers[0].totalStats.mp))
 	print("| $$ | " + str(partyMoney))
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 
@@ -2475,8 +2493,8 @@ def renderInnDetails(action):
 						currentHPRecovery = superRound(chosenInnPower, int)
 						currentMPRecovery = superRound(chosenInnPower, int)
 					elif (chosenInnResource in percentageResources):
-						currentHPRecovery = currentPlayers[0].totalStats.maxHP * (chosenInnPower / 100)
-						currentMPRecovery = currentPlayers[0].totalStats.maxMP * (chosenInnPower / 100)
+						currentHPRecovery = currentPlayers[0].totalStats.hp * (chosenInnPower / 100)
+						currentMPRecovery = currentPlayers[0].totalStats.mp * (chosenInnPower / 100)
 						currentHPRecovery = superRound(currentHPRecovery, int)
 						currentMPRecovery = superRound(currentMPRecovery, int)
 					else:
@@ -2565,13 +2583,13 @@ def castSkill(target, user, skill, version):
 		targetDefenseStat = []
 
 		if (skill.statType == statTypes[1]):
-			userAttackStat = user.totalStats.meleeAttack
+			userAttackStat = user.totalStats.ballisticAttack
 			for i in range(len(target)):
-				targetDefenseStat.append(target[i].totalStats.meleeDefense)
+				targetDefenseStat.append(target[i].totalStats.ballisticDefense)
 		elif (skill.statType == statTypes[2]):
-			userAttackStat = user.totalStats.rangedAttack
+			userAttackStat = user.totalStats.magicAttack
 			for i in range(len(target)):
-				targetDefenseStat.append(target[i].totalStats.rangedDefense)
+				targetDefenseStat.append(target[i].totalStats.magicDefense)
 		else:
 			userAttackStat = 1
 			for i in range(len(target)):
@@ -2645,9 +2663,9 @@ def castSkill(target, user, skill, version):
 
 	elif (skill.skillType == skillTypes[2]):
 		if (skill.statType == statTypes[1]):
-			userHealStat = user.totalStats.meleeAttack
+			userHealStat = user.totalStats.ballisticAttack
 		elif (skill.statType == statTypes[2]):
-			userHealStat = user.totalStats.rangedAttack
+			userHealStat = user.totalStats.magicAttack
 		else:
 			userHealStat = 1
 
@@ -2692,9 +2710,9 @@ def castSkill(target, user, skill, version):
 				targetEvadeStat.pop(targetEvadeStat[i])
 
 		if (skill.statType == statTypes[1]):
-			userHealStat = user.totalStats.meleeAttack
+			userHealStat = user.totalStats.ballisticAttack
 		elif (skill.statType == statTypes[2]):
-			userHealStat = user.totalStats.rangedAttack
+			userHealStat = user.totalStats.magicAttack
 		else:
 			userHealStat = 1
 
@@ -2772,13 +2790,13 @@ def useItem(user, target, itemIndex):
 
 	# If item is of health type
 	if chosenItem.itemType == itemTypes[0]:
-		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.maxHP), 0)))
+		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.hp), 0)))
 		user.currentHP += currentHealing
 		print(userName + " recovered " + str(currentHealing) + " HP.", end="")
 
 	# Else, if item is of mana type
 	elif chosenItem.itemType == itemTypes[1]:
-		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.maxMP), 0)))
+		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.mp), 0)))
 		user.currentMP += currentHealing
 		print(userName + " recovered " + str(currentHealing) + " MP.", end="")
 
@@ -2787,11 +2805,11 @@ def useItem(user, target, itemIndex):
 	# 	damageMod = 1
 
 	# 	if skill.statType == statTypes[1]:
-	# 		userAttackStat = user.totalStats.meleeAttack
-	# 		targetDefenseStat = target.totalStats.meleeDefense
+	# 		userAttackStat = user.totalStats.ballisticAttack
+	# 		targetDefenseStat = target.totalStats.ballisticDefense
 	# 	elif skill.statType == statTypes[2]:
-	# 		userAttackStat = user.totalStats.rangedAttack
-	# 		targetDefenseStat = target.totalStats.rangedDefense
+	# 		userAttackStat = user.totalStats.magicAttack
+	# 		targetDefenseStat = target.totalStats.magicDefense
 	input()
 
 	user.evaluateCurrentPoints()
