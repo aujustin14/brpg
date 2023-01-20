@@ -369,22 +369,13 @@ class Item:
 		return "+–––––––+–––––––––––––––––––––––––––––––+\n|Name\t| " + str(self.name) + "\n|Type\t| " + str(self.itemType) + "\n|Power\t| " + powerString + "\n+–––––––+–––––––––––––––––––––––––––––––+"
 
 
-class Player:
-	def __init__(self, currentName, currentBaseStats, skills, currentWeapon, currentArmor, currentInventory):
-		self.name = currentName
-		self.currentHP = 1
-		self.currentMP = 1
+class PlayerCharacter:
+	def __init__(self, name="Null", stats=Stats(), skills=[], weapon=0, armor=1, inventory="050100050100"):
+		self.name = name
+		self.curHP = 1
+		self.curMP = 1
 
-		self.baseStats = Stats(
-			round(currentBaseStats[0]),
-			round(currentBaseStats[1]),
-			round(currentBaseStats[2]),
-			round(currentBaseStats[3]),
-			round(currentBaseStats[4]),
-			round(currentBaseStats[5]),
-			round(currentBaseStats[6]),
-			round(currentBaseStats[7])
-		)
+		self.baseStats = stats
 
 		self.leveledUpStats = Stats(
 			round(self.baseStats.hp * (1.05 ** (partyLevel - 1))),
@@ -399,16 +390,16 @@ class Player:
 
 		self.skills = skills
 
-		self.weapon = equipmentList[currentWeapon]
-		self.armor = equipmentList[currentArmor]
+		self.weapon = equipmentList[weapon]
+		self.armor = equipmentList[armor]
 
 		self.itemInventory = [
-			int(currentInventory[0:2]),
-			int(currentInventory[2:4]),
-			int(currentInventory[4:6]),
-			int(currentInventory[6:8]),
-			int(currentInventory[8:10]),
-			int(currentInventory[10:12])
+			int(inventory[0:2]),
+			int(inventory[2:4]),
+			int(inventory[4:6]),
+			int(inventory[6:8]),
+			int(inventory[8:10]),
+			int(inventory[10:12])
 		]
 
 		self.statusEffects = []
@@ -417,12 +408,14 @@ class Player:
 		self.totalStats = Stats()
 		self.evaluateTotalStats()
 
-		self.currentHP = self.totalStats.hp
-		self.currentMP = self.totalStats.mp
+		self.maxHP = self.totalStats.hp
+		self.maxMP = self.totalStats.mp
+		self.curHP = self.maxHP
+		self.curMP = self.maxMP
 
 	def evaluateTotalStats(self):
-		healthRatio = self.currentHP / self.totalStats.hp
-		manaRatio = self.currentMP / self.totalStats.mp
+		healthRatio = self.curHP / self.totalStats.hp
+		manaRatio = self.curMP / self.totalStats.mp
 
 		self.statusEffectStats = Stats(
 			100,
@@ -448,19 +441,19 @@ class Player:
 			round((self.leveledUpStats.evade + self.weapon.stats.evade + self.armor.stats.evade) * (self.statusEffectStats.evade / 100))
 		)
 
-		self.currentHP = int(self.totalStats.hp * healthRatio)
-		self.currentMP = int(self.totalStats.mp * manaRatio)
+		self.curHP = int(self.totalStats.hp * healthRatio)
+		self.curMP = int(self.totalStats.mp * manaRatio)
 
 	def evaluateCurrentPoints(self):
-		if (self.currentHP > self.totalStats.hp):
-			self.currentHP = self.totalStats.hp
-		elif (self.currentHP < 0):
-			self.currentHP = 0
+		if (self.curHP > self.totalStats.hp):
+			self.curHP = self.totalStats.hp
+		elif (self.curHP < 0):
+			self.curHP = 0
 
-		if (self.currentMP > self.totalStats.mp):
-			self.currentMP = self.totalStats.mp
-		elif (self.currentMP < 0):
-			self.currentMP = 0
+		if (self.curMP > self.totalStats.mp):
+			self.curMP = self.totalStats.mp
+		elif (self.curMP < 0):
+			self.curMP = 0
 
 
 class Enemy:
@@ -469,7 +462,7 @@ class Enemy:
 		self.currentClass = currentName
 		# levelConstant = gameRegion * regionBattle
 		self.currentLevel = random.choice([max(1, partyLevel - 1), max(1, partyLevel - 1), max(1, partyLevel - 1), partyLevel, partyLevel, partyLevel, partyLevel, min(maxPlayerLevel, partyLevel + 1)])
-		self.currentHP = 1
+		self.curHP = 1
 
 		self.baseStats = Stats(
 			round(currentBaseStats[0]),
@@ -506,8 +499,8 @@ class Enemy:
 		self.skills = skills
 
 
-		# self.currentWeapon = equipmentList[0]
-		# self.currentArmor = equipmentList[1]
+		# self.weapon = equipmentList[0]
+		# self.armor = equipmentList[1]
 
 		self.statusEffects = []
 		self.statusEffectDurations = []
@@ -516,10 +509,10 @@ class Enemy:
 		self.evaluateTotalStats()
 		# self.checkForLevelUp()
 
-		self.currentHP = self.totalStats.hp
+		self.curHP = self.totalStats.hp
 
 	def evaluateTotalStats(self):
-		healthRatio = self.currentHP / self.totalStats.hp
+		healthRatio = self.curHP / self.totalStats.hp
 
 		self.statusEffectStats = Stats(
 			100,
@@ -556,13 +549,13 @@ class Enemy:
 			round(self.leveledUpStats.evade * (self.statusEffectStats.evade / 100))
 		)
 
-		self.currentHP = superRound(self.totalStats.hp * healthRatio, int)
+		self.curHP = superRound(self.totalStats.hp * healthRatio, int)
 
 	def evaluateCurrentPoints(self):
-		if (self.currentHP > self.totalStats.hp):
-			self.currentHP = self.totalStats.hp
-		elif (self.currentHP < 0):
-			self.currentHP = 0
+		if (self.curHP > self.totalStats.hp):
+			self.curHP = self.totalStats.hp
+		elif (self.curHP < 0):
+			self.curHP = 0
 
 	# def checkForLevelUp(self):
 	# 	self.baseStats = Stats(
@@ -1061,38 +1054,31 @@ itemsList = {
 
 # Contains the list for players.
 playersList = {
-	0: [
-		"",
-		[1, 1, 1, 1, 1, 1, 1, 1],
-		[],
-		0,
-		1,
-		"050100050100"
-	],
-	1: [
-		"Player A",
-		[550, 100, 55, 50, 55, 50, 20, 20],
-		[3, 4],
-		2,
-		3,
-		"050100050100"
-	],
-	2: [
-		"Player B",
-		[450, 100, 50, 50, 50, 50, 25, 25],
-		[5, 6],
-		4,
-		5,
-		"050100050100"
-	],
-	3: [
-		"Player C",
-		[500, 100, 50, 55, 50, 55, 20, 20],
-		[7, 8, 9, 10, 11],
-		6,
-		7,
-		"050100050100"
-	],
+	0: PlayerCharacter(),
+	1: PlayerCharacter(
+		name = "Monkey A",
+		stats = Stats(550, 100, 55, 50, 55, 50, 20, 20),
+		skills = [3, 4],
+		weapon = 2,
+		armor = 3,
+		inventory = "050100050100"
+	),
+	2: PlayerCharacter(
+		name = "Monkey B",
+		stats = Stats(450, 100, 50, 50, 50, 50, 25, 25),
+		skills = [5, 6],
+		weapon = 4,
+		armor = 5,
+		inventory = "050100050100"
+	),
+	3: PlayerCharacter(
+		name = "Monkey C",
+		stats = Stats(500, 100, 50, 55, 50, 55, 20, 20),
+		skills = [7, 8, 9, 10, 11],
+		weapon = 6,
+		armor = 7,
+		inventory = "050100050100"
+	),
 }
 
 # Contains the list for enemies.
@@ -1365,15 +1351,16 @@ def renderDebugMenu():
 # Render the menu for when the player starts a new game. This menu should allow the player to check out and customize their character (such as their name and class). This menu should also allow the player to officially start a new game.
 def renderNewGameMenu():
 	inNewGameMenu = True
-	selectedCharacters = [0, 0, 0]
+	# selectedCharacters = [0, 0, 0]
+	selectedCharacters = [1, 2, 3]
 
 	while (inNewGameMenu):
 		clearScreen()
 		print("New Game")
 		print("--------")
-		print("1. " + playersList[selectedCharacters[0]][0]) if selectedCharacters[0] != 0 else print("1. Empty Slot")
-		print("2. " + playersList[selectedCharacters[1]][0]) if selectedCharacters[1] != 0 else print("2. Empty Slot")
-		print("3. " + playersList[selectedCharacters[2]][0]) if selectedCharacters[2] != 0 else print("3. Empty Slot")
+		print("1. " + playersList[selectedCharacters[0]].name) if selectedCharacters[0] != 0 else print("1. Empty Slot")
+		print("2. " + playersList[selectedCharacters[1]].name) if selectedCharacters[1] != 0 else print("2. Empty Slot")
+		print("3. " + playersList[selectedCharacters[2]].name) if selectedCharacters[2] != 0 else print("3. Empty Slot")
 		if (not all(flag == 0 for flag in selectedCharacters)):
 			print("Q. Start Game")
 		print("`. Back")
@@ -1387,8 +1374,7 @@ def renderNewGameMenu():
 			elif (userInput.lower() == "q" and not all(flag == 0 for flag in selectedCharacters)):
 				for i in range(len(currentPlayers)):
 					if (selectedCharacters[i] != 0):
-						characterData = playersList[selectedCharacters[i]]
-						currentPlayers[i] = Player(characterData[0], characterData[1], characterData[2], characterData[3], characterData[4], characterData[5])
+						currentPlayers[i] = playersList[selectedCharacters[i]]
 						playersAlive[i] = True
 						playersHaveMoved[i] = False
 				startGame()
@@ -1407,10 +1393,10 @@ def requestCharacterChange(currentCharacter, party):
 		clearScreen()
 		print("Select Monkey")
 		print("-------------")
-		print("Current Monkey in Slot: " + str(playersList[currentCharacter][0]))
+		print("Current Monkey in Slot: " + str(playersList[currentCharacter].name))
 		for key in playersList:
 			if (key != 0):
-				print(str(key) + ". " + str(playersList[key][0]))
+				print(str(key) + ". " + str(playersList[key].name))
 		print("Q. Deselect")
 		print("`. Back")
 
@@ -1576,8 +1562,8 @@ def checkForPartyLevelUp():
 	for i in range(len(currentPlayers)):
 		if (currentPlayers[i] != None):
 			initialStats.append(currentPlayers[i].totalStats)
-			healthRatio.append(currentPlayers[i].currentHP / currentPlayers[i].totalStats.hp)
-			manaRatio.append(currentPlayers[i].currentMP / currentPlayers[i].totalStats.mp)
+			healthRatio.append(currentPlayers[i].curHP / currentPlayers[i].totalStats.hp)
+			manaRatio.append(currentPlayers[i].curMP / currentPlayers[i].totalStats.mp)
 
 	while (partyCurrentXP >= partyNextXP and partyLevel < maxPlayerLevel):
 		partyLeveledUp = True
@@ -1618,8 +1604,8 @@ def checkForPartyLevelUp():
 		for i in range(len(currentPlayers)):
 			if (currentPlayers[i] != None):
 				changeInStats.append(newStats[i] - initialStats[i])
-				currentPlayers[i].currentHP = superRound(currentPlayers[i].totalStats.hp * healthRatio[i], int)
-				currentPlayers[i].currentMP = superRound(currentPlayers[i].totalStats.mp * manaRatio[i], int)
+				currentPlayers[i].curHP = superRound(currentPlayers[i].totalStats.hp * healthRatio[i], int)
+				currentPlayers[i].curMP = superRound(currentPlayers[i].totalStats.mp * manaRatio[i], int)
 
 		print("\n+–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––+")
 		print(levelUpUIRow("Level Up! LVL " + str(initialPartyLevel) + " -> LVL " + str(newPartyLevel), 0))
@@ -1659,8 +1645,8 @@ def renderBattleStatusMenu():
 	for i in range(3):
 		if (currentPlayers[i] != None):
 			currentPlayerName = currentPlayers[i].name
-			currentPlayerCHP = currentPlayers[i].currentHP
-			currentPlayerCMP = currentPlayers[i].currentMP
+			currentPlayerCHP = currentPlayers[i].curHP
+			currentPlayerCMP = currentPlayers[i].curMP
 			currentPlayerMHP = currentPlayers[i].totalStats.hp
 			currentPlayerMMP = currentPlayers[i].totalStats.mp
 
@@ -1679,7 +1665,7 @@ def renderBattleStatusMenu():
 
 		if (currentEnemies[i] != None and enemiesAlive[i]):
 			currentEnemyName = "LV " + str(currentEnemies[i].currentLevel) + " " + currentEnemies[i].currentClass
-			currentEnemyCHP = currentEnemies[i].currentHP
+			currentEnemyCHP = currentEnemies[i].curHP
 			currentEnemyMHP = currentEnemies[i].totalStats.hp
 
 			if (len(currentEnemyName) > 20):
@@ -1806,13 +1792,13 @@ def renderAttackMenu():
 					userInput -= 1
 					chosenSkill = skillsList[currentPlayers[selectedPlayer].skills[userInput]]
 
-					currentPlayerResource = currentPlayers[selectedPlayer].currentMP
+					currentPlayerResource = currentPlayers[selectedPlayer].curMP
 					chosenSkillResource = currentPlayers[selectedPlayer].totalStats.mp
 					resourceString = "MP"
 
 					chosenSkillCost = chosenSkill.cost
 
-					if ((currentPlayerResource == currentPlayers[selectedPlayer].currentMP) and currentPlayerResource >= chosenSkillCost):
+					if ((currentPlayerResource == currentPlayers[selectedPlayer].curMP) and currentPlayerResource >= chosenSkillCost):
 						renderAttackDetails(chosenSkill)
 						if (playersHaveMoved[selectedPlayer]):
 							pickingSkill = False
@@ -2218,10 +2204,10 @@ def evaluateCharacterStatuses():
 
 	for i in range(len(currentPlayers)):
 		if (currentPlayers[i] != None):
-			playersAlive[i] = currentPlayers[i].currentHP > 0
+			playersAlive[i] = currentPlayers[i].curHP > 0
 	for i in range(len(currentEnemies)):
 		if (currentEnemies[i] != None):
-			enemiesAlive[i] = currentEnemies[i].currentHP > 0
+			enemiesAlive[i] = currentEnemies[i].curHP > 0
 
 
 # Increment the turn in battle by 1.
@@ -2257,11 +2243,11 @@ def progressBattleTurn():
 			for currentStatusEffect in currentPlayers[i].statusEffects:
 				if (currentStatusEffect in fireStatusEffects):
 					if (currentStatusEffect == fireStatusEffects[0]):
-						currentPlayers[i].currentHP -= (2/100) * currentPlayers[i].totalStats.hp
+						currentPlayers[i].curHP -= (2/100) * currentPlayers[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[1]):
-						currentPlayers[i].currentHP -= (4/100) * currentPlayers[i].totalStats.hp
+						currentPlayers[i].curHP -= (4/100) * currentPlayers[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[2]):
-						currentPlayers[i].currentHP -= (6/100) * currentPlayers[i].totalStats.hp
+						currentPlayers[i].curHP -= (6/100) * currentPlayers[i].totalStats.hp
 		else:
 			continue
 
@@ -2270,11 +2256,11 @@ def progressBattleTurn():
 			for currentStatusEffect in currentEnemies[i].statusEffects:
 				if (currentStatusEffect in fireStatusEffects):
 					if (currentStatusEffect == fireStatusEffects[0]):
-						currentEnemies[i].currentHP -= (2/100) * currentEnemies[i].totalStats.hp
+						currentEnemies[i].curHP -= (2/100) * currentEnemies[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[1]):
-						currentEnemies[i].currentHP -= (4/100) * currentEnemies[i].totalStats.hp
+						currentEnemies[i].curHP -= (4/100) * currentEnemies[i].totalStats.hp
 					if (currentStatusEffect == fireStatusEffects[2]):
-						currentEnemies[i].currentHP -= (6/100) * currentEnemies[i].totalStats.hp
+						currentEnemies[i].curHP -= (6/100) * currentEnemies[i].totalStats.hp
 		else:
 			continue
 
@@ -2318,8 +2304,8 @@ def renderTownStatusMenu():
 	print("| " + str(regions[gameRegion % 3]) + " | Town")
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 	print("| " + str(currentPlayers[0].name) + " | LV " + str(partyLevel))
-	print("| HP | " + str(currentPlayers[0].currentHP) + "/" + str(currentPlayers[0].totalStats.hp))
-	print("| MP | " + str(currentPlayers[0].currentMP) + "/" + str(currentPlayers[0].totalStats.mp))
+	print("| HP | " + str(currentPlayers[0].curHP) + "/" + str(currentPlayers[0].totalStats.hp))
+	print("| MP | " + str(currentPlayers[0].curMP) + "/" + str(currentPlayers[0].totalStats.mp))
 	print("| $$ | " + str(partyMoney))
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 
@@ -2502,20 +2488,20 @@ def renderInnDetails(action):
 						currentMPRecovery = superRound(chosenInnPower, int)
 
 					if (chosenInnResource == resources[1] or chosenInnResource == resources[4]):
-						currentPlayers[0].currentHP += currentHPRecovery
+						currentPlayers[0].curHP += currentHPRecovery
 						currentPlayers[0].evaluateCurrentPoints()
 
 						proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentHPRecovery) + " HP.", "")
 						viewingActionDetails = False
 					elif (chosenInnResource == resources[2] or chosenInnResource == resources[5]):
-						currentPlayers[0].currentMP += currentMPRecovery
+						currentPlayers[0].curMP += currentMPRecovery
 						currentPlayers[0].evaluateCurrentPoints()
 
 						proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentMPRecovery) + " MP.", "")
 						viewingActionDetails = False
 					elif (chosenInnResource == resources[3] or chosenInnResource == resources[6]):
-						currentPlayers[0].currentHP += currentHPRecovery
-						currentPlayers[0].currentMP += currentMPRecovery
+						currentPlayers[0].curHP += currentHPRecovery
+						currentPlayers[0].curMP += currentMPRecovery
 						currentPlayers[0].evaluateCurrentPoints()
 
 						proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentHPRecovery) + " HP and " + str(currentMPRecovery) + " MP.", "")
@@ -2558,9 +2544,9 @@ def castSkill(target, user, skill, version):
 	for i in range(len(target)):
 		targetName.append(target[i].name)
 
-	if (type(user) is Player):
+	if (type(user) is PlayerCharacter):
 		skillCost = skill.cost
-		user.currentMP -= skillCost
+		user.curMP -= skillCost
 
 	if (version == 0):
 		skillPower = skill.basePowerA
@@ -2632,7 +2618,7 @@ def castSkill(target, user, skill, version):
 				else:
 					criticalString = ""
 
-				target[i].currentHP -= currentDamage
+				target[i].curHP -= currentDamage
 
 				totalDealtDamage.append(currentDamage)
 			else:
@@ -2672,7 +2658,7 @@ def castSkill(target, user, skill, version):
 		totalPotentialHealing = []
 		for i in range(len(target)):
 			currentPotentialHealing = math.ceil((userHealStat ** 2) / (userHealStat) * skillPower)
-			if (type(target[0]) is Player):
+			if (type(target[0]) is PlayerCharacter):
 				currentPotentialHealing *= 4
 			else:
 				currentPotentialHealing *= 1.5
@@ -2684,7 +2670,7 @@ def castSkill(target, user, skill, version):
 		for i in range(len(target)):
 			currentHealing = round(totalPotentialHealing[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
 
-			target[i].currentHP += currentHealing
+			target[i].curHP += currentHealing
 
 			totalDealtHealing.append(currentHealing)
 
@@ -2704,7 +2690,7 @@ def castSkill(target, user, skill, version):
 
 	elif (skill.skillType == skillTypes[3]):
 		for i in range(len(target)):
-			if (target[i].currentHP > 0):
+			if (target[i].curHP > 0):
 				target.pop(target[i])
 				targetName.pop(targetName[i])
 				targetEvadeStat.pop(targetEvadeStat[i])
@@ -2727,7 +2713,7 @@ def castSkill(target, user, skill, version):
 		for i in range(len(target)):
 			currentHealing = round(totalPotentialHealing[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
 
-			target[i].currentHP += currentHealing
+			target[i].curHP += currentHealing
 			if (user in currentPlayers):
 				playersHaveMoved[currentPlayers.index(target[i])] = False
 			elif (user in currentEnemies):
@@ -2791,13 +2777,13 @@ def useItem(user, target, itemIndex):
 	# If item is of health type
 	if chosenItem.itemType == itemTypes[0]:
 		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.hp), 0)))
-		user.currentHP += currentHealing
+		user.curHP += currentHealing
 		print(userName + " recovered " + str(currentHealing) + " HP.", end="")
 
 	# Else, if item is of mana type
 	elif chosenItem.itemType == itemTypes[1]:
 		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.mp), 0)))
-		user.currentMP += currentHealing
+		user.curMP += currentHealing
 		print(userName + " recovered " + str(currentHealing) + " MP.", end="")
 
 	# # Else, item is of damage type
