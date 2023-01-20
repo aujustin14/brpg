@@ -8,7 +8,8 @@ import pyperclip
 """
 todo:
     main focus
-        - streamline combat
+        - refactor combat logic
+		- redo lists of data for objects
 
 	high priority
         - implement alt skills
@@ -336,7 +337,7 @@ class Item:
 
 
 class Player:
-	def __init__(self, currentName, currentBaseStats, currentSkills, currentWeapon, currentArmor, currentInventory):
+	def __init__(self, currentName, currentBaseStats, skills, currentWeapon, currentArmor, currentInventory):
 		self.name = currentName
 		self.currentHP = 1
 		self.currentMP = 1
@@ -363,29 +364,7 @@ class Player:
 			round(self.baseStats.evade * (1.05 ** (partyLevel - 1)))
 		)
 
-		self.skills = []
-		for i in range(len(currentSkills)):
-			skillData = skillsList[currentSkills[i]]
-			self.skills.append(
-				Skill(
-					skillData[0],
-					skillData[1],
-					skillData[2],
-					skillData[3],
-					skillData[4],
-					skillData[5],
-					skillData[6],
-					skillData[7],
-					skillData[8],
-					skillData[9],
-					skillData[10],
-					skillData[11],
-					skillData[12],
-					skillData[13],
-					skillData[14],
-					skillData[15]
-				)
-			)
+		self.skills = skills
 
 		self.weapon = equipmentList[currentWeapon]
 		self.armor = equipmentList[currentArmor]
@@ -452,7 +431,7 @@ class Player:
 
 
 class Enemy:
-	def __init__(self, currentName, currentBaseStats, currentSkills):
+	def __init__(self, currentName, currentBaseStats, skills):
 		self.name = currentName
 		self.currentClass = currentName
 		# levelConstant = gameRegion * regionBattle
@@ -491,29 +470,7 @@ class Enemy:
 		# 	1.05
 		# )
 
-		self.skills = []
-		for i in range(0, len(currentSkills), 3):
-			skillData = skillsList[currentSkills[i]]
-			self.skills.append(
-				Skill(
-					skillData[0],
-					skillData[1],
-					skillData[2],
-					skillData[3],
-					skillData[4],
-					skillData[5],
-					skillData[6],
-					skillData[7],
-					skillData[8],
-					skillData[9],
-					skillData[10],
-					skillData[11],
-					skillData[12],
-					skillData[13],
-					skillData[14],
-					skillData[15]
-				)
-			)
+		self.skills = skills
 
 
 		# self.currentWeapon = equipmentList[0]
@@ -887,222 +844,222 @@ equipmentList = {
 
 # Contains the list for skills.
 skillsList = {
-	0: [
-		0,
-		"Empty",
-		0,
-		0,
-		0,
-		0,
-		0,
-		None,
-		None,
-		None,
-		None,
-		1.00,
-		0.00,
-		0.10,
-		None,
-		0
-	],
-	1: [
-		0,
-		"Defend",
-		1,
-		4,
-		0,
-		1,
-		0,
-		1,
-		None,
-		None,
-		None,
-		1.00,
-		0.00,
-		0.10,
-		90,
-		3
-	],
-	2: [
-		0,
-		"Evade",
-		1,
-		4,
-		0,
-		1,
-		0,
-		1,
-		None,
-		None,
-		None,
-		1.00,
-		0.00,
-		0.10,
-		91,
-		3
-	],
-	3: [
-		1,
-		"Basic Attack A",
-		1,
-		1,
-		1,
-		1,
-		0,
-		2,
-		None,
-		1.00,
-		None,
-		1.00,
-		0.10,
-		0.10,
-		None,
-		0
-	],
-	4: [
-		1,
-		"Basic Attack B",
-		1,
-		1,
-		1,
-		1,
-		0,
-		2,
-		3,
-		1.00,
-		0.75,
-		1.00,
-		0.10,
-		0.10,
-		None,
-		0
-	],
-	5: [
-		2,
-		"Basic Attack C",
-		1,
-		1,
-		2,
-		1,
-		0,
-		2,
-		None,
-		1.00,
-		None,
-		1.00,
-		0.10,
-		0.10,
-		None,
-		0
-	],
-	6: [
-		2,
-		"Basic Attack D",
-		1,
-		1,
-		2,
-		1,
-		0,
-		2,
-		3,
-		1.00,
-		0.75,
-		1.00,
-		0.10,
-		0.10,
-		None,
-		0
-	],
-	7: [
-		3,
-		"Self-heal",
-		1,
-		2,
-		2,
-		1,
-		0,
-		1,
-		None,
-		1.00,
-		None,
-		1.00,
-		0.00,
-		0.10,
-		None,
-		0
-	],
-	8: [
-		3,
-		"Heal A",
-		1,
-		2,
-		2,
-		1,
-		0,
-		4,
-		None,
-		1.00,
-		None,
-		1.00,
-		0.00,
-		0.10,
-		None,
-		0
-	],
-	9: [
-		3,
-		"Heal B",
-		1,
-		2,
-		2,
-		1,
-		0,
-		4,
-		5,
-		1.00,
-		0.75,
-		1.00,
-		0.00,
-		0.10,
-		None,
-		0
-	],
-	10: [
-		3,
-		"Revive A",
-		1,
-		3,
-		2,
-		1,
-		0,
-		6,
-		None,
-		1.00,
-		None,
-		1.00,
-		0.00,
-		0.10,
-		None,
-		0
-	],
-	11: [
-		3,
-		"Revive B",
-		1,
-		3,
-		2,
-		1,
-		0,
-		6,
-		7,
-		1.00,
-		0.75,
-		1.00,
-		0.00,
-		0.10,
-		None,
-		0
-	],
+	0: Skill(
+		forClass = 0,
+		name = "Empty",
+		maxPlayerLevel = 0,
+		skillType = 0,
+		statType = 0,
+		element = 0,
+		cost = 0,
+		targetingTypeA = None,
+		targetingTypeB = None,
+		basePowerA = None,
+		basePowerB = None,
+		accuracyMod = 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	1: Skill(
+		forClass = 0,
+		name = "Defend",
+		maxPlayerLevel = 1,
+		skillType = 4,
+		statType = 0,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 1,
+		targetingTypeB = None,
+		basePowerA = None,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = 90,
+		statusEffectDuration = 3
+	),
+	2: Skill(
+		forClass = 0,
+		name = "Evade",
+		maxPlayerLevel = 1,
+		skillType = 4,
+		statType = 0,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 1,
+		targetingTypeB = None,
+		basePowerA = None,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = 91,
+		statusEffectDuration = 3
+	),
+	3: Skill(
+		forClass = 1,
+		name = "Basic Attack A",
+		maxPlayerLevel = 1,
+		skillType = 1,
+		statType = 1,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 2,
+		targetingTypeB = None,
+		basePowerA = 1.00,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.10,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	4: Skill(
+		forClass = 1,
+		name = "Basic Attack B",
+		maxPlayerLevel = 1,
+		skillType = 1,
+		statType = 1,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 2,
+		targetingTypeB = 3,
+		basePowerA = 1.00,
+		basePowerB = 0.75,
+		accuracyMod= 1.00,
+		critChance = 0.10,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	5: Skill(
+		forClass = 2,
+		name = "Basic Attack C",
+		maxPlayerLevel = 1,
+		skillType = 1,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 2,
+		targetingTypeB = None,
+		basePowerA = 1.00,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.10,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	6: Skill(
+		forClass = 2,
+		name = "Basic Attack D",
+		maxPlayerLevel = 1,
+		skillType = 1,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 2,
+		targetingTypeB = 3,
+		basePowerA = 1.00,
+		basePowerB = 0.75,
+		accuracyMod= 1.00,
+		critChance = 0.10,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	7: Skill(
+		forClass = 3,
+		name = "Self-heal",
+		maxPlayerLevel = 1,
+		skillType = 2,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 1,
+		targetingTypeB = None,
+		basePowerA = 1.00,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	8: Skill(
+		forClass = 3,
+		name = "Heal A",
+		maxPlayerLevel = 1,
+		skillType = 2,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 4,
+		targetingTypeB = None,
+		basePowerA = 1.00,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	9: Skill(
+		forClass = 3,
+		name = "Heal B",
+		maxPlayerLevel = 1,
+		skillType = 2,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 4,
+		targetingTypeB = 5,
+		basePowerA = 1.00,
+		basePowerB = 0.75,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	10: Skill(
+		forClass = 3,
+		name = "Revive A",
+		maxPlayerLevel = 1,
+		skillType = 3,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 6,
+		targetingTypeB = None,
+		basePowerA = 1.00,
+		basePowerB = None,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	11: Skill(
+		forClass = 3,
+		name = "Revive B",
+		maxPlayerLevel = 1,
+		skillType = 3,
+		statType = 2,
+		element = 1,
+		cost = 0,
+		targetingTypeA = 6,
+		targetingTypeB = 7,
+		basePowerA = 1.00,
+		basePowerB = 0.75,
+		accuracyMod= 1.00,
+		critChance = 0.00,
+		randomMod = 0.10,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
 }
 
 # Contains the list for items.
@@ -1846,7 +1803,7 @@ def renderAttackMenu():
 		print("––––––")
 		for i in range(len(currentPlayers[selectedPlayer].skills)):
 			count = i + 1
-			currentSkill = currentPlayers[selectedPlayer].skills[i]
+			currentSkill = skillsList[currentPlayers[selectedPlayer].skills[i]]
 
 			currentSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
 			resourceString = " MP"
@@ -1865,7 +1822,7 @@ def renderAttackMenu():
 			choice = int(input("> "))
 			if (choice >= 1 and choice <= len(currentPlayers[selectedPlayer].skills) and currentPlayers[selectedPlayer].skills[choice - 1] != skillsList[0]):
 				choice -= 1
-				chosenSkill = currentPlayers[selectedPlayer].skills[choice]
+				chosenSkill = skillsList[currentPlayers[selectedPlayer].skills[choice]]
 
 				currentPlayerResource = currentPlayers[selectedPlayer].currentMP
 				chosenSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
@@ -2278,8 +2235,8 @@ def initiateEnemyAttack():
 	renderBattleStatusMenu()
 
 	possibleSkills = []
-	for possibleSkill in currentEnemies[selectedEnemy].skills:
-
+	for i in range(len(currentEnemies[selectedEnemy].skills)):
+		possibleSkill = skillsList[currentEnemies[selectedEnemy].skills[i]]
 		if (possibleSkill.name != "Empty" and possibleSkill.name != "Struggle"):
 			possibleSkills.append(possibleSkill)
 
