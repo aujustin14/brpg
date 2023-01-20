@@ -245,11 +245,8 @@ class StatusEffect:
 
 
 class Skill:
-	def __init__(self, forClass, name, maxPlayerLevel, skillType, statType, element, cost, targetingTypeA, targetingTypeB, basePowerA, basePowerB, accuracyMod, critChance, randomMod, statusEffect, statusEffectDuration):
-		self.forClass = playerClasses[forClass]
+	def __init__(self, name="Null", skillType=0, statType=0, element=0, cost=0, targetingTypeA=None, targetingTypeB=None, basePowerA=None, basePowerB=None, accuracyMod=0.00, critChance=0.00, randomMod=0.00, statusEffect=None, statusEffectDuration=0):
 		self.name = str(name)
-		self.currentLevel = 1
-		self.maxPlayerLevel = maxPlayerLevel
 		self.skillType = skillTypes[skillType]
 		self.statType = statTypes[statType]
 		self.element = elements[element]
@@ -272,6 +269,9 @@ class Skill:
 		else:
 			self.statusEffect = None
 		self.statusEffectDuration = statusEffectDuration
+
+		self.skillLevel = 1
+
 
 	def __repr__(self):
 		if (self.cost == 0):
@@ -304,19 +304,34 @@ class Skill:
 		else:
 			effectsString = "None"
 
-		return (
-			"+–––––––––––––––––––––––––––––––––––––––+"
-			+ "\n| " + formatText(self.name, 0, 37) + " |"
-			+ "\n+–––––––+–––––––––––––––––––––––––––––––+"
-			+ "\n| " + formatText("Cost", 0, 5) + " | " + formatText(costString, 0, 29) + " |"
-			+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 29) + " |"
-			+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 29) + " |"
-			+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 29) + " |"
-			+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(superRound((self.basePowerA * 100), str) + "%", 0, 29) + " |"
-			+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 29) + " |"
-			+ "\n| " + formatText("Effct", 0, 5) + " | " + formatText(effectsString, 0, 29) + " |"
-			+ "\n+–––––––+–––––––––––––––––––––––––––––––+"
-		)
+		if (self.targetingTypeA != None and self.targetingTypeB != None and self.basePowerA != None and self.basePowerB != None):
+			return (
+				"+–––––––––––––––––––––––––––––––+"
+				+ "\n| " + formatText(self.name, 0, 29) + " |"
+				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
+				+ "\n| " + formatText("Cost", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
+				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
+				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
+				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 21) + " | " + formatText(self.targetingTypeB, 0, 21) + " |"
+				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(superRound((self.basePowerA * 100), str) + "%", 0, 21) + " | " + formatText(superRound((self.basePowerB * 100), str) + "%", 0, 21) + " |"
+				+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 21) + " | " + formatText(accuracyString, 0, 21) + " |"
+				+ "\n| " + formatText("Effct", 0, 5) + " | " + formatText(effectsString, 0, 21) + " | " + formatText(effectsString, 0, 21) + " |"
+				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
+			)
+		else:
+			return (
+				"+–––––––––––––––––––––––––––––––+"
+				+ "\n| " + formatText(self.name, 0, 29) + " |"
+				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
+				+ "\n| " + formatText("Cost", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
+				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
+				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
+				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 45) + " |"
+				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(superRound((self.basePowerA * 100), str) + "%", 0, 45) + " |"
+				+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 45) + " |"
+				+ "\n| " + formatText("Effct", 0, 5) + " | " + formatText(effectsString, 0, 45) + " |"
+				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
+			)
 
 
 class Item:
@@ -844,28 +859,9 @@ equipmentList = {
 
 # Contains the list for skills.
 skillsList = {
-	0: Skill(
-		forClass = 0,
-		name = "Empty",
-		maxPlayerLevel = 0,
-		skillType = 0,
-		statType = 0,
-		element = 0,
-		cost = 0,
-		targetingTypeA = None,
-		targetingTypeB = None,
-		basePowerA = None,
-		basePowerB = None,
-		accuracyMod = 1.00,
-		critChance = 0.00,
-		randomMod = 0.10,
-		statusEffect = None,
-		statusEffectDuration = 0
-	),
+	0: Skill(),
 	1: Skill(
-		forClass = 0,
 		name = "Defend",
-		maxPlayerLevel = 1,
 		skillType = 4,
 		statType = 0,
 		element = 1,
@@ -881,9 +877,7 @@ skillsList = {
 		statusEffectDuration = 3
 	),
 	2: Skill(
-		forClass = 0,
 		name = "Evade",
-		maxPlayerLevel = 1,
 		skillType = 4,
 		statType = 0,
 		element = 1,
@@ -899,9 +893,7 @@ skillsList = {
 		statusEffectDuration = 3
 	),
 	3: Skill(
-		forClass = 1,
 		name = "Basic Attack A",
-		maxPlayerLevel = 1,
 		skillType = 1,
 		statType = 1,
 		element = 1,
@@ -917,9 +909,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	4: Skill(
-		forClass = 1,
 		name = "Basic Attack B",
-		maxPlayerLevel = 1,
 		skillType = 1,
 		statType = 1,
 		element = 1,
@@ -935,9 +925,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	5: Skill(
-		forClass = 2,
 		name = "Basic Attack C",
-		maxPlayerLevel = 1,
 		skillType = 1,
 		statType = 2,
 		element = 1,
@@ -953,9 +941,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	6: Skill(
-		forClass = 2,
 		name = "Basic Attack D",
-		maxPlayerLevel = 1,
 		skillType = 1,
 		statType = 2,
 		element = 1,
@@ -971,9 +957,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	7: Skill(
-		forClass = 3,
 		name = "Self-heal",
-		maxPlayerLevel = 1,
 		skillType = 2,
 		statType = 2,
 		element = 1,
@@ -989,9 +973,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	8: Skill(
-		forClass = 3,
 		name = "Heal A",
-		maxPlayerLevel = 1,
 		skillType = 2,
 		statType = 2,
 		element = 1,
@@ -1007,9 +989,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	9: Skill(
-		forClass = 3,
 		name = "Heal B",
-		maxPlayerLevel = 1,
 		skillType = 2,
 		statType = 2,
 		element = 1,
@@ -1025,9 +1005,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	10: Skill(
-		forClass = 3,
 		name = "Revive A",
-		maxPlayerLevel = 1,
 		skillType = 3,
 		statType = 2,
 		element = 1,
@@ -1043,9 +1021,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	11: Skill(
-		forClass = 3,
 		name = "Revive B",
-		maxPlayerLevel = 1,
 		skillType = 3,
 		statType = 2,
 		element = 1,
