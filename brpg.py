@@ -348,7 +348,7 @@ class Item:
 		else:
 			powerString = str(self.primaryPower) + " MP or " + str(self.secondaryPower) + "% MP (whichever is higher)"
 
-		return "\n+–––––––+–––––––––––––––––––––––––––––––+\n|Name\t| " + str(self.name) + "\n|Type\t| " + str(self.itemType) + "\n|Power\t| " + powerString + "\n+–––––––+–––––––––––––––––––––––––––––––+"
+		return "+–––––––+–––––––––––––––––––––––––––––––+\n|Name\t| " + str(self.name) + "\n|Type\t| " + str(self.itemType) + "\n|Power\t| " + powerString + "\n+–––––––+–––––––––––––––––––––––––––––––+"
 
 
 class Player:
@@ -1145,36 +1145,31 @@ innCosts = [
 
 # Render the main menu of the game. This menu should give the player the option to start a new game, load a saved game, and quit the game.
 def renderMainMenu():
-	global playerInputInvalidCommand
+	inMainMenu = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (inMainMenu):
 		clearScreen()
-		if (playerInputInvalidCommand):
-			print("+––          Invalid Command          ––+")
-			playerInputInvalidCommand = False
-		print("\nTitle")
+		print("Title")
 		print("–––––")
 		print("1. New Game")
 		# print("2. Load Game")
 		print("9. Debug")
-		print("0. Exit")
+		print("`. Exit")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1):
-				renderNewGameMenu()
-			# elif (choice == 2):
-				# renderLoadGameMenu()
-			elif (choice == 9):
-				renderDebugMenu()
-			elif (choice == 0):
-				sys.exit()
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput == 1):
+					renderNewGameMenu()
+				# elif (userInput == 2):
+					# renderLoadGameMenu()
+				elif (userInput == 9):
+					renderDebugMenu()
+			elif (userInput == "`"):
+				inMainMenu = False
+		except:
+			continue
 
 
 def renderDebugMenu():
@@ -1195,8 +1190,8 @@ def renderDebugMenu():
 
 	while (choice != 0):
 		clearScreen()
-		print("\nDebug")
-		print("–––––")
+		print("Debug")
+		print("-----")
 		print("1. Update Skills List")
 		print("0. Back")
 
@@ -1353,26 +1348,27 @@ def renderDebugMenu():
 
 # Render the menu for when the player starts a new game. This menu should allow the player to check out and customize their character (such as their name and class). This menu should also allow the player to officially start a new game.
 def renderNewGameMenu():
-	global currentPlayers
+	inNewGameMenu = True
+	selectedCharacters = [0, 0, 0]
 
-	selectedCharacters = [1, 2, 3]
-
-	choice = -1
-
-	while (choice != 0):
+	while (inNewGameMenu):
 		clearScreen()
-		print("\nNew Game")
-		print("–––––")
+		print("New Game")
+		print("--------")
+		print("1. " + playersList[selectedCharacters[0]][0]) if selectedCharacters[0] != 0 else print("1. Empty Slot")
+		print("2. " + playersList[selectedCharacters[1]][0]) if selectedCharacters[1] != 0 else print("2. Empty Slot")
+		print("3. " + playersList[selectedCharacters[2]][0]) if selectedCharacters[2] != 0 else print("3. Empty Slot")
 		if (not all(flag == 0 for flag in selectedCharacters)):
-			print("1. Start")
-		print("2. Change Character 1 (" + str(playersList[selectedCharacters[0]][0]) + ")")
-		print("3. Change Character 2 (" + str(playersList[selectedCharacters[1]][0]) + ")")
-		print("4. Change Character 3 (" + str(playersList[selectedCharacters[2]][0]) + ")")
-		print("0. Back")
+			print("Q. Start Game")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1 and not all(flag == 0 for flag in selectedCharacters)):
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (1 <= userInput <= 3):
+					selectedCharacters[userInput - 1] = requestCharacterChange(selectedCharacters[userInput - 1], selectedCharacters)
+			elif (userInput.lower() == "q" and not all(flag == 0 for flag in selectedCharacters)):
 				for i in range(len(currentPlayers)):
 					if (selectedCharacters[i] != 0):
 						characterData = playersList[selectedCharacters[i]]
@@ -1380,49 +1376,48 @@ def renderNewGameMenu():
 						playersAlive[i] = True
 						playersHaveMoved[i] = False
 				startGame()
-				choice = 0
-			elif (choice == 2):
-				selectedCharacters[0] = requestCharacterChange(selectedCharacters[0], selectedCharacters)
-			elif (choice == 3):
-				selectedCharacters[1] = requestCharacterChange(selectedCharacters[1], selectedCharacters)
-			elif (choice == 4):
-				selectedCharacters[2] = requestCharacterChange(selectedCharacters[2], selectedCharacters)
-		except ValueError:
+				inNewGameMenu = False
+			elif (userInput == "`"):
+				inNewGameMenu = False
+		except:
 			continue
 
 
 # Render a menu that allows the player to change a character in the party.
 def requestCharacterChange(currentCharacter, party):
-	newCharacter = ""
-	while (True):
-		clearScreen()
-		print("Change Character")
-		print("–––––")
-		print("Current Character: " + str(playersList[currentCharacter][0]))
-		for key in playersList:
-			if (key != 0 and key not in party):
-				print(str(key) + ". " + str(playersList[key][0]))
-		print("Q. Remove")
-		print("0. Back")
+	changingCharacter = True
 
-		newCharacter = str(input("> "))
-		if (newCharacter.isdecimal()):
-			newCharacter = int(newCharacter)
-			if (newCharacter != 0 and newCharacter in playersList):
-				return int(newCharacter)
-			elif (newCharacter == 0):
-				return int(currentCharacter)
-		else:
-			if (newCharacter.upper() == "Q"):
-				return 0
+	while (changingCharacter):
+		clearScreen()
+		print("Select Monkey")
+		print("-------------")
+		print("Current Monkey in Slot: " + str(playersList[currentCharacter][0]))
+		for key in playersList:
+			if (key != 0):
+				print(str(key) + ". " + str(playersList[key][0]))
+		print("Q. Deselect")
+		print("`. Back")
+
+		try:
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput != 0 and userInput in playersList):
+					changingCharacter = False
+			elif (userInput.lower() == "q"):
+				userInput = 0
+				changingCharacter = False
+			elif (userInput == "`"):
+				userInput = currentCharacter
+				changingCharacter = False
+		except:
+			continue
+	
+	return userInput
 
 
 # Handles what happens inbetween battles and towns.
 def startGame():
-	global gameRegion
-	global regionBattle
-	global battleTurn
-
 	gameRegion = 1
 	regionBattle = 1
 
@@ -1431,10 +1426,10 @@ def startGame():
 			gameRegion += 1
 			regionBattle = 1
 			clearScreen()
-			proceduralPrint("\nYou entered the " + str(regions[gameRegion % 3]) + ".", "")
+			proceduralPrint("You entered the " + str(regions[gameRegion % 3]) + ".", "")
 		if (regionBattle % 5 == 0 or regionBattle % 5 == 1):
 			clearScreen()
-			proceduralPrint("\nYou came across a town.", "")
+			proceduralPrint("You came across a town.", "")
 			renderTownActionMenu()
 		startBattle()
 		regionBattle += 1
@@ -1442,16 +1437,9 @@ def startGame():
 
 # Create an enemy character for the player to fight. Also handles the battle system as well.
 def startBattle():
-	global currentPlayers
-	global currentEnemies
-	global selectedPlayer
-	global selectedEnemy
-	global playersHaveMoved
-	global enemiesHaveMoved
-
-	numOfEntities = random.randint(1, 3)
-	for i in range(numOfEntities):
-		entityData = enemiesList[random.randint(1, 3)]
+	numOfEnemyCharacters = random.randint(1, 1)
+	for i in range(numOfEnemyCharacters):
+		entityData = enemiesList[random.randint(3, 3)]
 		currentEnemies[i] = Enemy(entityData[0], entityData[1], entityData[2])
 		enemiesAlive[i] = True
 		enemiesHaveMoved[i] = False
@@ -1486,12 +1474,14 @@ def startBattle():
 	# 	enemiesHaveMoved[0] = False
 
 	clearScreen()
-	proceduralPrint("\nYou encountered a group of enemies!", "")
+	proceduralPrint("You encountered a group of enemies!", "")
 	progressBattleTurn()
 
-	# While both the player and the enemy are alive, allow both characters to perform battle actions and progress the battle.
+	# While both player characters and enemy characters are alive, run the battle sequence.
 	while (playersAlive.count(True) > 0 and enemiesAlive.count(True) > 0):
+		# Player turn on odd numbers.
 		if (battleTurn % 2 == 1):
+			# Select the next available player character.
 			while (playersHaveMoved.count(True) != (len(currentPlayers) - currentPlayers.count(None))):
 				selectedPlayer = 0
 				while (selectedPlayer < (len(currentPlayers) - currentPlayers.count(None))):
@@ -1500,8 +1490,11 @@ def startBattle():
 					else:
 						break
 				renderBattleActionMenu()
-				evaluatePlayersEnemiesStatus()
+				evaluateCharacterStatuses()
+
+		# Enemy turn on even numbers.
 		elif (battleTurn % 2 == 0):
+			# Select the next available enemy character.
 			while (enemiesHaveMoved.count(True) != (len(currentEnemies) - currentEnemies.count(None))):
 				selectedEnemy = 0
 				while (selectedEnemy < (len(currentEnemies) - currentEnemies.count(None))):
@@ -1510,7 +1503,7 @@ def startBattle():
 					else:
 						break
 				initiateEnemyAttack()
-				evaluatePlayersEnemiesStatus()
+				evaluateCharacterStatuses()
 		progressBattleTurn()
 	
 	finishBattle()
@@ -1711,78 +1704,71 @@ def renderBattleStatusMenu():
 
 # Render a menu that shows the player their general actions when in battle (such as use a skill or an item).
 def renderBattleActionMenu():
-	global playerInputInvalidCommand
-	global battleTurn
 	global selectedPlayer
-	global currentPlayers
-	global currentEnemies
 
-	choice = -1
+	quickSwitchButtons = ["q", "w", "e"]
 
-	while (choice != 0 and playersHaveMoved[selectedPlayer] != True):
+	while (playersHaveMoved[selectedPlayer] != True):
 		renderBattleStatusMenu()
 
 		print("\n" + str(currentPlayers[selectedPlayer].name))
-		print("–––––––")
+		print("-" * len(currentPlayers[selectedPlayer].name))
 		print("1. Attack")
 		# print("1. Skills")
 		print("2. Items")
 		print("3. Scan")
 		print("8. Defend")
 		print("9. Evade")
-		if (not (selectedPlayer == 0) and currentPlayers[0] != None and not playersHaveMoved[0]):
-			print("Q. Switch to Player 1")
-		if (not (selectedPlayer == 1) and currentPlayers[1] != None and not playersHaveMoved[1]):
-			print("W. Switch to Player 2")
-		if (not (selectedPlayer == 2) and currentPlayers[2] != None and not playersHaveMoved[2]):
-			print("E. Switch to Player 3")
-		print("0. Skip")
+		for i in range(len(currentPlayers)):
+			if (not (selectedPlayer == i) and currentPlayers[i] != None and not playersHaveMoved[i]):
+				print(quickSwitchButtons[i].upper() + ". Switch to " + currentPlayers[i].name)
+		print("`. Skip")
 
 		try:
-			choice = str(input("> "))
-			if (choice == "1"):
-				renderAttackMenu()
-			elif (choice == "2"):
-				renderItemMenu()
-			elif (choice == "3"):
-				renderScanMenu()
-			elif (choice == "8"):
-				defendSkillData = skillsList[1]
-				castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], Skill(defendSkillData[0],defendSkillData[1],defendSkillData[2],defendSkillData[3],defendSkillData[4],defendSkillData[5],defendSkillData[6],defendSkillData[7],defendSkillData[8],defendSkillData[9],defendSkillData[10],defendSkillData[11],defendSkillData[12],defendSkillData[13],defendSkillData[14],defendSkillData[15]), 0)
-			elif (choice == "9"):
-				evadeSkillData = skillsList[2]
-				castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], Skill(evadeSkillData[0],evadeSkillData[1],evadeSkillData[2],evadeSkillData[3],evadeSkillData[4],evadeSkillData[5],evadeSkillData[6],evadeSkillData[7],evadeSkillData[8],evadeSkillData[9],evadeSkillData[10],evadeSkillData[11],evadeSkillData[12],evadeSkillData[13],evadeSkillData[14],evadeSkillData[15]), 0)
-			elif (choice.upper() == "Q" and not (selectedPlayer == 0) and currentPlayers[0] != None and not playersHaveMoved[0]):
-				selectedPlayer = 0
-			elif (choice.upper() == "W" and not (selectedPlayer == 1) and currentPlayers[1] != None and not playersHaveMoved[1]):
-				selectedPlayer = 1
-			elif (choice.upper() == "E" and not (selectedPlayer == 2) and currentPlayers[2] != None and not playersHaveMoved[2]):
-				selectedPlayer = 2
-			elif (choice == "0"):
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput == 1):
+					renderAttackMenu()
+				elif (userInput == 2):
+					renderItemMenu()
+				elif (userInput == 3):
+					renderScanMenu()
+				elif (userInput == 8):
+					defendSkillData = skillsList[1]
+					castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], Skill(defendSkillData[0],defendSkillData[1],defendSkillData[2],defendSkillData[3],defendSkillData[4],defendSkillData[5],defendSkillData[6],defendSkillData[7],defendSkillData[8],defendSkillData[9],defendSkillData[10],defendSkillData[11],defendSkillData[12],defendSkillData[13],defendSkillData[14],defendSkillData[15]), 0)
+				elif (userInput == 9):
+					evadeSkillData = skillsList[2]
+					castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], Skill(evadeSkillData[0],evadeSkillData[1],evadeSkillData[2],evadeSkillData[3],evadeSkillData[4],evadeSkillData[5],evadeSkillData[6],evadeSkillData[7],evadeSkillData[8],evadeSkillData[9],evadeSkillData[10],evadeSkillData[11],evadeSkillData[12],evadeSkillData[13],evadeSkillData[14],evadeSkillData[15]), 0)
+			elif (userInput.lower() in quickSwitchButtons):
+				for i in range(len(currentPlayers)):
+					if (userInput.lower() == quickSwitchButtons[i] and not (selectedPlayer == i) and currentPlayers[i] != None and not playersHaveMoved[i]):
+						selectedPlayer = i
+						break
+			elif (userInput == "`"):
 				playersHaveMoved[selectedPlayer] = True
+				clearScreen()
+				renderBattleStatusMenu()
 				proceduralPrint("\n" + str(currentPlayers[selectedPlayer].name) + " skipped their turn.", "")
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+		except:
+			continue
 
 
 # Render a menu that shows the player their available skills.
 def renderAttackMenu():
-	global playerInputInvalidCommand
+	pickingSkill = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (pickingSkill):
 		renderBattleStatusMenu()
-		print("\n" + str(currentPlayers[selectedPlayer].name) + " > Attack")
-		print("––––––")
+
+		print("\n" + currentPlayers[selectedPlayer].name + " > Attack")
+		print("-" * len(currentPlayers[selectedPlayer].name) + "---------")
 		for i in range(len(currentPlayers[selectedPlayer].skills)):
 			count = i + 1
 			currentSkill = skillsList[currentPlayers[selectedPlayer].skills[i]]
 
 			currentSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
-			resourceString = " MP"
+			resourceString = "MP"
 
 			currentSkillTotalCost = currentSkill.cost
 
@@ -1791,47 +1777,44 @@ def renderAttackMenu():
 			elif (currentSkill.cost == 0):
 				print(str(count) + ". " + currentSkill.name + " (Free)", end="\n")
 			else:
-				print(str(count) + ". " + currentSkill.name + " (" + str(currentSkillTotalCost) + str(resourceString) + ")")
-		print("0. Back")
+				print(str(count) + ". " + currentSkill.name + " ( " + str(currentSkillTotalCost) + str(resourceString) + ")")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice >= 1 and choice <= len(currentPlayers[selectedPlayer].skills) and currentPlayers[selectedPlayer].skills[choice - 1] != skillsList[0]):
-				choice -= 1
-				chosenSkill = skillsList[currentPlayers[selectedPlayer].skills[choice]]
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (1 <= userInput <= len(currentPlayers[selectedPlayer].skills) and currentPlayers[selectedPlayer].skills[userInput - 1] != skillsList[0]):
+					userInput -= 1
+					chosenSkill = skillsList[currentPlayers[selectedPlayer].skills[userInput]]
 
-				currentPlayerResource = currentPlayers[selectedPlayer].currentMP
-				chosenSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
-				resourceString = "MP"
+					currentPlayerResource = currentPlayers[selectedPlayer].currentMP
+					chosenSkillResource = currentPlayers[selectedPlayer].totalStats.maxMP
+					resourceString = "MP"
 
-				chosenSkillCost = chosenSkill.cost
+					chosenSkillCost = chosenSkill.cost
 
-				if ((currentPlayerResource == currentPlayers[selectedPlayer].currentHP) and currentPlayerResource > chosenSkillCost):
-					renderAttackDetails(chosenSkill)
-					choice = 0
-				elif ((currentPlayerResource == currentPlayers[selectedPlayer].currentMP) and currentPlayerResource >= chosenSkillCost):
-					renderAttackDetails(chosenSkill)
-					choice = 0
-				else:
-					playerInputInvalidCommand = True
-					choice += 1
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+					if ((currentPlayerResource == currentPlayers[selectedPlayer].currentMP) and currentPlayerResource >= chosenSkillCost):
+						renderAttackDetails(chosenSkill)
+						if (playersHaveMoved[selectedPlayer]):
+							pickingSkill = False
+					else:
+						userInput += 1
+			elif (userInput == "`"):
+				pickingSkill = False
+		except:
+			continue
 
 
 # Render a menu that shows the player more details about the skill they just selected when in battle.
 def renderAttackDetails(skill):
-	global playerInputInvalidCommand
+	viewingSkillDetails = True
 
-	choice = "-1"
-
-	while (choice != "0"):
+	while (viewingSkillDetails):
 		renderBattleStatusMenu()
-		print("\n" + str(currentPlayers[selectedPlayer].name) + " > Attack > Targeting")
+
+		print("\n" + currentPlayers[selectedPlayer].name + " > Attack > Targeting")
+		print("-" * len(currentPlayers[selectedPlayer].name) + "---------------------")
 		print(skill)
 
 		targetAButtons = ["1", "2", "3"]
@@ -1869,338 +1852,288 @@ def renderAttackDetails(skill):
 		else:
 			print(str(targetAButtons[0]) + " ???")
 
-		targetBButtons = ["Q", "W", "E"]
+		targetBButtons = ["q", "w", "e"]
 		if (skill.targetingTypeB == targetingTypes[1]):
 			print(str(targetAButtons[0]) + " Self")
 
 		elif (skill.targetingTypeB == targetingTypes[2]):
 			for i in range(len(currentEnemies) - enemiesAlive.count(None)):
 				if (enemiesAlive[i]):
-					print(targetBButtons[i] + ". " + str(currentEnemies[i].name))
+					print(targetBButtons[i].upper() + ". " + str(currentEnemies[i].name))
 
 		elif (skill.targetingTypeB == targetingTypes[3]):
-			print(str(targetBButtons[0]) + ". All Enemies")
+			print(str(targetBButtons[0].upper()) + ". All Enemies")
 
 		elif (skill.targetingTypeB == targetingTypes[4]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (playersAlive[i]):
-					print(targetBButtons[i] + ". " + str(currentPlayers[i].name))
+					print(targetBButtons[i].upper() + ". " + str(currentPlayers[i].name))
 
 		elif (skill.targetingTypeB == targetingTypes[5]):
-			print(str(targetBButtons[0]) + ". All Alive Allies")
+			print(str(targetBButtons[0].upper()) + ". All Alive Allies")
 		
 		elif (skill.targetingTypeB == targetingTypes[6]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (not playersAlive[i]):
-					print(targetBButtons[i] + ". " + str(currentPlayers[i].name))
+					print(targetBButtons[i].upper() + ". " + str(currentPlayers[i].name))
 
 		elif (skill.targetingTypeB == targetingTypes[7]):
 			if (playersAlive.count(False) >= 1):
-				print(str(targetBButtons[0]) + ". All Dead Allies")
+				print(str(targetBButtons[0].upper()) + ". All Dead Allies")
 
 		elif (skill.targetingTypeB == None):
 			pass
 
 		else:
-			print(str(targetBButtons[0]) + ". ???")
+			print(str(targetBButtons[0].upper()) + ". ???")
 
-		print("0. Cancel")
+		print("`. Cancel")
 
 		try:
-			choice = str(input("> ")).upper()[-1]
-			if (len(choice) > 0 and choice in targetAButtons and skill.targetingTypeA != None):
-				skillVersion = 0
+			userInput = input("> ")
+			if (userInput in targetAButtons or userInput in targetBButtons):
+				if (userInput in targetAButtons and skill.targetingTypeA != None):
+					skillVersion = 0
 
-				if (skill.targetingTypeA == targetingTypes[1]):
-					if (choice == targetAButtons[0]):
-						choice = targetAButtons.index(choice)
-						chosenTarget = [currentPlayers[selectedPlayer]]
-					else:
-						choice = "-1"
-						continue
+					if (skill.targetingTypeA == targetingTypes[1]):
+						if (userInput == targetAButtons[0]):
+							userInput = targetAButtons.index(userInput)
+							chosenTarget = [currentPlayers[selectedPlayer]]
 
-				elif (skill.targetingTypeA == targetingTypes[2]):
-					choice = targetAButtons.index(choice)
-					if (enemiesAlive[choice]):
-						chosenTarget = [currentEnemies[choice]]
-					else:
-						choice = "-1"
-						continue
+					elif (skill.targetingTypeA == targetingTypes[2]):
+						userInput = targetAButtons.index(userInput)
+						if (enemiesAlive[userInput]):
+							chosenTarget = [currentEnemies[userInput]]
 
-				elif (skill.targetingTypeA == targetingTypes[3]):
-					if (choice == targetAButtons[0]):
-						choice = targetAButtons.index(choice)
-						chosenTarget = []
-						for i in range(len(currentEnemies)):
-							if (enemiesAlive[i] and currentEnemies[i] != None):
-								chosenTarget.append(currentEnemies[i])
-					else:
-						choice = "-1"
-						continue
+					elif (skill.targetingTypeA == targetingTypes[3]):
+						if (userInput == targetAButtons[0]):
+							userInput = targetAButtons.index(userInput)
+							chosenTarget = []
+							for i in range(len(currentEnemies)):
+								if (enemiesAlive[i] and currentEnemies[i] != None):
+									chosenTarget.append(currentEnemies[i])
 
-				elif (skill.targetingTypeA == targetingTypes[4]):
-					choice = targetAButtons.index(choice)
-					if (playersAlive[choice]):
-						chosenTarget = [currentPlayers[choice]]
-					else:
-						choice = "-1"
-						continue
+					elif (skill.targetingTypeA == targetingTypes[4]):
+						userInput = targetAButtons.index(userInput)
+						if (playersAlive[userInput]):
+							chosenTarget = [currentPlayers[userInput]]
 
-				elif (skill.targetingTypeA == targetingTypes[5]):
-					if (choice == targetAButtons[0]):
-						choice = targetAButtons.index(choice)
-						chosenTarget = []
-						for i in range(len(currentPlayers)):
-							if (playersAlive[i] and currentPlayers[i] != None):
-								chosenTarget.append(currentPlayers[i])
-					else:
-						choice = "-1"
-						continue
-
-				elif (skill.targetingTypeA == targetingTypes[6]):
-					choice = targetAButtons.index(choice)
-					if (not playersAlive[choice]):
-						chosenTarget = [currentPlayers[choice]]
-					else:
-						choice = "-1"
-						continue
-				
-				elif (skill.targetingTypeA == targetingTypes[7]):
-					if (choice == targetAButtons[0]):
-						choice = targetAButtons.index(choice)
-						if (playersAlive.count(False) >= 1):
+					elif (skill.targetingTypeA == targetingTypes[5]):
+						if (userInput == targetAButtons[0]):
+							userInput = targetAButtons.index(userInput)
 							chosenTarget = []
 							for i in range(len(currentPlayers)):
-								if (not playersAlive[i] and currentPlayers[i] != None):
+								if (playersAlive[i] and currentPlayers[i] != None):
 									chosenTarget.append(currentPlayers[i])
-						else:
-							choice = "-1"
-							continue
+
+					elif (skill.targetingTypeA == targetingTypes[6]):
+						userInput = targetAButtons.index(userInput)
+						if (not playersAlive[userInput]):
+							chosenTarget = [currentPlayers[userInput]]
+					
+					elif (skill.targetingTypeA == targetingTypes[7]):
+						if (userInput == targetAButtons[0]):
+							userInput = targetAButtons.index(userInput)
+							if (playersAlive.count(False) >= 1):
+								chosenTarget = []
+								for i in range(len(currentPlayers)):
+									if (not playersAlive[i] and currentPlayers[i] != None):
+										chosenTarget.append(currentPlayers[i])
+
 					else:
-						choice = "-1"
-						continue
-
-				else:
-					chosenTarget = []
-
-			elif (len(choice) > 0 and choice in targetBButtons and skill.targetingTypeB != None):
-				skillVersion = 1
-
-				if (skill.targetingTypeB == targetingTypes[1]):
-					if (choice == targetBButtons[0]):
-						choice = targetBButtons.index(choice)
-						chosenTarget = [currentPlayers[selectedPlayer]]
-					else:
-						choice = "-1"
-						continue
-
-				elif (skill.targetingTypeB == targetingTypes[2]):
-					choice = targetBButtons.index(choice)
-					if (enemiesAlive[choice]):
-						chosenTarget = [currentEnemies[choice]]
-					else:
-						choice = "-1"
-						continue
-
-				elif (skill.targetingTypeB == targetingTypes[3]):
-					if (choice == targetBButtons[0]):
-						choice = targetBButtons.index(choice)
 						chosenTarget = []
-						for i in range(len(currentEnemies)):
-							if (enemiesAlive[i] and currentEnemies[i] != None):
-								chosenTarget.append(currentEnemies[i])
-					else:
-						choice = "-1"
-						continue
 
-				elif (skill.targetingTypeB == targetingTypes[4]):
-					choice = targetBButtons.index(choice)
-					if (playersAlive[choice]):
-						chosenTarget = [currentPlayers[choice]]
-					else:
-						choice = "-1"
-						continue
+				elif (userInput in targetBButtons and skill.targetingTypeB != None):
+					skillVersion = 1
 
-				elif (skill.targetingTypeB == targetingTypes[5]):
-					if (choice == targetBButtons[0]):
-						choice = targetBButtons.index(choice)
-						chosenTarget = []
-						for i in range(len(currentPlayers)):
-							if (playersAlive[i] and currentPlayers[i] != None):
-								chosenTarget.append(currentPlayers[i])
-					else:
-						choice = "-1"
-						continue
+					if (skill.targetingTypeB == targetingTypes[1]):
+						if (userInput == targetBButtons[0]):
+							userInput = targetBButtons.index(userInput)
+							chosenTarget = [currentPlayers[selectedPlayer]]
 
-				elif (skill.targetingTypeB == targetingTypes[6]):
-					choice = targetBButtons.index(choice)
-					if (not playersAlive[choice]):
-						chosenTarget = [currentPlayers[choice]]
-					else:
-						choice = "-1"
-						continue
-				
-				elif (skill.targetingTypeB == targetingTypes[7]):
-					if (choice == targetBButtons[0]):
-						choice = targetBButtons.index(choice)
-						if (playersAlive.count(False) >= 1):
+					elif (skill.targetingTypeB == targetingTypes[2]):
+						userInput = targetBButtons.index(userInput)
+						if (enemiesAlive[userInput]):
+							chosenTarget = [currentEnemies[userInput]]
+
+					elif (skill.targetingTypeB == targetingTypes[3]):
+						if (userInput == targetBButtons[0]):
+							userInput = targetBButtons.index(userInput)
+							chosenTarget = []
+							for i in range(len(currentEnemies)):
+								if (enemiesAlive[i] and currentEnemies[i] != None):
+									chosenTarget.append(currentEnemies[i])
+
+					elif (skill.targetingTypeB == targetingTypes[4]):
+						userInput = targetBButtons.index(userInput)
+						if (playersAlive[userInput]):
+							chosenTarget = [currentPlayers[userInput]]
+
+					elif (skill.targetingTypeB == targetingTypes[5]):
+						if (userInput == targetBButtons[0]):
+							userInput = targetBButtons.index(userInput)
 							chosenTarget = []
 							for i in range(len(currentPlayers)):
-								if (not playersAlive[i] and currentPlayers[i] != None):
+								if (playersAlive[i] and currentPlayers[i] != None):
 									chosenTarget.append(currentPlayers[i])
-						else:
-							choice = "-1"
-							continue
+
+					elif (skill.targetingTypeB == targetingTypes[6]):
+						userInput = targetBButtons.index(userInput)
+						if (not playersAlive[userInput]):
+							chosenTarget = [currentPlayers[userInput]]
+					
+					elif (skill.targetingTypeB == targetingTypes[7]):
+						if (userInput == targetBButtons[0]):
+							userInput = targetBButtons.index(userInput)
+							if (playersAlive.count(False) >= 1):
+								chosenTarget = []
+								for i in range(len(currentPlayers)):
+									if (not playersAlive[i] and currentPlayers[i] != None):
+										chosenTarget.append(currentPlayers[i])
+
 					else:
-						choice = "-1"
-						continue
+						chosenTarget = []
 
-				else:
-					chosenTarget = []
-			elif (len(choice) > 0 and choice == "0"):
-				continue
-			else:
-				continue
+				castSkill(chosenTarget, currentPlayers[selectedPlayer], skill, skillVersion)
+				viewingSkillDetails = False
 
-			castSkill(chosenTarget, currentPlayers[selectedPlayer], skill, skillVersion)
-
-			choice = "0"
+			elif (userInput == "`"):
+				viewingSkillDetails = False
 		except:
 			continue
 
 
 # Render a menu that shows the player all the items.
 def renderItemMenu():
-	global playerInputInvalidCommand
+	pickingItem = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (pickingItem):
 		renderBattleStatusMenu()
-		print("\nItems")
-		print("–––––")
+
+		print("\n" + currentPlayers[selectedPlayer].name + " > Items")
+		print("-" * len(currentPlayers[selectedPlayer].name) + "--------")
 		for i in range(len(itemsList)):
 			currentItemAmount = currentPlayers[selectedPlayer].itemInventory[i]
 			if (currentItemAmount > 0):
 				print(str(i + 1) + ". ", end="")
 				print(itemsList[i].name + " (" + str(currentItemAmount) + ")")
-		print("0. Back")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice >= 1 and choice <= len(itemsList) and sum(currentPlayers[selectedPlayer].itemInventory) > 0):
-				choice -= 1
-				chosenItemAmount = currentPlayers[selectedPlayer].itemInventory[choice]
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (1 <= userInput <= len(itemsList) and sum(currentPlayers[selectedPlayer].itemInventory) > 0):
+					userInput -= 1
+					chosenItemAmount = currentPlayers[selectedPlayer].itemInventory[userInput]
 
-				if (chosenItemAmount > 0):
-					renderItemDetails(choice)
-					choice = 0
-				else:
-					playerInputInvalidCommand = True
-					choice += 1
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+					if (chosenItemAmount > 0):
+						renderItemDetails(userInput)
+						if (playersHaveMoved[selectedPlayer]):
+							pickingItem = False
+			elif (userInput == "`"):
+				pickingItem = False
+		except:
+			continue
 
 
 # Render a menu that shows the player more details about the item they just selected when in battle.
 def renderItemDetails(itemIndex):
-	global playerInputInvalidCommand
-
-	choice = -1
+	viewingItemDetails = True
 	chosenItem = itemsList[itemIndex]
 
-	while (choice != 0):
+	while (viewingItemDetails):
 		renderBattleStatusMenu()
-		print("\nUse Item")
+
+		print("\n" + currentPlayers[selectedPlayer].name + " > Items > Use")
+		print("-" * len(currentPlayers[selectedPlayer].name) + "--------------")
 		print(chosenItem)
 		print("1. Confirm")
-		print("0. Back")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1):
-				useItem(currentPlayers[selectedPlayer], currentPlayers[selectedPlayer], itemIndex)
-				choice = 0
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput == 1):
+					useItem(currentPlayers[selectedPlayer], currentPlayers[selectedPlayer], itemIndex)
+					viewingItemDetails = False
+			elif (userInput == "`"):
+				viewingItemDetails = False
+		except:
+			continue
 
 
 # Render a menu that shows the player who they can scan.
 def renderScanMenu():
-	global playerInputInvalidCommand
+	scanningCharacters = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (scanningCharacters):
 		renderBattleStatusMenu()
-		print("\nScan")
-		print("–––––")
+		print("\n" + currentPlayers[selectedPlayer].name + " > Scan")
+		print("-" * len(currentPlayers[selectedPlayer].name) + "-------")
 		print("1. " + str(currentPlayers[0].name))
 		print("2. " + str(currentEnemies[0].name))
-		print("0. Back")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1):
-				renderPlayerScanMenu()
-				choice = 0
-			elif (choice == 2):
-				print(currentEnemies[0])
-		except ValueError:
-			playerInputInvalidCommand = True
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput == 1):
+					renderPlayerScanMenu()
+				elif (userInput == 2):
+					print(currentEnemies[0])
+			elif (userInput == "`"):
+				scanningCharacters = False
+		except:
+			continue
 
 
 # Render a menu that allows the player to scan themselves.
 def renderPlayerScanMenu():
-	global playerInputInvalidCommand
+	scanningPlayerCharacter = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (scanningPlayerCharacter):
 		renderBattleStatusMenu()
-		print("\nScan Player")
-		print("–––––")
+
+		print("\n" + currentPlayers[selectedPlayer].name + " > Scan > " + currentPlayers[selectedPlayer].name)
+		print("-" * len(currentPlayers[selectedPlayer].name) + "----------" + "-" * len(currentPlayers[selectedPlayer].name))
 		print("1. Base Stats")
 		print("2. Weapon")
 		print("3. Armor")
 		print("4. Status Effects")
-		print("0. Back")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1):
-				proceduralPrint("\nBase Stats\n" + str(currentPlayers[0].baseStats), "\n")
-				choice = 0
-			elif (choice == 2):
-				proceduralPrint("\n" + str(currentPlayers[0].weapon), "\n")
-				choice = 0
-			elif (choice == 3):
-				proceduralPrint("\n" + str(currentPlayers[0].armor), "\n")
-				choice = 0
-			elif (choice == 4):
-				statusEffectsString = ""
-				if (len(currentPlayers[0].statusEffects) > 0):
-					for i in range(len(currentPlayers[0].statusEffects)):
-						statusEffectsString += "\n" + str(currentPlayers[0].statusEffects[i]) + " (" + str(currentPlayers[0].statusEffectDurations[i]) + ")"
-						# statusEffectsString += str(currentPlayers[0].statusEffects[i])
-						# statusEffectsString += " ("
-						# statusEffectsString += str(currentPlayers[0].statusEffectDurations[i])
-						# statusEffectsString += ")"
-				else:
-					statusEffectsString = "\nN/A"
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput == 1):
+					proceduralPrint("\nBase Stats\n" + str(currentPlayers[0].baseStats), "\n")
+					scanningPlayerCharacter = False
+				elif (userInput == 2):
+					proceduralPrint("\n" + str(currentPlayers[0].weapon), "\n")
+					scanningPlayerCharacter = False
+				elif (userInput == 3):
+					proceduralPrint("\n" + str(currentPlayers[0].armor), "\n")
+					scanningPlayerCharacter = False
+				elif (userInput == 4):
+					statusEffectsString = ""
+					if (len(currentPlayers[0].statusEffects) > 0):
+						for i in range(len(currentPlayers[0].statusEffects)):
+							statusEffectsString += "\n" + str(currentPlayers[0].statusEffects[i]) + " (" + str(currentPlayers[0].statusEffectDurations[i]) + ")"
+							# statusEffectsString += str(currentPlayers[0].statusEffects[i])
+							# statusEffectsString += " ("
+							# statusEffectsString += str(currentPlayers[0].statusEffectDurations[i])
+							# statusEffectsString += ")"
+					else:
+						statusEffectsString = "\nN/A"
 
-				proceduralPrint(statusEffectsString, "\n")
-				choice = 0
-		except ValueError:
-			playerInputInvalidCommand = True
+					proceduralPrint(statusEffectsString, "\n")
+					scanningPlayerCharacter = False
+		except:
+			continue
 
 
 # Have the enemy perform an action, such as casting a skill or using an item.
@@ -2261,7 +2194,7 @@ def initiateEnemyAttack():
 
 
 # Check the status of all players and enemies.
-def evaluatePlayersEnemiesStatus():
+def evaluateCharacterStatuses():
 	global currentPlayers
 	global currentEnemies
 	global playersAlive
@@ -2359,18 +2292,13 @@ def progressBattleTurn():
 		else:
 			continue
 
-	evaluatePlayersEnemiesStatus()
+	evaluateCharacterStatuses()
 
 
 # Render a menu that prints out the status of the player when in town (such as level, HP, MP, and money).
 def renderTownStatusMenu():
-	global playerInputInvalidCommand
-
 	clearScreen()
-	if (playerInputInvalidCommand):
-		print("+––          Invalid Command          ––+")
-		playerInputInvalidCommand = False
-	print("\n+–––––––––––––––––––––––––––––––––––––––+")
+	print("+–––––––––––––––––––––––––––––––––––––––+")
 	print("| " + str(regions[gameRegion % 3]) + " | Town")
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 	print("| " + str(currentPlayers[0].name) + " | LV " + str(partyLevel))
@@ -2382,221 +2310,209 @@ def renderTownStatusMenu():
 
 # Render a menu that shows the player their general actions when in town (go to the shop or enter the inn).
 def renderTownActionMenu():
-	global playerInputInvalidCommand
+	inTownMenu = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (inTownMenu):
 		renderTownStatusMenu()
-		print("\nAction")
-		print("–––––")
+
+		print("\nTown")
+		print("----")
 		print("1. Shop")
 		print("2. Inn")
 		# print("9. Save Game")
-		print("0. Leave")
+		print("`. Leave")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1):
-				renderShopMenu()
-			elif (choice == 2):
-				renderInnMenu()
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				if (userInput == 1):
+					renderShopMenu()
+				elif (userInput == 2):
+					renderInnMenu()
+			elif (userInput == "`"):
+				inTownMenu = False
+		except:
+			continue
 
 
 # Render a menu that shows the player the shop in town.
 def renderShopMenu():
-	global playerInputInvalidCommand
+	inShop = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (inShop):
 		renderTownStatusMenu()
-		print("\nShop")
-		print("–––––")
+
+		print("\nTown > Shop")
+		print("-----------")
 		for i in range(len(currentPlayers[0].itemInventory)):
 			currentItemAmount = currentPlayers[0].itemInventory[i]
 			print(str(i + 1) + ". ", end="")
 			print(itemsList[i].name + " (" + str(currentItemAmount) + ") ($" + str(itemsList[i].value) + ")")
-		print("0. Leave")
+		print("`. Leave")
 
 		try:
-			choice = int(input("> "))
-			if (choice >= 1 and choice <= len(itemsList)):
-				choice -= 1
-				chosenItemAmount = currentPlayers[0].itemInventory[choice]
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (1 <= userInput <= len(itemsList)):
+					userInput -= 1
+					chosenItemAmount = currentPlayers[0].itemInventory[userInput]
 
-				if (chosenItemAmount > 0):
-					renderShopDetails(choice)
-				else:
-					playerInputInvalidCommand = True
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+					if (chosenItemAmount > 0):
+						renderShopDetails(userInput)
+			elif (userInput == "`"):
+				inShop = False
+		except:
+			continue
 
 
 # Render a menu that shows the player more details about the item they just selected when in town.
 def renderShopDetails(itemIndex):
-	global playerInputInvalidCommand
-
-	choice = -1
+	viewingItemDetails = True
 	chosenItem = itemsList[itemIndex]
 
-	while (choice != 0):
+	while (viewingItemDetails):
 		renderTownStatusMenu()
-		print("\nBuy Item")
+
+		print("\nTown > Shop > Item Details")
+		print("--------------------------")
 		print(chosenItem)
 		print(">0. Buy current item at 100% value")
 		print("<0. Sell current item at 20% value")
-		print("0. Back")
+		print("`. Back")
 
 		try:
-			choice = int(input("> "))
-			if (choice > 0):
-				totalCost = chosenItem.value * choice
-				if (partyMoney >= totalCost):
-					partyMoney -= totalCost
-					currentPlayers[0].itemInventory[itemIndex] += choice
-					if (choice == 1):
-						proceduralPrint("\n" + str(currentPlayers[0].name) + " spent $" + str(totalCost) + " to buy 1 " + str(chosenItem.name) + ".", "")
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (userInput > 0):
+					totalCost = chosenItem.value * userInput
+					if (partyMoney >= totalCost):
+						partyMoney -= totalCost
+						currentPlayers[0].itemInventory[itemIndex] += userInput
+						if (userInput == 1):
+							proceduralPrint("\n" + str(currentPlayers[0].name) + " spent $" + str(totalCost) + " to buy 1 " + str(chosenItem.name) + ".", "")
+						else:
+							proceduralPrint("\n" + str(currentPlayers[0].name) + " spent $" + str(totalCost) + " to buy " + str(userInput) + " " + str(chosenItem.name) + "s.", "")
+						viewingItemDetails = False
+				elif (userInput < 0):
+					userInput = abs(userInput)
+					if (currentPlayers[0].itemInventory[itemIndex] >= userInput):
+						totalProfit = (chosenItem.value * (20/100)) * userInput
+						totalProfit = superRound(totalProfit, int)
+						partyMoney += totalProfit
+						currentPlayers[0].itemInventory[itemIndex] -= userInput
+						if (userInput == 1):
+							proceduralPrint("\n" + str(currentPlayers[0].name) + " sold 1 " + str(chosenItem.name) + " for $" + str(totalProfit) + ".", "")
+						else:
+							proceduralPrint("\n" + str(currentPlayers[0].name) + " sold " + str(userInput) + " " + str(chosenItem.name) + "s for $" + str(totalProfit) + ".", "")
+						viewingItemDetails = False
 					else:
-						proceduralPrint("\n" + str(currentPlayers[0].name) + " spent $" + str(totalCost) + " to buy " + str(choice) + " " + str(chosenItem.name) + "s.", "")
-					choice = 0
-				else:
-					playerInputInvalidCommand = True
-			elif (choice < 0):
-				choice = abs(choice)
-				if (currentPlayers[0].itemInventory[itemIndex] >= choice):
-					totalProfit = (chosenItem.value * (20/100)) * choice
-					totalProfit = superRound(totalProfit, int)
-					partyMoney += totalProfit
-					currentPlayers[0].itemInventory[itemIndex] -= choice
-					if (choice == 1):
-						proceduralPrint("\n" + str(currentPlayers[0].name) + " sold 1 " + str(chosenItem.name) + " for $" + str(totalProfit) + ".", "")
-					else:
-						proceduralPrint("\n" + str(currentPlayers[0].name) + " sold " + str(choice) + " " + str(chosenItem.name) + "s for $" + str(totalProfit) + ".", "")
-					choice = 0
-				else:
-					playerInputInvalidCommand = True
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+						playerInputInvalidCommand = True
+			elif (userInput == "`"):
+				viewingItemDetails = False
+		except:
+			continue
 
 
 # Render a menu that shows the player the inn in town.
 def renderInnMenu():
-	global playerInputInvalidCommand
+	inInn = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (inInn):
 		renderTownStatusMenu()
-		print("\nInn")
-		print("–––––")
+
+		print("\nTown > Inn")
+		print("----------")
 		print("1. " + str(innActions[0]) + " (50% HP) ($" + str(innCosts[0]) + ")")
 		print("2. " + str(innActions[1]) + " (100% HP) ($" + str(innCosts[1]) + ")")
 		print("3. " + str(innActions[2]) + " (50% MP) ($" + str(innCosts[2]) + ")")
 		print("4. " + str(innActions[3]) + " (100% MP) ($" + str(innCosts[3]) + ")")
 		print("5. " + str(innActions[4]) + " (50% HP/MP) ($" + str(innCosts[4]) + ")")
 		print("6. " + str(innActions[5]) + " (100% HP/MP) ($" + str(innCosts[5]) + ")")
-		print("0. Leave")
+		print("`. Leave")
 
 		try:
-			choice = int(input("> "))
-			if (choice >= 1 and choice <= 6):
-				choice -= 1
-				chosenInnCosts = innCosts[choice]
+			userInput = input("> ")
+			if (userInput.isdigit()):
+				userInput = int(userInput)
+				if (1 <= userInput <= 6):
+					userInput -= 1
+					chosenInnCosts = innCosts[userInput]
 
-				if (partyMoney >= chosenInnCosts):
-					renderInnDetails(choice)
-					choice = 0
-				else:
-					playerInputInvalidCommand = True
-					choice += 1
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+					if (partyMoney >= chosenInnCosts):
+						renderInnDetails(userInput)
+						inInn = False
+					else:
+						playerInputInvalidCommand = True
+						userInput += 1
+			elif (userInput == "`"):
+				inInn = False
+		except:
+			continue
 
 
 # Render a menu that shows the player more details about the inn action they just selected when in town.
 def renderInnDetails(action):
-	global playerInputInvalidCommand
+	viewingActionDetails = True
 
-	choice = -1
-
-	while (choice != 0):
+	while (viewingActionDetails):
 		renderTownStatusMenu()
-		print("\nAction Details")
+		print("\nTown > Inn > Action Details")
+		print("---------------------------")
 		print("+–––––––+–––––––––––––––––––––––––––––––+")
 		print("|Action\t| " + str(innActions[action]))
 		print("|Power\t| " + str(innPowers[action]) + str(innResources[action]))
 		print("|Cost\t| " + str(innCosts[action]))
 		print("+–––––––+–––––––––––––––––––––––––––––––+")
 		print("\n1. Confirm")
-		print("0. Cancel")
+		print("`. Cancel")
 
 		try:
-			choice = int(input("> "))
-			if (choice == 1):
-				chosenInnPower = innPowers[action]
-				chosenInnResource = innResources[action]
-				chosenInnCosts = innCosts[action]
+			userInput = int(input("> "))
+			if (userInput.isdigit()):
+				if (userInput == 1):
+					chosenInnPower = innPowers[action]
+					chosenInnResource = innResources[action]
+					chosenInnCosts = innCosts[action]
 
-				partyMoney -= chosenInnCosts
+					partyMoney -= chosenInnCosts
 
-				if (chosenInnResource in flatResources):
-					currentHPRecovery = superRound(chosenInnPower, int)
-					currentMPRecovery = superRound(chosenInnPower, int)
-				elif (chosenInnResource in percentageResources):
-					currentHPRecovery = currentPlayers[0].totalStats.maxHP * (chosenInnPower / 100)
-					currentMPRecovery = currentPlayers[0].totalStats.maxMP * (chosenInnPower / 100)
-					currentHPRecovery = superRound(currentHPRecovery, int)
-					currentMPRecovery = superRound(currentMPRecovery, int)
-				else:
-					currentHPRecovery = superRound(chosenInnPower, int)
-					currentMPRecovery = superRound(chosenInnPower, int)
+					if (chosenInnResource in flatResources):
+						currentHPRecovery = superRound(chosenInnPower, int)
+						currentMPRecovery = superRound(chosenInnPower, int)
+					elif (chosenInnResource in percentageResources):
+						currentHPRecovery = currentPlayers[0].totalStats.maxHP * (chosenInnPower / 100)
+						currentMPRecovery = currentPlayers[0].totalStats.maxMP * (chosenInnPower / 100)
+						currentHPRecovery = superRound(currentHPRecovery, int)
+						currentMPRecovery = superRound(currentMPRecovery, int)
+					else:
+						currentHPRecovery = superRound(chosenInnPower, int)
+						currentMPRecovery = superRound(chosenInnPower, int)
 
-				if (chosenInnResource == resources[1] or chosenInnResource == resources[4]):
-					currentPlayers[0].currentHP += currentHPRecovery
-					currentPlayers[0].evaluateCurrentPoints()
+					if (chosenInnResource == resources[1] or chosenInnResource == resources[4]):
+						currentPlayers[0].currentHP += currentHPRecovery
+						currentPlayers[0].evaluateCurrentPoints()
 
-					proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentHPRecovery) + " HP.", "")
-					choice = 0
-				elif (chosenInnResource == resources[2] or chosenInnResource == resources[5]):
-					currentPlayers[0].currentMP += currentMPRecovery
-					currentPlayers[0].evaluateCurrentPoints()
+						proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentHPRecovery) + " HP.", "")
+						viewingActionDetails = False
+					elif (chosenInnResource == resources[2] or chosenInnResource == resources[5]):
+						currentPlayers[0].currentMP += currentMPRecovery
+						currentPlayers[0].evaluateCurrentPoints()
 
-					proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentMPRecovery) + " MP.", "")
-					choice = 0
-				elif (chosenInnResource == resources[3] or chosenInnResource == resources[6]):
-					currentPlayers[0].currentHP += currentHPRecovery
-					currentPlayers[0].currentMP += currentMPRecovery
-					currentPlayers[0].evaluateCurrentPoints()
+						proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentMPRecovery) + " MP.", "")
+						viewingActionDetails = False
+					elif (chosenInnResource == resources[3] or chosenInnResource == resources[6]):
+						currentPlayers[0].currentHP += currentHPRecovery
+						currentPlayers[0].currentMP += currentMPRecovery
+						currentPlayers[0].evaluateCurrentPoints()
 
-					proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentHPRecovery) + " HP and " + str(currentMPRecovery) + " MP.", "")
-					choice = 0
-				else:
-					continue
-			elif (choice == 0):
-				continue
-			else:
-				playerInputInvalidCommand = True
-		except ValueError:
-			playerInputInvalidCommand = True
+						proceduralPrint("\n" + str(currentPlayers[0].name) + " has recovered " + str(currentHPRecovery) + " HP and " + str(currentMPRecovery) + " MP.", "")
+						viewingActionDetails = False
+			elif (userInput == "`"):
+				viewingActionDetails = False
+		except:
+			continue
 
 
 # The user applies a specified status effect onto the target for a specified amount of turns.
@@ -2895,3 +2811,4 @@ def useItem(user, target, itemIndex):
 
 
 renderMainMenu()
+sys.exit()
