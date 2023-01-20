@@ -585,8 +585,6 @@ enemiesAlive = [None, None, None]
 playersHaveMoved = [None, None, None]
 enemiesHaveMoved = [None, None, None]
 
-playerInputInvalidCommand = False
-
 playerClasses = {
 	0: "None",
 	1: "Class A",
@@ -1624,8 +1622,6 @@ def checkForPartyLevelUp():
 
 # Render a menu that prints out the status of players and enemies when in battle (such as level, HP, and MP).
 def renderBattleStatusMenu():
-	global playerInputInvalidCommand
-
 	clearScreen()
 
 	if (partyCurrentFocus >= partyMaxFocus):
@@ -1798,8 +1794,6 @@ def renderAttackMenu():
 						renderAttackDetails(chosenSkill)
 						if (playersHaveMoved[selectedPlayer]):
 							pickingSkill = False
-					else:
-						userInput += 1
 			elif (userInput == "`"):
 				pickingSkill = False
 		except:
@@ -2407,8 +2401,6 @@ def renderShopDetails(itemIndex):
 						else:
 							proceduralPrint("\n" + str(currentPlayers[0].name) + " sold " + str(userInput) + " " + str(chosenItem.name) + "s for $" + str(totalProfit) + ".", "")
 						viewingItemDetails = False
-					else:
-						playerInputInvalidCommand = True
 			elif (userInput == "`"):
 				viewingItemDetails = False
 		except:
@@ -2443,9 +2435,6 @@ def renderInnMenu():
 					if (partyMoney >= chosenInnCosts):
 						renderInnDetails(userInput)
 						inInn = False
-					else:
-						playerInputInvalidCommand = True
-						userInput += 1
 			elif (userInput == "`"):
 				inInn = False
 		except:
