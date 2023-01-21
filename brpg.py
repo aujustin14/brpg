@@ -1143,7 +1143,7 @@ def renderMainMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput == 1):
 					renderNewGameMenu()
@@ -1350,7 +1350,7 @@ def renderNewGameMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (1 <= userInput <= 3):
 					selectedCharacters[userInput - 1] = requestCharacterChange(selectedCharacters[userInput - 1], selectedCharacters)
@@ -1385,7 +1385,7 @@ def requestCharacterChange(currentCharacter, party):
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput != 0 and userInput in playersList):
 					changingCharacter = False
@@ -1713,7 +1713,7 @@ def renderBattleActionMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput == 1):
 					renderAttackMenu()
@@ -1768,7 +1768,7 @@ def renderAttackMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (1 <= userInput <= len(currentPlayers[selectedPlayer].skills) and currentPlayers[selectedPlayer].skills[userInput - 1] != skillsList[0]):
 					userInput -= 1
@@ -2011,7 +2011,7 @@ def renderItemMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (1 <= userInput <= len(itemsList) and sum(currentPlayers[selectedPlayer].itemInventory) > 0):
 					userInput -= 1
@@ -2043,7 +2043,7 @@ def renderItemDetails(itemIndex):
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput == 1):
 					useItem(currentPlayers[selectedPlayer], currentPlayers[selectedPlayer], itemIndex)
@@ -2068,7 +2068,7 @@ def renderScanMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput == 1):
 					renderPlayerScanMenu()
@@ -2097,7 +2097,7 @@ def renderPlayerScanMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput == 1):
 					proceduralPrint("\nBase Stats\n" + str(currentPlayers[0].baseStats), "\n")
@@ -2314,7 +2314,7 @@ def renderTownActionMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				if (userInput == 1):
 					renderShopMenu()
 				elif (userInput == 2):
@@ -2342,7 +2342,7 @@ def renderShopMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (1 <= userInput <= len(itemsList)):
 					userInput -= 1
@@ -2373,7 +2373,7 @@ def renderShopDetails(itemIndex):
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (userInput > 0):
 					totalCost = chosenItem.value * userInput
@@ -2422,7 +2422,7 @@ def renderInnMenu():
 
 		try:
 			userInput = input("> ")
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				userInput = int(userInput)
 				if (1 <= userInput <= 6):
 					userInput -= 1
@@ -2455,7 +2455,7 @@ def renderInnDetails(action):
 
 		try:
 			userInput = int(input("> "))
-			if (userInput.isdigit()):
+			if (userInput.isdecimal()):
 				if (userInput == 1):
 					chosenInnPower = innPowers[action]
 					chosenInnResource = innResources[action]
