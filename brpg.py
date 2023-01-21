@@ -116,7 +116,7 @@ def levelUpUIRow(value, mode):
 
 # Rounds a value into an integer and then converts the result into another specified variable type.
 def superRound(value, varType):
-	return varType(round(value))
+	return varType(round(value)) if (value != None) else None
 
 
 # Clears the screen.
@@ -282,6 +282,12 @@ class Skill:
 			self.statusEffect = None
 		self.statusEffectDuration = statusEffectDuration
 
+		if (self.targetingTypeA == None or self.basePowerA == None):
+			self.targetingTypeA = None
+			self.basePowerA = None
+		if (self.targetingTypeB == None or self.basePowerB == None):
+			self.targetingTypeB = None
+			self.basePowerB = None
 		if ((self.targetingTypeA == None or self.basePowerA == None) and self.targetingTypeB != None and self.basePowerB != None):
 			self.targetingTypeA = self.targetingTypeB
 			self.basePowerA = self.basePowerB
@@ -293,6 +299,8 @@ class Skill:
 
 	def __repr__(self):
 		costString = superRound(self.mpChange, str) if (self.mpChange < 0) else "+" + superRound(self.mpChange, str)
+		powerAString = superRound((self.basePowerA * 100), str) + "%" if (self.basePowerA != None) else "None"
+		powerBString = superRound((self.basePowerB * 100), str) + "%" if (self.basePowerB != None) else "None"
 		accuracyString = "Guaranteed" if (self.accuracyMod >= 100) else superRound((self.accuracyMod * 100), str) + "%"
 		effectsString = str(self.statusEffect.name) + " for " + str(self.statusEffectDuration) + " turns" if (self.statusEffect != None and self.statusEffectDuration > 0) else "None"
 
@@ -305,7 +313,7 @@ class Skill:
 				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
 				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
 				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 21) + " | " + formatText(self.targetingTypeB, 0, 21) + " |"
-				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(superRound((self.basePowerA * 100), str) + "%", 0, 21) + " | " + formatText(superRound((self.basePowerB * 100), str) + "%", 0, 21) + " |"
+				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(powerAString, 0, 21) + " | " + formatText(powerBString, 0, 21) + " |"
 				+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 21) + " | " + formatText(accuracyString, 0, 21) + " |"
 				+ "\n| " + formatText("Effct", 0, 5) + " | " + formatText(effectsString, 0, 21) + " | " + formatText(effectsString, 0, 21) + " |"
 				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
@@ -319,7 +327,7 @@ class Skill:
 				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
 				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
 				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 45) + " |"
-				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(superRound((self.basePowerA * 100), str) + "%", 0, 45) + " |"
+				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(powerAString, 0, 45) + " |"
 				+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 45) + " |"
 				+ "\n| " + formatText("Effct", 0, 5) + " | " + formatText(effectsString, 0, 45) + " |"
 				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
