@@ -7,24 +7,24 @@ import pyperclip
 
 """
 todo:
-    main focus
-        - refactor combat logic
+	main focus
+		- refactor combat logic
 		- redo lists of data for objects
 
 	high priority
-        - implement alt skills
-        - implement skill leveling
-        - implement equipment leveling
-        - redo inventory and item system
-        - redo enemy class
-        - add more comments
-        - improve enemy ai
-        - balance damage, healing, and leveling
-        - add more things to the town menu
-        - implement saving/loading
-        - create more items, item types, skills, and status effects
-        - add more enemy/boss types
-        - improve title screen
+		- implement alt skills
+		- implement skill leveling
+		- implement equipment leveling
+		- redo inventory and item system
+		- redo enemy class
+		- add more comments
+		- improve enemy ai
+		- balance damage, healing, and leveling
+		- add more things to the town menu
+		- implement saving/loading
+		- create more items, item types, skills, and status effects
+		- add more enemy/boss types
+		- improve title screen
 	low priority
 """
 
@@ -263,20 +263,14 @@ class StatusEffect:
 
 
 class Skill:
-	def __init__(self, name="Null", skillType=0, statType=0, element=0, cost=0, targetingTypeA=None, targetingTypeB=None, basePowerA=None, basePowerB=None, accuracyMod=0.00, critChance=0.00, randomMod=0.00, statusEffect=None, statusEffectDuration=0):
+	def __init__(self, name="Null", skillType=0, statType=0, element=0, mpChange=0, targetingTypeA=None, targetingTypeB=None, basePowerA=None, basePowerB=None, accuracyMod=0.00, critChance=0.00, randomMod=0.00, statusEffect=None, statusEffectDuration=0):
 		self.name = str(name)
 		self.skillType = skillTypes[skillType]
 		self.statType = statTypes[statType]
 		self.element = elements[element]
-		self.cost = cost
-		if (targetingTypeA != None):
-			self.targetingTypeA = targetingTypes[targetingTypeA]
-		else:
-			self.targetingTypeA = None
-		if (targetingTypeB != None):
-			self.targetingTypeB = targetingTypes[targetingTypeB]
-		else:
-			self.targetingTypeB = None
+		self.mpChange = mpChange
+		self.targetingTypeA = targetingTypes[targetingTypeA] if (targetingTypeA != None) else None
+		self.targetingTypeB = targetingTypes[targetingTypeB] if (targetingTypeB != None) else None
 		self.basePowerA = basePowerA
 		self.basePowerB = basePowerB
 		self.accuracyMod = accuracyMod
@@ -288,46 +282,26 @@ class Skill:
 			self.statusEffect = None
 		self.statusEffectDuration = statusEffectDuration
 
+		if ((self.targetingTypeA == None or self.basePowerA == None) and self.targetingTypeB != None and self.basePowerB != None):
+			self.targetingTypeA = self.targetingTypeB
+			self.basePowerA = self.basePowerB
+			self.targetingTypeB = None
+			self.basePowerB = None
+
 		self.skillLevel = 1
 
 
 	def __repr__(self):
-		if (self.cost == 0):
-			costString = "Free"
-		else:
-			costString = superRound(self.cost, str) + str(self.resource)
-
-		targetingString = ""
-		if (self.targetingTypeA != None):
-			targetingString += self.targetingTypeA
-		if (self.targetingTypeB != None):
-			targetingString += "\t| " + self.targetingTypeB
-
-		powerString = ""
-		if (self.element in supportiveElements[1:3]):
-			powerString += "–"
-		else:
-			if (self.basePowerA != None):
-				powerString += superRound((self.basePowerA * 100), str) + "%"
-			if (self.basePowerB != None):
-				powerString += "\t\t| " + superRound((self.basePowerB * 100), str) + "%"
-		
-		if (self.accuracyMod >= 100):
-			accuracyString = "Guaranteed"
-		else:
-			accuracyString = superRound((self.accuracyMod * 100), str) + "%"
-
-		if (self.statusEffect != None and self.statusEffectDuration > 0):
-			effectsString = str(self.statusEffect.name) + " for " + str(self.statusEffectDuration) + " turns"
-		else:
-			effectsString = "None"
+		costString = superRound(self.mpChange, str) if (self.mpChange < 0) else "+" + superRound(self.mpChange, str)
+		accuracyString = "Guaranteed" if (self.accuracyMod >= 100) else superRound((self.accuracyMod * 100), str) + "%"
+		effectsString = str(self.statusEffect.name) + " for " + str(self.statusEffectDuration) + " turns" if (self.statusEffect != None and self.statusEffectDuration > 0) else "None"
 
 		if (self.targetingTypeA != None and self.targetingTypeB != None and self.basePowerA != None and self.basePowerB != None):
 			return (
 				"+–––––––––––––––––––––––––––––––+"
 				+ "\n| " + formatText(self.name, 0, 29) + " |"
 				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
-				+ "\n| " + formatText("Cost", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
+				+ "\n| " + formatText("MP", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
 				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
 				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
 				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 21) + " | " + formatText(self.targetingTypeB, 0, 21) + " |"
@@ -341,7 +315,7 @@ class Skill:
 				"+–––––––––––––––––––––––––––––––+"
 				+ "\n| " + formatText(self.name, 0, 29) + " |"
 				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
-				+ "\n| " + formatText("Cost", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
+				+ "\n| " + formatText("MP", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
 				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
 				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
 				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 45) + " |"
@@ -445,13 +419,13 @@ class PlayerCharacter:
 		self.curMP = int(self.totalStats.mp * manaRatio)
 
 	def evaluateCurrentPoints(self):
-		if (self.curHP > self.totalStats.hp):
-			self.curHP = self.totalStats.hp
+		if (self.curHP > self.maxHP):
+			self.curHP = self.maxHP
 		elif (self.curHP < 0):
 			self.curHP = 0
 
-		if (self.curMP > self.totalStats.mp):
-			self.curMP = self.totalStats.mp
+		if (self.curMP > self.maxMP):
+			self.curMP = self.maxMP
 		elif (self.curMP < 0):
 			self.curMP = 0
 
@@ -509,7 +483,8 @@ class Enemy:
 		self.evaluateTotalStats()
 		# self.checkForLevelUp()
 
-		self.curHP = self.totalStats.hp
+		self.maxHP = self.totalStats.hp
+		self.curHP = self.maxHP
 
 	def evaluateTotalStats(self):
 		healthRatio = self.curHP / self.totalStats.hp
@@ -552,8 +527,8 @@ class Enemy:
 		self.curHP = superRound(self.totalStats.hp * healthRatio, int)
 
 	def evaluateCurrentPoints(self):
-		if (self.curHP > self.totalStats.hp):
-			self.curHP = self.totalStats.hp
+		if (self.curHP > self.maxHP):
+			self.curHP = self.maxHP
 		elif (self.curHP < 0):
 			self.curHP = 0
 
@@ -742,8 +717,8 @@ skillTypes = {
 
 statTypes = {
 	0: "None",
-	1: "Melee",
-	2: "Ranged"
+	1: "Ballistic",
+	2: "Magic"
 }
 
 targetingTypes = {
@@ -751,10 +726,10 @@ targetingTypes = {
 	1: "Self",
 	2: "Single Enemy",
 	3: "All Enemies",
-	4: "Single Alive Ally",
-	5: "All Alive Allies",
-	6: "Single Dead Ally",
-	7: "All Dead Allies",
+	4: "Single Ally (Living)",
+	5: "All Allies (Living)",
+	6: "Single Ally (Dead)",
+	7: "All Allies (Dead)",
 }
 
 elements = {
@@ -874,12 +849,12 @@ skillsList = {
 		skillType = 4,
 		statType = 0,
 		element = 1,
-		cost = 0,
+		mpChange = 0,
 		targetingTypeA = 1,
 		targetingTypeB = None,
 		basePowerA = None,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = 90,
@@ -890,12 +865,12 @@ skillsList = {
 		skillType = 4,
 		statType = 0,
 		element = 1,
-		cost = 0,
+		mpChange = 0,
 		targetingTypeA = 1,
 		targetingTypeB = None,
 		basePowerA = None,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = 91,
@@ -906,12 +881,12 @@ skillsList = {
 		skillType = 1,
 		statType = 1,
 		element = 1,
-		cost = 0,
+		mpChange = 10,
 		targetingTypeA = 2,
 		targetingTypeB = None,
 		basePowerA = 1.00,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -922,12 +897,12 @@ skillsList = {
 		skillType = 1,
 		statType = 1,
 		element = 1,
-		cost = 0,
+		mpChange = -10,
 		targetingTypeA = 2,
 		targetingTypeB = 3,
-		basePowerA = 1.00,
+		basePowerA = 1.50,
 		basePowerB = 0.75,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -938,12 +913,12 @@ skillsList = {
 		skillType = 1,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = 10,
 		targetingTypeA = 2,
 		targetingTypeB = None,
 		basePowerA = 1.00,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -954,12 +929,12 @@ skillsList = {
 		skillType = 1,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = -10,
 		targetingTypeA = 2,
 		targetingTypeB = 3,
-		basePowerA = 1.00,
+		basePowerA = 1.50,
 		basePowerB = 0.75,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -970,12 +945,12 @@ skillsList = {
 		skillType = 2,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = 10,
 		targetingTypeA = 1,
 		targetingTypeB = None,
 		basePowerA = 1.00,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -986,12 +961,12 @@ skillsList = {
 		skillType = 2,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = 0,
 		targetingTypeA = 4,
 		targetingTypeB = None,
 		basePowerA = 1.00,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -1002,12 +977,12 @@ skillsList = {
 		skillType = 2,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = -10,
 		targetingTypeA = 4,
 		targetingTypeB = 5,
-		basePowerA = 1.00,
+		basePowerA = 1.50,
 		basePowerB = 0.75,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -1018,12 +993,12 @@ skillsList = {
 		skillType = 3,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = -25,
 		targetingTypeA = 6,
 		targetingTypeB = None,
 		basePowerA = 1.00,
 		basePowerB = None,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -1034,12 +1009,12 @@ skillsList = {
 		skillType = 3,
 		statType = 2,
 		element = 1,
-		cost = 0,
+		mpChange = -100,
 		targetingTypeA = 6,
 		targetingTypeB = 7,
-		basePowerA = 1.00,
+		basePowerA = 1.50,
 		basePowerB = 0.75,
-		accuracyMod= 1.00,
+		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
 		statusEffect = None,
@@ -1391,9 +1366,9 @@ def requestCharacterChange(currentCharacter, party):
 
 	while (changingCharacter):
 		clearScreen()
-		print("Select Monkey")
+		print("Select Tower")
 		print("-------------")
-		print("Current Monkey in Slot: " + str(playersList[currentCharacter].name))
+		print("Current Tower in Slot: " + str(playersList[currentCharacter].name))
 		for key in playersList:
 			if (key != 0):
 				print(str(key) + ". " + str(playersList[key].name))
@@ -1562,8 +1537,8 @@ def checkForPartyLevelUp():
 	for i in range(len(currentPlayers)):
 		if (currentPlayers[i] != None):
 			initialStats.append(currentPlayers[i].totalStats)
-			healthRatio.append(currentPlayers[i].curHP / currentPlayers[i].totalStats.hp)
-			manaRatio.append(currentPlayers[i].curMP / currentPlayers[i].totalStats.mp)
+			healthRatio.append(currentPlayers[i].curHP / currentPlayers[i].maxHP)
+			manaRatio.append(currentPlayers[i].curMP / currentPlayers[i].maxMP)
 
 	while (partyCurrentXP >= partyNextXP and partyLevel < maxPlayerLevel):
 		partyLeveledUp = True
@@ -1604,8 +1579,8 @@ def checkForPartyLevelUp():
 		for i in range(len(currentPlayers)):
 			if (currentPlayers[i] != None):
 				changeInStats.append(newStats[i] - initialStats[i])
-				currentPlayers[i].curHP = superRound(currentPlayers[i].totalStats.hp * healthRatio[i], int)
-				currentPlayers[i].curMP = superRound(currentPlayers[i].totalStats.mp * manaRatio[i], int)
+				currentPlayers[i].curHP = superRound(currentPlayers[i].maxHP * healthRatio[i], int)
+				currentPlayers[i].curMP = superRound(currentPlayers[i].maxMP * manaRatio[i], int)
 
 		print("\n+–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––+")
 		print(levelUpUIRow("Level Up! LVL " + str(initialPartyLevel) + " -> LVL " + str(newPartyLevel), 0))
@@ -1645,38 +1620,38 @@ def renderBattleStatusMenu():
 	for i in range(3):
 		if (currentPlayers[i] != None):
 			currentPlayerName = currentPlayers[i].name
-			currentPlayerCHP = currentPlayers[i].curHP
-			currentPlayerCMP = currentPlayers[i].curMP
-			currentPlayerMHP = currentPlayers[i].totalStats.hp
-			currentPlayerMMP = currentPlayers[i].totalStats.mp
+			currentPlayerCurHP = currentPlayers[i].curHP
+			currentPlayerCurMP = currentPlayers[i].curMP
+			currentPlayerMaxHP = currentPlayers[i].maxHP
+			currentPlayerMaxMP = currentPlayers[i].maxMP
 
 			if (len(currentPlayerName) > 14):
 				currentPlayerName = currentPlayerName[0:11] + "..."
-			# currentPlayerText = "/ " + "{:<14}".format(str(currentPlayerName)) + " / HP " + "{:^4}".format(str(currentPlayerCHP)) + " MP " + "{:^3}".format(str(currentPlayerCMP)) + " /"
-			currentPlayerText = "/ " + "{:<14}".format(str(currentPlayerName)) + " / ❤  " + "{:^4}".format(str(currentPlayerCHP)) + " 🗲  " + "{:^3}".format(str(currentPlayerCMP)) + " /"
+			# currentPlayerText = "/ " + "{:<14}".format(str(currentPlayerName)) + " / HP " + "{:^4}".format(str(currentPlayerCurHP)) + " MP " + "{:^3}".format(str(currentPlayerCurMP)) + " /"
+			currentPlayerText = "/ " + "{:<14}".format(str(currentPlayerName)) + " / ❤  " + "{:^4}".format(str(currentPlayerCurHP)) + " 🗲  " + "{:^3}".format(str(currentPlayerCurMP)) + " /"
 			if (i == selectedPlayer):
 				currentPlayerText = "> " + currentPlayerText
 			else:
 				currentPlayerText = "  " + currentPlayerText
-			currentPlayerBar = generalUIBar(22, 0, "=", currentPlayerCHP, currentPlayerMHP) + generalUIBar(10, 0, "—", currentPlayerCMP, currentPlayerMMP)
+			currentPlayerBar = generalUIBar(22, 0, "=", currentPlayerCurHP, currentPlayerMaxHP) + generalUIBar(10, 0, "—", currentPlayerCurMP, currentPlayerMaxMP)
 		else:
 			currentPlayerText = ""
 			currentPlayerBar = ""
 
 		if (currentEnemies[i] != None and enemiesAlive[i]):
 			currentEnemyName = "LV " + str(currentEnemies[i].currentLevel) + " " + currentEnemies[i].currentClass
-			currentEnemyCHP = currentEnemies[i].curHP
-			currentEnemyMHP = currentEnemies[i].totalStats.hp
+			currentEnemyCurHP = currentEnemies[i].curHP
+			currentEnemyMaxHP = currentEnemies[i].maxHP
 
 			if (len(currentEnemyName) > 20):
 				currentEnemyName = currentEnemyName[0:17] + "..."
-			# currentEnemyText = "\\ HP " + "{:^5}".format(str(currentEnemyCHP)) + " \\ " + "{:>20}".format(str(currentEnemyName)) + " \\"
-			currentEnemyText = "\\ ❤  " + "{:^5}".format(str(currentEnemyCHP)) + " \\ " + "{:>20}".format(str(currentEnemyName)) + " \\"
+			# currentEnemyText = "\\ HP " + "{:^5}".format(str(currentEnemyCurHP)) + " \\ " + "{:>20}".format(str(currentEnemyName)) + " \\"
+			currentEnemyText = "\\ ❤  " + "{:^5}".format(str(currentEnemyCurHP)) + " \\ " + "{:>20}".format(str(currentEnemyName)) + " \\"
 			if (i == selectedEnemy):
 				currentEnemyText += " <"
 			else:
 				currentEnemyText += "  "
-			currentEnemyBar = generalUIBar(34, 1, "=", currentEnemyCHP, currentEnemyMHP)
+			currentEnemyBar = generalUIBar(34, 1, "=", currentEnemyCurHP, currentEnemyMaxHP)
 		else:
 			currentEnemyText = ""
 			currentEnemyBar = ""
@@ -1771,17 +1746,16 @@ def renderAttackMenu():
 			count = i + 1
 			currentSkill = skillsList[currentPlayers[selectedPlayer].skills[i]]
 
-			currentSkillResource = currentPlayers[selectedPlayer].totalStats.mp
-			resourceString = "MP"
+			currentSkillResource = currentPlayers[selectedPlayer].maxMP
 
-			currentSkillTotalCost = currentSkill.cost
+			currentSkillMPChange = currentSkill.mpChange
 
 			if (currentSkill == skillsList[0]):
 				continue
-			elif (currentSkill.cost == 0):
-				print(str(count) + ". " + currentSkill.name + " (Free)", end="\n")
+			elif (currentSkill.mpChange < 0):
+				print(str(count) + ". " + currentSkill.name + " (" + str(currentSkillMPChange) + " MP)")
 			else:
-				print(str(count) + ". " + currentSkill.name + " ( " + str(currentSkillTotalCost) + str(resourceString) + ")")
+				print(str(count) + ". " + currentSkill.name + " (+" + str(currentSkillMPChange) + " MP)")
 		print("`. Back")
 
 		try:
@@ -1793,12 +1767,11 @@ def renderAttackMenu():
 					chosenSkill = skillsList[currentPlayers[selectedPlayer].skills[userInput]]
 
 					currentPlayerResource = currentPlayers[selectedPlayer].curMP
-					chosenSkillResource = currentPlayers[selectedPlayer].totalStats.mp
-					resourceString = "MP"
+					chosenSkillResource = currentPlayers[selectedPlayer].maxMP
 
-					chosenSkillCost = chosenSkill.cost
+					chosenSkillMPChange = chosenSkill.mpChange
 
-					if ((currentPlayerResource == currentPlayers[selectedPlayer].curMP) and currentPlayerResource >= chosenSkillCost):
+					if (currentPlayerResource == currentPlayers[selectedPlayer].curMP and currentPlayerResource + chosenSkillMPChange >= 0):
 						renderAttackDetails(chosenSkill)
 						if (playersHaveMoved[selectedPlayer]):
 							pickingSkill = False
@@ -1819,75 +1792,82 @@ def renderAttackDetails(skill):
 		print("-" * len(currentPlayers[selectedPlayer].name) + "---------------------")
 		print(skill)
 
+		hasAvailableTarget = False
+
 		targetAButtons = ["1", "2", "3"]
 		if (skill.targetingTypeA == targetingTypes[1]):
-			print(str(targetAButtons[0]) + ". Self")
+			print(targetAButtons[0].upper() + ". " + targetingTypes[1])
+			hasAvailableTarget = True
 
 		elif (skill.targetingTypeA == targetingTypes[2]):
 			for i in range(len(currentEnemies) - enemiesAlive.count(None)):
 				if (enemiesAlive[i]):
-					print(targetAButtons[i] + ". " + str(currentEnemies[i].name))
+					print(targetAButtons[i].upper() + ". " + currentEnemies[i].name)
+					hasAvailableTarget = True
 
 		elif (skill.targetingTypeA == targetingTypes[3]):
-			print(str(targetAButtons[0]) + ". All Enemies")
+			print(targetAButtons[0].upper() + ". " + targetingTypes[3])
+			hasAvailableTarget = True
 
 		elif (skill.targetingTypeA == targetingTypes[4]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (playersAlive[i]):
-					print(targetAButtons[i] + ". " + str(currentPlayers[i].name))
+					print(targetAButtons[i].upper() + ". " + currentPlayers[i].name)
+					hasAvailableTarget = True
 
 		elif (skill.targetingTypeA == targetingTypes[5]):
-			print(str(targetAButtons[0]) + ". All Alive Allies")
+			print(targetAButtons[0].upper() + ". " + targetingTypes[5])
+			hasAvailableTarget = True
 		
 		elif (skill.targetingTypeA == targetingTypes[6]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (not playersAlive[i]):
-					print(targetAButtons[i] + ". " + str(currentPlayers[i].name))
+					print(targetAButtons[i].upper() + ". " + currentPlayers[i].name)
+					hasAvailableTarget = True
 
 		elif (skill.targetingTypeA == targetingTypes[7]):
 			if (playersAlive.count(False) >= 1):
-				print(str(targetAButtons[0]) + ". All Dead Allies")
-
-		elif (skill.targetingTypeA == None):
-			pass
-
-		else:
-			print(str(targetAButtons[0]) + " ???")
+				print(targetAButtons[0].upper() + ". " + targetingTypes[7])
+				hasAvailableTarget = True
 
 		targetBButtons = ["q", "w", "e"]
 		if (skill.targetingTypeB == targetingTypes[1]):
-			print(str(targetAButtons[0]) + " Self")
+			print(targetBButtons[0].upper() + ". " + targetingTypes[1])
+			hasAvailableTarget = True
 
 		elif (skill.targetingTypeB == targetingTypes[2]):
 			for i in range(len(currentEnemies) - enemiesAlive.count(None)):
 				if (enemiesAlive[i]):
-					print(targetBButtons[i].upper() + ". " + str(currentEnemies[i].name))
+					print(targetBButtons[i].upper() + ". " + currentEnemies[i].name)
+					hasAvailableTarget = True
 
 		elif (skill.targetingTypeB == targetingTypes[3]):
-			print(str(targetBButtons[0].upper()) + ". All Enemies")
+			print(targetBButtons[0].upper() + ". " + targetingTypes[3])
+			hasAvailableTarget = True
 
 		elif (skill.targetingTypeB == targetingTypes[4]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (playersAlive[i]):
-					print(targetBButtons[i].upper() + ". " + str(currentPlayers[i].name))
+					print(targetBButtons[i].upper() + ". " + currentPlayers[i].name)
+					hasAvailableTarget = True
 
 		elif (skill.targetingTypeB == targetingTypes[5]):
-			print(str(targetBButtons[0].upper()) + ". All Alive Allies")
+			print(targetBButtons[0].upper() + ". " + targetingTypes[5])
+			hasAvailableTarget = True
 		
 		elif (skill.targetingTypeB == targetingTypes[6]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (not playersAlive[i]):
-					print(targetBButtons[i].upper() + ". " + str(currentPlayers[i].name))
+					print(targetBButtons[i].upper() + ". " + currentPlayers[i].name)
+					hasAvailableTarget = True
 
 		elif (skill.targetingTypeB == targetingTypes[7]):
 			if (playersAlive.count(False) >= 1):
-				print(str(targetBButtons[0].upper()) + ". All Dead Allies")
-
-		elif (skill.targetingTypeB == None):
-			pass
-
-		else:
-			print(str(targetBButtons[0].upper()) + ". ???")
+				print(targetBButtons[0].upper() + ". " + targetingTypes[7])
+				hasAvailableTarget = True
+		
+		if (not hasAvailableTarget):
+			print("No targets available.")
 
 		print("`. Cancel")
 
@@ -2243,11 +2223,11 @@ def progressBattleTurn():
 			for currentStatusEffect in currentPlayers[i].statusEffects:
 				if (currentStatusEffect in fireStatusEffects):
 					if (currentStatusEffect == fireStatusEffects[0]):
-						currentPlayers[i].curHP -= (2/100) * currentPlayers[i].totalStats.hp
+						currentPlayers[i].curHP -= (2/100) * currentPlayers[i].maxHP
 					if (currentStatusEffect == fireStatusEffects[1]):
-						currentPlayers[i].curHP -= (4/100) * currentPlayers[i].totalStats.hp
+						currentPlayers[i].curHP -= (4/100) * currentPlayers[i].maxHP
 					if (currentStatusEffect == fireStatusEffects[2]):
-						currentPlayers[i].curHP -= (6/100) * currentPlayers[i].totalStats.hp
+						currentPlayers[i].curHP -= (6/100) * currentPlayers[i].maxHP
 		else:
 			continue
 
@@ -2256,11 +2236,11 @@ def progressBattleTurn():
 			for currentStatusEffect in currentEnemies[i].statusEffects:
 				if (currentStatusEffect in fireStatusEffects):
 					if (currentStatusEffect == fireStatusEffects[0]):
-						currentEnemies[i].curHP -= (2/100) * currentEnemies[i].totalStats.hp
+						currentEnemies[i].curHP -= (2/100) * currentEnemies[i].maxHP
 					if (currentStatusEffect == fireStatusEffects[1]):
-						currentEnemies[i].curHP -= (4/100) * currentEnemies[i].totalStats.hp
+						currentEnemies[i].curHP -= (4/100) * currentEnemies[i].maxHP
 					if (currentStatusEffect == fireStatusEffects[2]):
-						currentEnemies[i].curHP -= (6/100) * currentEnemies[i].totalStats.hp
+						currentEnemies[i].curHP -= (6/100) * currentEnemies[i].maxHP
 		else:
 			continue
 
@@ -2304,8 +2284,8 @@ def renderTownStatusMenu():
 	print("| " + str(regions[gameRegion % 3]) + " | Town")
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 	print("| " + str(currentPlayers[0].name) + " | LV " + str(partyLevel))
-	print("| HP | " + str(currentPlayers[0].curHP) + "/" + str(currentPlayers[0].totalStats.hp))
-	print("| MP | " + str(currentPlayers[0].curMP) + "/" + str(currentPlayers[0].totalStats.mp))
+	print("| HP | " + str(currentPlayers[0].curHP) + "/" + str(currentPlayers[0].maxHP))
+	print("| MP | " + str(currentPlayers[0].curMP) + "/" + str(currentPlayers[0].maxMP))
 	print("| $$ | " + str(partyMoney))
 	print("+–––––––––––––––––––––––––––––––––––––––+")
 
@@ -2479,8 +2459,8 @@ def renderInnDetails(action):
 						currentHPRecovery = superRound(chosenInnPower, int)
 						currentMPRecovery = superRound(chosenInnPower, int)
 					elif (chosenInnResource in percentageResources):
-						currentHPRecovery = currentPlayers[0].totalStats.hp * (chosenInnPower / 100)
-						currentMPRecovery = currentPlayers[0].totalStats.mp * (chosenInnPower / 100)
+						currentHPRecovery = currentPlayers[0].maxHP * (chosenInnPower / 100)
+						currentMPRecovery = currentPlayers[0].maxMP * (chosenInnPower / 100)
 						currentHPRecovery = superRound(currentHPRecovery, int)
 						currentMPRecovery = superRound(currentMPRecovery, int)
 					else:
@@ -2545,8 +2525,8 @@ def castSkill(target, user, skill, version):
 		targetName.append(target[i].name)
 
 	if (type(user) is PlayerCharacter):
-		skillCost = skill.cost
-		user.curMP -= skillCost
+		skillMPChange = skill.mpChange
+		user.curMP += skillMPChange
 
 	if (version == 0):
 		skillPower = skill.basePowerA
@@ -2776,13 +2756,13 @@ def useItem(user, target, itemIndex):
 
 	# If item is of health type
 	if chosenItem.itemType == itemTypes[0]:
-		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.hp), 0)))
+		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.maxHP), 0)))
 		user.curHP += currentHealing
 		print(userName + " recovered " + str(currentHealing) + " HP.", end="")
 
 	# Else, if item is of mana type
 	elif chosenItem.itemType == itemTypes[1]:
-		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.totalStats.mp), 0)))
+		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.maxMP), 0)))
 		user.curMP += currentHealing
 		print(userName + " recovered " + str(currentHealing) + " MP.", end="")
 
