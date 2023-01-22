@@ -586,122 +586,6 @@ playerClasses = {
 	3: "Class C",
 }
 
-enemyNames = {
-	0: "Empty",
-	1: "Green Slime",
-	2: "Blue Slime",
-	3: "Zombie",
-	4: "Demon Eye",
-	5: "Blood Slime",
-	6: "Flesh Slime",
-	7: "Man Eater",
-	8: "Demon Eye Bat",
-	9: "Stone Slime",
-	10: "Flesh Slime",
-	11: "Man Eater",
-	12: "Demon Bat",
-}
-
-enemyData = {
-	"region": {
-		0: "0",
-		1: "1",
-		2: "1",
-		3: "1",
-		4: "1",
-		5: "2",
-		6: "2",
-		7: "2",
-		8: "2",
-		9: "3",
-		10: "3",
-		11: "3",
-		12: "3",
-	},
-
-	"baseStats": {
-		0: "00000000000000000000000000",
-		1: "02000050010009010009010010",
-		2: "01500100009010009010010010",
-		3: "02500025013008010005009007",
-		4: "01500050012012006006010015",
-		5: "02000100010010010010010010",
-		6: "02500050012007011006010008",
-		7: "02500025013009011006009008",
-		8: "01500050013013007007010016",
-		9: "02000100010010010010010010",
-		10: "02500050012007011006010008",
-		11: "02500025013009011006009008",
-		12: "01500050013013007007010016",
-	},
-
-	"skills": {
-		0: "001002001002001002001002001",
-		1: "003004000000000000000000000",
-		2: "005006000000000000000000000",
-		3: "003004000000000000000000000",
-		4: "005006000000000000000000000",
-		5: "001002001002001002001002001",
-		6: "001002001002001002001002001",
-		7: "001002001002001002001002001",
-		8: "001002001002001002001002001",
-		9: "001002001002001002001002001",
-		10: "001002001002001002001002001",
-		11: "001002001002001002001002001",
-		12: "001002001002001002001002001",
-	}
-}
-
-bossNames = {
-	0: "Empty",
-	1: "Great Green Slime",
-	2: "Great Blue Slime",
-	3: "Armored Zombie",
-	4: "Demon Eye Fleet",
-	5: "Giant Blood Slime",
-	6: "Giant Flesh Slime",
-	7: "Stoic Man Eater",
-	8: "Demon Bat Swarm",
-}
-
-bossData = {
-	"region": {
-		0: "0",
-		1: "1",
-		2: "1",
-		3: "1",
-		4: "1",
-		5: "2",
-		6: "2",
-		7: "2",
-		8: "2",
-	},
-
-	"baseStats": {
-		0: "00000000000000000000000000",
-		1: "03500100012011012011009009",
-		2: "03000300011012011012009009",
-		3: "04000025014009016011006006",
-		4: "03000075010010010010008012",
-		5: "03500100011011011011009009",
-		6: "03500100013008012010009007",
-		7: "04000025014010012007008007",
-		8: "03000075014014008008008013",
-	},
-
-	"skills": {
-		0: "000000000000000000000000000",
-		1: "130131132000000000000000000",
-		2: "133134135000000000000000000",
-		3: "136137138000000000000000000",
-		4: "139140141000000000000000000",
-		5: "158159160161000000000000000",
-		6: "162163164165000000000000000",
-		7: "000000000000000",
-		8: "000000000000000",
-	}
-}
-
 regions = {
 	0: "None",
 	1: "Green Grasslands",
@@ -753,20 +637,6 @@ elements = {
 	9: "Debuff"
 }
 
-offensiveElements = [
-	elements[1],
-	elements[2],
-	elements[3],
-	elements[4],
-	elements[5]
-]
-
-supportiveElements = [
-	elements[6],
-	elements[7],
-	elements[8]
-]
-
 resources = {
 	0: "None",
 	1: " HP",
@@ -809,41 +679,6 @@ statusEffectsList = {
 	0: StatusEffect("Healthy I",Stats(15,0,0,0,0,0,0,0)),1: StatusEffect("Healthy II",Stats(30,0,0,0,0,0,0,0)),2: StatusEffect("Healthy III",Stats(45,0,0,0,0,0,0,0)),3: StatusEffect("Energetic I",Stats(0,15,0,0,0,0,0,0)),4: StatusEffect("Energetic II",Stats(0,30,0,0,0,0,0,0)),5: StatusEffect("Energetic III",Stats(0,45,0,0,0,0,0,0)),6: StatusEffect("Strengthened I",Stats(0,0,15,0,0,0,0,0)),7: StatusEffect("Strengthened II",Stats(0,0,30,0,0,0,0,0)),8: StatusEffect("Strengthened III",Stats(0,0,45,0,0,0,0,0)),9: StatusEffect("Sharpened I",Stats(0,0,0,15,0,0,0,0)),10: StatusEffect("Sharpened II",Stats(0,0,0,30,0,0,0,0)),11: StatusEffect("Sharpened III",Stats(0,0,0,45,0,0,0,0)),12: StatusEffect("Shielded I",Stats(0,0,0,0,15,0,0,0)),13: StatusEffect("Shielded II",Stats(0,0,0,0,30,0,0,0)),14: StatusEffect("Shielded III",Stats(0,0,0,0,45,0,0,0)),15: StatusEffect("Barriered I",Stats(0,0,0,0,0,15,0,0)),16: StatusEffect("Barriered II",Stats(0,0,0,0,0,30,0,0)),17: StatusEffect("Barriered III",Stats(0,0,0,0,0,45,0,0)),18: StatusEffect("Accurate I",Stats(0,0,0,0,0,0,15,0)),19: StatusEffect("Accurate II",Stats(0,0,0,0,0,0,30,0)),20: StatusEffect("Accurate III",Stats(0,0,0,0,0,0,45,0)),21: StatusEffect("Evasive I",Stats(0,0,0,0,0,0,0,15)),22: StatusEffect("Evasive II",Stats(0,0,0,0,0,0,0,30)),23: StatusEffect("Evasive III",Stats(0,0,0,0,0,0,0,45)),24: StatusEffect("Resourceful I",Stats(15,15,0,0,0,0,0,0)),25: StatusEffect("Resourceful II",Stats(30,30,0,0,0,0,0,0)),26: StatusEffect("Resourceful III",Stats(45,45,0,0,0,0,0,0)),27: StatusEffect("Offensive I",Stats(0,0,15,15,0,0,15,0)),28: StatusEffect("Offensive II",Stats(0,0,30,30,0,0,30,0)),29: StatusEffect("Offensive III",Stats(0,0,45,45,0,0,45,0)),30: StatusEffect("Defensive I",Stats(0,0,0,0,15,15,0,15)),31: StatusEffect("Defensive II",Stats(0,0,0,0,30,30,0,30)),32: StatusEffect("Defensive III",Stats(0,0,0,0,45,45,0,45)),33: StatusEffect("Agile I",Stats(0,0,0,0,0,0,15,15)),34: StatusEffect("Agile II",Stats(0,0,0,0,0,0,30,30)),35: StatusEffect("Agile III",Stats(0,0,0,0,0,0,45,45)),36: StatusEffect("Enhanced I",Stats(15,0,15,0,15,0,0,0)),37: StatusEffect("Enhanced II",Stats(30,0,30,0,30,0,0,0)),38: StatusEffect("Enhanced III",Stats(45,0,45,0,45,0,0,0)),39: StatusEffect("Enchanted I",Stats(0,15,0,15,0,15,0,0)),40: StatusEffect("Enchanted II",Stats(0,30,0,30,0,30,0,0)),41: StatusEffect("Enchanted III",Stats(0,45,0,45,0,45,0,0)),42: StatusEffect("Empowered I",Stats(15,15,15,15,15,15,15,15)),43: StatusEffect("Empowered II",Stats(30,30,30,30,30,30,30,30)),44: StatusEffect("Empowered III",Stats(45,45,45,45,45,45,45,45)),45: StatusEffect("Ill I",Stats(-15,0,0,0,0,0,0,0)),46: StatusEffect("Ill II",Stats(-30,0,0,0,0,0,0,0)),47: StatusEffect("Ill III",Stats(-45,0,0,0,0,0,0,0)),48: StatusEffect("Lethargic I",Stats(0,-15,0,0,0,0,0,0)),49: StatusEffect("Lethargic II",Stats(0,-30,0,0,0,0,0,0)),50: StatusEffect("Lethargic III",Stats(0,-45,0,0,0,0,0,0)),51: StatusEffect("Weakened I",Stats(0,0,-15,0,0,0,0,0)),52: StatusEffect("Weakened II",Stats(0,0,-30,0,0,0,0,0)),53: StatusEffect("Weakened III",Stats(0,0,-45,0,0,0,0,0)),54: StatusEffect("Dulled I",Stats(0,0,0,-15,0,0,0,0)),55: StatusEffect("Dulled II",Stats(0,0,0,-30,0,0,0,0)),56: StatusEffect("Dulled III",Stats(0,0,0,-45,0,0,0,0)),57: StatusEffect("Broken I",Stats(0,0,0,0,-15,0,0,0)),58: StatusEffect("Broken II",Stats(0,0,0,0,-30,0,0,0)),59: StatusEffect("Broken III",Stats(0,0,0,0,-45,0,0,0)),60: StatusEffect("Shattered I",Stats(0,0,0,0,0,-15,0,0)),61: StatusEffect("Shattered II",Stats(0,0,0,0,0,-30,0,0)),62: StatusEffect("Shattered III",Stats(0,0,0,0,0,-45,0,0)),63: StatusEffect("Blinded I",Stats(0,0,0,0,0,0,-15,0)),64: StatusEffect("Blinded II",Stats(0,0,0,0,0,0,-30,0)),65: StatusEffect("Blinded III",Stats(0,0,0,0,0,0,-45,0)),66: StatusEffect("Sluggish I",Stats(0,0,0,0,0,0,0,-15)),67: StatusEffect("Sluggish II",Stats(0,0,0,0,0,0,0,-30)),68: StatusEffect("Sluggish III",Stats(0,0,0,0,0,0,0,-45)),69: StatusEffect("Drained I",Stats(-15,-15,0,0,0,0,0,0)),70: StatusEffect("Drained II",Stats(-30,-30,0,0,0,0,0,0)),71: StatusEffect("Drained III",Stats(-45,-45,0,0,0,0,0,0)),72: StatusEffect("Distracted I",Stats(0,0,-15,-15,0,0,-15,0)),73: StatusEffect("Distracted II",Stats(0,0,-30,-30,0,0,-30,0)),74: StatusEffect("Distracted III",Stats(0,0,-45,-45,0,0,-45,0)),75: StatusEffect("Offguard I",Stats(0,0,0,0,-15,-15,0,-15)),76: StatusEffect("Offguard II",Stats(0,0,0,0,-30,-30,0,-30)),77: StatusEffect("Offguard III",Stats(0,0,0,0,-45,-45,0,-45)),78: StatusEffect("Clumsy I",Stats(0,0,0,0,0,0,-15,-15)),79: StatusEffect("Clumsy II",Stats(0,0,0,0,0,0,-30,-30)),80: StatusEffect("Clumsy III",Stats(0,0,0,0,0,0,-45,-45)),81: StatusEffect("Poisoned I",Stats(-15,0,-15,0,-15,0,0,0)),82: StatusEffect("Poisoned II",Stats(-30,0,-30,0,-30,0,0,0)),83: StatusEffect("Poisoned III",Stats(-45,0,-45,0,-45,0,0,0)),84: StatusEffect("Cursed I",Stats(0,-15,0,-15,0,-15,0,0)),85: StatusEffect("Cursed II",Stats(0,-30,0,-30,0,-30,0,0)),86: StatusEffect("Cursed III",Stats(0,-45,0,-45,0,-45,0,0)),87: StatusEffect("Empowered I",Stats(-15,-15,-15,-15,-15,-15,-15,-15)),88: StatusEffect("Empowered II",Stats(-30,-30,-30,-30,-30,-30,-30,-30)),89: StatusEffect("Empowered III",Stats(-45,-45,-45,-45,-45,-45,-45,-45)),90: StatusEffect("Defending",Stats(0,0,0,0,50,50,0,0)),91: StatusEffect("Evading",Stats(0,0,0,0,0,0,0,50)),92: StatusEffect("Burn",Stats(-1,0,0,0,0,0,0,0)),93: StatusEffect("Blaze",Stats(-2,0,0,0,0,0,0,0)),94: StatusEffect("Scorch",Stats(-3,0,0,0,0,0,0,0)),95: StatusEffect("Wet",Stats(0,0,0,0,-10,-10,0,0)),96: StatusEffect("Soak",Stats(0,0,0,0,-20,-20,0,0)),97: StatusEffect("Drench",Stats(0,0,0,0,-30,-30,0,0)),98: StatusEffect("Frozen",Stats(0,0,0,0,0,0,-2,-2)),99: StatusEffect("Frostbite",Stats(0,0,0,0,0,0,-4,-4)),100: StatusEffect("Frostburn",Stats(0,0,0,0,0,0,-6,-6)),101: StatusEffect("Refreshing",Stats(0,0,0,0,0,0,0,0)),102: StatusEffect("Regrowing",Stats(0,0,0,0,0,0,0,0)),103: StatusEffect("Renewing",Stats(0,0,0,0,0,0,0,0)),104: StatusEffect("Napping",Stats(0,0,0,0,0,0,0,0)),105: StatusEffect("Resting",Stats(0,0,0,0,0,0,0,0)),106: StatusEffect("Relaxing",Stats(0,0,0,0,0,0,0,0)),
 }
 
-# Contains the list for fire-related status effects.
-fireStatusEffects = [
-	statusEffectsList[92],
-	statusEffectsList[93],
-	statusEffectsList[94]
-]
-
-# Contains the list for water-related status effects.
-waterStatusEffects = [
-	statusEffectsList[95],
-	statusEffectsList[96],
-	statusEffectsList[97]
-]
-
-# Contains the list for ice-related status effects.
-iceStatusEffects = [
-	statusEffectsList[98],
-	statusEffectsList[99],
-	statusEffectsList[100]
-]
-
-# Contains the list for HP-regen-related status effects.
-hpRegenStatusEffects = [
-	statusEffectsList[101],
-	statusEffectsList[102],
-	statusEffectsList[103]
-]
-
-# Contains the list for MP-regen-related status effects.
-mpRegenStatusEffects = [
-	statusEffectsList[104],
-	statusEffectsList[105],
-	statusEffectsList[106]
-]
-
 # Contains the list for equipment.
 equipmentList = {
 	0:Equipment(equipmentSlots[0],"Empty-handed",elements[0],Stats(0,0,0,0,0,0,0,0)),1:Equipment(equipmentSlots[1],"Naked",elements[0],Stats(0,0,0,0,0,0,0,0)),2:Equipment(equipmentSlots[0],"Sword",elements[1],Stats(0,0,5,0,0,0,0,0)),3:Equipment(equipmentSlots[1],"Chestplate",elements[1],Stats(0,0,0,0,5,0,0,0)),4:Equipment(equipmentSlots[0],"Dagger",elements[1],Stats(0,0,0,0,0,0,1,1)),5:Equipment(equipmentSlots[1],"Tunic",elements[1],Stats(0,0,0,0,0,0,1,1)),6:Equipment(equipmentSlots[0],"Staff",elements[1],Stats(0,0,0,5,0,0,0,0)),7:Equipment(equipmentSlots[1],"Robes",elements[1],Stats(0,0,0,0,0,5,0,0)),
@@ -853,38 +688,54 @@ equipmentList = {
 skillsList = {
 	0: Skill(),
 	1: Skill(
+		name = "Skip",
+		skillType = 0,
+		statType = 0,
+		element = 0,
+		mpChange = 25,
+		targetingTypeA = 1,
+		targetingTypeB = None,
+		basePowerA = 0.00,
+		basePowerB = None,
+		accuracyMod = 100,
+		critChance = 0.00,
+		randomMod = 0.00,
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	2: Skill(
 		name = "Defend",
 		skillType = 4,
 		statType = 0,
-		element = 1,
+		element = 0,
 		mpChange = 0,
 		targetingTypeA = 1,
 		targetingTypeB = None,
-		basePowerA = None,
+		basePowerA = 0.00,
 		basePowerB = None,
-		accuracyMod = 1.00,
+		accuracyMod = 100.00,
 		critChance = 0.00,
-		randomMod = 0.10,
+		randomMod = 0.00,
 		statusEffect = 90,
 		statusEffectDuration = 3
 	),
-	2: Skill(
+	3: Skill(
 		name = "Evade",
 		skillType = 4,
 		statType = 0,
-		element = 1,
+		element = 0,
 		mpChange = 0,
 		targetingTypeA = 1,
 		targetingTypeB = None,
-		basePowerA = None,
+		basePowerA = 0.00,
 		basePowerB = None,
-		accuracyMod = 1.00,
+		accuracyMod = 100.00,
 		critChance = 0.00,
-		randomMod = 0.10,
+		randomMod = 0.00,
 		statusEffect = 91,
 		statusEffectDuration = 3
 	),
-	3: Skill(
+	4: Skill(
 		name = "Basic Attack A",
 		skillType = 1,
 		statType = 1,
@@ -900,7 +751,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	4: Skill(
+	5: Skill(
 		name = "Basic Attack B",
 		skillType = 1,
 		statType = 1,
@@ -916,7 +767,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	5: Skill(
+	6: Skill(
 		name = "Basic Attack C",
 		skillType = 1,
 		statType = 2,
@@ -932,7 +783,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	6: Skill(
+	7: Skill(
 		name = "Basic Attack D",
 		skillType = 1,
 		statType = 2,
@@ -948,7 +799,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	7: Skill(
+	8: Skill(
 		name = "Self-heal",
 		skillType = 2,
 		statType = 2,
@@ -964,7 +815,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	8: Skill(
+	9: Skill(
 		name = "Heal A",
 		skillType = 2,
 		statType = 2,
@@ -980,7 +831,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	9: Skill(
+	10: Skill(
 		name = "Heal B",
 		skillType = 2,
 		statType = 2,
@@ -996,7 +847,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	10: Skill(
+	11: Skill(
 		name = "Revive A",
 		skillType = 3,
 		statType = 2,
@@ -1012,7 +863,7 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
-	11: Skill(
+	12: Skill(
 		name = "Revive B",
 		skillType = 3,
 		statType = 2,
@@ -1041,7 +892,7 @@ playersList = {
 	1: PlayerCharacter(
 		name = "Monkey A",
 		stats = Stats(550, 100, 55, 50, 55, 50, 20, 20),
-		skills = [3, 4],
+		skills = [4, 5],
 		weapon = 2,
 		armor = 3,
 		inventory = "050100050100"
@@ -1049,7 +900,7 @@ playersList = {
 	2: PlayerCharacter(
 		name = "Monkey B",
 		stats = Stats(450, 100, 50, 50, 50, 50, 25, 25),
-		skills = [5, 6],
+		skills = [6, 7],
 		weapon = 4,
 		armor = 5,
 		inventory = "050100050100"
@@ -1057,7 +908,7 @@ playersList = {
 	3: PlayerCharacter(
 		name = "Monkey C",
 		stats = Stats(500, 100, 50, 55, 50, 55, 20, 20),
-		skills = [7, 8, 9, 10, 11],
+		skills = [8, 9, 10, 11, 12],
 		weapon = 6,
 		armor = 7,
 		inventory = "050100050100"
@@ -1074,17 +925,17 @@ enemiesList = {
 	1: [
 		"Enemy A",
 		[1500, 55, 50, 55, 50, 20, 20],
-		[3, 4]
+		[4, 5]
 	],
 	2: [
 		"Enemy B",
 		[750, 50, 50, 50, 50, 25, 25],
-		[5, 6]
+		[6, 7]
 	],
 	3: [
 		"Enemy C",
 		[1000, 50, 55, 50, 55, 20, 20],
-		[7, 8, 9]
+		[8, 9, 10]
 	],
 }
 
@@ -1433,35 +1284,6 @@ def startBattle():
 		enemiesAlive[i] = True
 		enemiesHaveMoved[i] = False
 
-	# if (regionBattle % 10 != 5 and regionBattle % 10 != 0):
-	# 	numOfEnemies = random.randint(1, 3)
-	# 	for i in range(numOfEnemies):
-	# 		possibleEnemyKeys = []
-	# 		for possibleEnemyKey in enemyData["region"]:
-	# 			if (int(enemyData["region"][possibleEnemyKey]) == (gameRegion % 3)):
-	# 				possibleEnemyKeys.append(possibleEnemyKey)
-	# 		currentEnemyKey = random.choice(possibleEnemyKeys)
-	# 		currentEnemyName = enemyNames[currentEnemyKey]
-	# 		currentEnemyRegion = enemyData["region"][currentEnemyKey]
-	# 		currentEnemyBaseStats = enemyData["baseStats"][currentEnemyKey]
-	# 		currentEnemySkills = enemyData["skills"][currentEnemyKey]
-	# 		currentEnemies[i] = Enemy(currentEnemyName, currentEnemyRegion, currentEnemyBaseStats, currentEnemySkills)
-	# 		enemiesAlive[i] = True
-	# 		enemiesHaveMoved[i] = False
-	# else:
-	# 	possibleBossKeys = []
-	# 	for possibleBossKey in bossData["region"]:
-	# 		if (int(bossData["region"][possibleBossKey]) == (gameRegion % 3)):
-	# 			possibleBossKeys.append(possibleBossKey)
-	# 	currentBossKey = random.choice(possibleBossKeys)
-	# 	currentBossName = bossNames[currentBossKey]
-	# 	currentBossRegion = bossData["region"][currentBossKey]
-	# 	currentBossBaseStats = bossData["baseStats"][currentBossKey]
-	# 	currentBossSkills = bossData["skills"][currentBossKey]
-	# 	currentEnemies[0] = Enemy(currentBossName, currentBossRegion, currentBossBaseStats, currentBossSkills)
-	# 	enemiesAlive[0] = True
-	# 	enemiesHaveMoved[0] = False
-
 	clearScreen()
 	proceduralPrint("You encountered a group of enemies!", "")
 	progressBattleTurn()
@@ -1669,7 +1491,6 @@ def renderBattleStatusMenu():
 		allEnemyTexts.append(currentEnemyText)
 		allEnemyBars.append(currentEnemyBar)
 
-	print("\n", end="")
 	print(battleUIRowDivider())
 
 	print(battleUIRow(playerFocusBar, 0) + battleUIRow(playerProgressText, 1))
@@ -1709,7 +1530,7 @@ def renderBattleActionMenu():
 		for i in range(len(currentPlayers)):
 			if (not (selectedPlayer == i) and currentPlayers[i] != None and not playersHaveMoved[i]):
 				print(quickSwitchButtons[i].upper() + ". Switch to " + currentPlayers[i].name)
-		print("`. Skip")
+		print("`. " + skillsList[1].name + " (+" + str(skillsList[1].mpChange) + " MP)")
 
 		try:
 			userInput = input("> ")
@@ -1722,21 +1543,16 @@ def renderBattleActionMenu():
 				elif (userInput == 3):
 					renderScanMenu()
 				elif (userInput == 8):
-					defendSkillData = skillsList[1]
-					castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], Skill(defendSkillData[0],defendSkillData[1],defendSkillData[2],defendSkillData[3],defendSkillData[4],defendSkillData[5],defendSkillData[6],defendSkillData[7],defendSkillData[8],defendSkillData[9],defendSkillData[10],defendSkillData[11],defendSkillData[12],defendSkillData[13],defendSkillData[14],defendSkillData[15]), 0)
+					castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], skillsList[2], 0)
 				elif (userInput == 9):
-					evadeSkillData = skillsList[2]
-					castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], Skill(evadeSkillData[0],evadeSkillData[1],evadeSkillData[2],evadeSkillData[3],evadeSkillData[4],evadeSkillData[5],evadeSkillData[6],evadeSkillData[7],evadeSkillData[8],evadeSkillData[9],evadeSkillData[10],evadeSkillData[11],evadeSkillData[12],evadeSkillData[13],evadeSkillData[14],evadeSkillData[15]), 0)
+					castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], skillsList[3], 0)
 			elif (userInput.lower() in quickSwitchButtons):
 				for i in range(len(currentPlayers)):
 					if (userInput.lower() == quickSwitchButtons[i] and not (selectedPlayer == i) and currentPlayers[i] != None and not playersHaveMoved[i]):
 						selectedPlayer = i
 						break
 			elif (userInput == "`"):
-				playersHaveMoved[selectedPlayer] = True
-				clearScreen()
-				renderBattleStatusMenu()
-				proceduralPrint("\n" + str(currentPlayers[selectedPlayer].name) + " skipped their turn.", "")
+				castSkill([currentPlayers[selectedPlayer]], currentPlayers[selectedPlayer], skillsList[1], 0)
 		except:
 			continue
 
@@ -2225,30 +2041,6 @@ def progressBattleTurn():
 			enemiesHaveMoved[i] = False
 		elif (not enemiesAlive[i] and enemiesAlive[i] != None):
 			enemiesHaveMoved[i] = True
-
-	for i in range(len(currentPlayers)):
-		if (currentPlayers[i] != None):
-			for currentStatusEffect in currentPlayers[i].statusEffects:
-				if (currentStatusEffect in fireStatusEffects):
-					if (currentStatusEffect == fireStatusEffects[0]):
-						currentPlayers[i].curHP -= (2/100) * currentPlayers[i].maxHP
-					if (currentStatusEffect == fireStatusEffects[1]):
-						currentPlayers[i].curHP -= (4/100) * currentPlayers[i].maxHP
-					if (currentStatusEffect == fireStatusEffects[2]):
-						currentPlayers[i].curHP -= (6/100) * currentPlayers[i].maxHP
-		else:
-			continue
-
-	for i in range(len(currentEnemies)):
-		if (currentEnemies[i] != None):
-			for currentStatusEffect in currentEnemies[i].statusEffects:
-				if (currentStatusEffect in fireStatusEffects):
-					if (currentStatusEffect == fireStatusEffects[0]):
-						currentEnemies[i].curHP -= (2/100) * currentEnemies[i].maxHP
-					if (currentStatusEffect == fireStatusEffects[1]):
-						currentEnemies[i].curHP -= (4/100) * currentEnemies[i].maxHP
-					if (currentStatusEffect == fireStatusEffects[2]):
-						currentEnemies[i].curHP -= (6/100) * currentEnemies[i].maxHP
 		else:
 			continue
 
