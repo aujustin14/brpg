@@ -372,7 +372,6 @@ class PlayerCharacter:
 
 		self.skills = skills
 
-
 		self.itemInventory = [
 			int(inventory[0:2]),
 			int(inventory[2:4]),
@@ -436,24 +435,14 @@ class PlayerCharacter:
 			self.curMP = 0
 
 
-class Enemy:
-	def __init__(self, currentName, currentBaseStats, skills):
-		self.name = currentName
-		self.currentClass = currentName
+class EnemyCharacter:
+	def __init__(self, name="Null", stats=Stats(), skills=[]):
+		self.name = name
 		# levelConstant = gameRegion * regionBattle
 		self.currentLevel = random.choice([max(1, partyLevel - 1), max(1, partyLevel - 1), max(1, partyLevel - 1), partyLevel, partyLevel, partyLevel, partyLevel, min(maxPlayerLevel, partyLevel + 1)])
 		self.curHP = 1
 
-		self.baseStats = Stats(
-			round(currentBaseStats[0]),
-			0,
-			round(currentBaseStats[1]),
-			round(currentBaseStats[2]),
-			round(currentBaseStats[3]),
-			round(currentBaseStats[4]),
-			round(currentBaseStats[5]),
-			round(currentBaseStats[6])
-		)
+		self.baseStats = stats
 
 		self.leveledUpStats = Stats(
 			round(self.baseStats.hp * (1.05 ** (self.currentLevel - 1))),
@@ -465,16 +454,6 @@ class Enemy:
 			round(self.baseStats.accuracy * (1.05 ** (self.currentLevel - 1))),
 			round(self.baseStats.evade * (1.05 ** (self.currentLevel - 1)))
 		)
-
-		# self.levelUpStats = Stats(
-		# 	1.05,
-		# 	1.05,
-		# 	1.05,
-		# 	1.05,
-		# 	1.05,
-		# 	1.05,
-		# 	1.05
-		# )
 
 		self.skills = skills
 
@@ -517,7 +496,7 @@ class Enemy:
 
 		self.totalStats = Stats(
 			round(self.leveledUpStats.hp * (self.statusEffectStats.hp / 100)),
-			0,
+			1,
 			round(self.leveledUpStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100)),
 			round(self.leveledUpStats.magicAttack * (self.statusEffectStats.magicAttack / 100)),
 			round(self.leveledUpStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100)),
@@ -905,26 +884,22 @@ playersList = {
 
 # Contains the list for enemies.
 enemiesList = {
-	0: [
-		"",
-		[1, 1, 1, 1, 1, 1, 1],
-		[]
-	],
-	1: [
-		"Enemy A",
-		[1500, 55, 50, 55, 50, 20, 20],
-		[4, 5]
-	],
-	2: [
-		"Enemy B",
-		[750, 50, 50, 50, 50, 25, 25],
-		[6, 7]
-	],
-	3: [
-		"Enemy C",
-		[1000, 50, 55, 50, 55, 20, 20],
-		[8, 9, 10]
-	],
+	0: EnemyCharacter(),
+	1: EnemyCharacter(
+		name = "Bloon A",
+		stats = Stats(1500, 1, 50, 55, 50, 20, 20),
+		skills = [4, 5]
+	),
+	2: EnemyCharacter(
+		name = "Bloon B",
+		stats = Stats(750, 1, 50, 50, 50, 25, 25),
+		skills = [6, 7]
+	),
+	3: EnemyCharacter(
+		name = "Bloon C",
+		stats = Stats(1000, 1, 55, 50, 55, 20, 20),
+		skills = [8, 9, 10]
+	),
 }
 
 # Contains the list for inn actions.
@@ -1267,8 +1242,7 @@ def startBattle():
 	# numOfEnemyCharacters = random.randint(1, 3)
 	numOfEnemyCharacters = 2
 	for i in range(numOfEnemyCharacters):
-		entityData = enemiesList[random.randint(1, 3)]
-		currentEnemies[i] = Enemy(entityData[0], entityData[1], entityData[2])
+		currentEnemies[i] = enemiesList[random.randint(1, 3)]
 		enemiesAlive[i] = True
 		enemiesHaveMoved[i] = False
 
@@ -1457,7 +1431,7 @@ def renderBattleStatusMenu():
 			currentPlayerBar = ""
 
 		if (currentEnemies[i] != None and enemiesAlive[i]):
-			currentEnemyName = "LV " + str(currentEnemies[i].currentLevel) + " " + currentEnemies[i].currentClass
+			currentEnemyName = "LV " + str(currentEnemies[i].currentLevel) + " " + currentEnemies[i].name
 			currentEnemyCurHP = currentEnemies[i].curHP
 			currentEnemyMaxHP = currentEnemies[i].maxHP
 
