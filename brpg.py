@@ -352,7 +352,7 @@ class Item:
 
 
 class PlayerCharacter:
-	def __init__(self, name="Null", stats=Stats(), skills=[], weapon=0, armor=1, inventory="050100050100"):
+	def __init__(self, name="Null", stats=Stats(), skills=[], inventory="050100050100"):
 		self.name = name
 		self.curHP = 1
 		self.curMP = 1
@@ -372,8 +372,6 @@ class PlayerCharacter:
 
 		self.skills = skills
 
-		self.weapon = equipmentList[weapon]
-		self.armor = equipmentList[armor]
 
 		self.itemInventory = [
 			int(inventory[0:2]),
@@ -413,14 +411,14 @@ class PlayerCharacter:
 			self.statusEffectStats += self.statusEffects[i].effect
 
 		self.totalStats = Stats(
-			round((self.leveledUpStats.hp + self.weapon.stats.hp + self.armor.stats.hp) * (self.statusEffectStats.hp / 100)),
-			round((self.leveledUpStats.mp + self.weapon.stats.mp + self.armor.stats.mp) * (self.statusEffectStats.mp / 100)),
-			round((self.leveledUpStats.ballisticAttack + self.weapon.stats.ballisticAttack + self.armor.stats.ballisticAttack) * (self.statusEffectStats.ballisticAttack / 100)),
-			round((self.leveledUpStats.magicAttack + self.weapon.stats.magicAttack + self.armor.stats.magicAttack) * (self.statusEffectStats.magicAttack / 100)),
-			round((self.leveledUpStats.ballisticDefense + self.weapon.stats.ballisticDefense + self.armor.stats.ballisticDefense) * (self.statusEffectStats.ballisticDefense / 100)),
-			round((self.leveledUpStats.magicDefense + self.weapon.stats.magicDefense + self.armor.stats.magicDefense) * (self.statusEffectStats.magicDefense / 100)),
-			round((self.leveledUpStats.accuracy + self.weapon.stats.accuracy + self.armor.stats.accuracy) * (self.statusEffectStats.accuracy / 100)),
-			round((self.leveledUpStats.evade + self.weapon.stats.evade + self.armor.stats.evade) * (self.statusEffectStats.evade / 100))
+			round(self.leveledUpStats.hp * (self.statusEffectStats.hp / 100)),
+			round(self.leveledUpStats.mp * (self.statusEffectStats.mp / 100)),
+			round(self.leveledUpStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100)),
+			round(self.leveledUpStats.magicAttack * (self.statusEffectStats.magicAttack / 100)),
+			round(self.leveledUpStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100)),
+			round(self.leveledUpStats.magicDefense * (self.statusEffectStats.magicDefense / 100)),
+			round(self.leveledUpStats.accuracy * (self.statusEffectStats.accuracy / 100)),
+			round(self.leveledUpStats.evade * (self.statusEffectStats.evade / 100))
 		)
 
 		self.curHP = int(self.totalStats.hp * healthRatio)
@@ -479,10 +477,6 @@ class Enemy:
 		# )
 
 		self.skills = skills
-
-
-		# self.weapon = equipmentList[0]
-		# self.armor = equipmentList[1]
 
 		self.statusEffects = []
 		self.statusEffectDurations = []
@@ -893,24 +887,18 @@ playersList = {
 		name = "Monkey A",
 		stats = Stats(550, 100, 55, 50, 55, 50, 20, 20),
 		skills = [4, 5],
-		weapon = 2,
-		armor = 3,
 		inventory = "050100050100"
 	),
 	2: PlayerCharacter(
 		name = "Monkey B",
 		stats = Stats(450, 100, 50, 50, 50, 50, 25, 25),
 		skills = [6, 7],
-		weapon = 4,
-		armor = 5,
 		inventory = "050100050100"
 	),
 	3: PlayerCharacter(
 		name = "Monkey C",
 		stats = Stats(500, 100, 50, 55, 50, 55, 20, 20),
 		skills = [8, 9, 10, 11, 12],
-		weapon = 6,
-		armor = 7,
 		inventory = "050100050100"
 	),
 }
@@ -1906,9 +1894,7 @@ def renderPlayerScanMenu():
 		print("\n" + currentPlayers[selectedPlayer].name + " > Scan > " + currentPlayers[selectedPlayer].name)
 		print("-" * len(currentPlayers[selectedPlayer].name) + "----------" + "-" * len(currentPlayers[selectedPlayer].name))
 		print("1. Base Stats")
-		print("2. Weapon")
-		print("3. Armor")
-		print("4. Status Effects")
+		print("2. Status Effects")
 		print("`. Back")
 
 		try:
@@ -1919,12 +1905,6 @@ def renderPlayerScanMenu():
 					proceduralPrint("\nBase Stats\n" + str(currentPlayers[0].baseStats), "\n")
 					scanningPlayerCharacter = False
 				elif (userInput == 2):
-					proceduralPrint("\n" + str(currentPlayers[0].weapon), "\n")
-					scanningPlayerCharacter = False
-				elif (userInput == 3):
-					proceduralPrint("\n" + str(currentPlayers[0].armor), "\n")
-					scanningPlayerCharacter = False
-				elif (userInput == 4):
 					statusEffectsString = ""
 					if (len(currentPlayers[0].statusEffects) > 0):
 						for i in range(len(currentPlayers[0].statusEffects)):
@@ -2360,9 +2340,6 @@ def castSkill(target, user, skill, version):
 			userAttackStat = 1
 			for i in range(len(target)):
 				targetDefenseStat.append(1)
-
-		if (skill.element == elements[5]):
-			skill.element = user.weapon.element
 
 		totalPotentialDamage = []
 		totalHitRequirement = []
