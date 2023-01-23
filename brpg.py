@@ -4,27 +4,14 @@ import random
 import math
 import openpyxl
 import pyperclip
+import copy
 
 """
 todo:
-	main focus
-		- refactor combat logic
-		- redo lists of data for objects
-
 	high priority
-		- implement alt skills
-		- implement skill leveling
-		- implement equipment leveling
-		- redo inventory and item system
-		- redo enemy class
-		- add more comments
-		- improve enemy ai
-		- balance damage, healing, and leveling
-		- add more things to the town menu
-		- implement saving/loading
-		- create more items, item types, skills, and status effects
-		- add more enemy/boss types
-		- improve title screen
+		- refactor combat logic
+		- rework status effects
+		- rework inventory
 	low priority
 """
 
@@ -91,7 +78,7 @@ def levelUpUIRow(value, mode):
 		currentRow += "\t " + "{:q>4}".format(str(value.accuracy))
 		currentRow += "\t " + "{:q>4}".format(str(value.evade))
 		currentRow += "\t\t|"
-		
+
 		for i in range(len(currentRow)):
 			if (currentRow[i] == "q"):
 				currentRow = currentRow[0:i] + " " + currentRow[i+1:len(currentRow)]
@@ -146,56 +133,53 @@ def formatText(text, alignment, length):
 
 # Initialize classes #
 class Stats:
-	def __init__(self, hp=1, mp=1, ballisticAttack=1, magicAttack=1, ballisticDefense=1, magicDefense=1, accuracy=1, evade=1):
-		self.hp = hp
-		self.mp = mp
-		self.ballisticAttack = ballisticAttack
-		self.magicAttack = magicAttack
-		self.ballisticDefense = ballisticDefense
-		self.magicDefense = magicDefense
-		self.accuracy = accuracy
-		self.evade = evade
-	
-	# def __repr__(self):
-	# 	return "HP: " + str(self.hp) + "\nMP: " + str(self.mp) + "\nM. Att.: " + str(self.ballisticAttack) + "\nR. Att.: " + str(self.magicAttack) + "\nM. Def.: " + str(self.ballisticDefense) + "\nR. Def.: " + str(self.magicDefense) + "\nAcc.: " + str(self.accuracy) + "\nEva.: " + str(self.evade)
+	def __init__(self, hp=1, mp=1, ballisticAttack=1, magicAttack=1, ballisticDefense=1, magicDefense=1, accuracy=1, evade=1, every=1):
+		self.hp = every if (every != 1 and hp == 1) else hp
+		self.mp = every if (every != 1 and mp == 1) else mp
+		self.ballisticAttack = every if (every != 1 and ballisticAttack == 1) else ballisticAttack
+		self.magicAttack = every if (every != 1 and magicAttack == 1) else magicAttack
+		self.ballisticDefense = every if (every != 1 and ballisticDefense == 1) else ballisticDefense
+		self.magicDefense = every if (every != 1 and magicDefense == 1) else magicDefense
+		self.accuracy = every if (every != 1 and accuracy == 1) else accuracy
+		self.evade = every if (every != 1 and evade == 1) else evade
 
 	def __add__(self, other):
 		totalHP = self.hp
 		totalMP = self.mp
-		totalMeleeAttack = self.ballisticAttack
-		totalRangedAttack = self.magicAttack
-		totalMeleeDefense = self.ballisticDefense
-		totalRangedDefense = self.magicDefense
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
 		totalAccuracy = self.accuracy
 		totalEvade = self.evade
 
 		if (type(other) is int):
 			totalHP += other
 			totalMP += other
-			totalMeleeAttack += other
-			totalRangedAttack += other
-			totalMeleeDefense += other
-			totalRangedDefense += other
+			totalBallisticAttack += other
+			totalMagicAttack += other
+			totalBallisticDefense += other
+			totalMagicDefense += other
 			totalAccuracy += other
 			totalEvade += other
 
 		elif (type(other) is Stats):
 			totalHP += other.hp
 			totalMP += other.mp
-			totalMeleeAttack += other.ballisticAttack
-			totalRangedAttack += other.magicAttack
-			totalMeleeDefense += other.ballisticDefense
-			totalRangedDefense += other.magicDefense
+			totalBallisticAttack += other.ballisticAttack
+			totalMagicAttack += other.magicAttack
+			totalBallisticDefense += other.ballisticDefense
+			totalMagicDefense += other.magicDefense
 			totalAccuracy += other.accuracy
 			totalEvade += other.evade
 
 		return Stats(
 			totalHP,
 			totalMP,
-			totalMeleeAttack,
-			totalRangedAttack,
-			totalMeleeDefense,
-			totalRangedDefense,
+			totalBallisticAttack,
+			totalMagicAttack,
+			totalBallisticDefense,
+			totalMagicDefense,
 			totalAccuracy,
 			totalEvade
 		)
@@ -203,54 +187,43 @@ class Stats:
 	def __sub__(self, other):
 		totalHP = self.hp
 		totalMP = self.mp
-		totalMeleeAttack = self.ballisticAttack
-		totalRangedAttack = self.magicAttack
-		totalMeleeDefense = self.ballisticDefense
-		totalRangedDefense = self.magicDefense
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
 		totalAccuracy = self.accuracy
 		totalEvade = self.evade
 
 		if (type(other) is int):
 			totalHP -= other
 			totalMP -= other
-			totalMeleeAttack -= other
-			totalRangedAttack -= other
-			totalMeleeDefense -= other
-			totalRangedDefense -= other
+			totalBallisticAttack -= other
+			totalMagicAttack -= other
+			totalBallisticDefense -= other
+			totalMagicDefense -= other
 			totalAccuracy -= other
 			totalEvade -= other
 
 		elif (type(other) is Stats):
 			totalHP -= other.hp
 			totalMP -= other.mp
-			totalMeleeAttack -= other.ballisticAttack
-			totalRangedAttack -= other.magicAttack
-			totalMeleeDefense -= other.ballisticDefense
-			totalRangedDefense -= other.magicDefense
+			totalBallisticAttack -= other.ballisticAttack
+			totalMagicAttack -= other.magicAttack
+			totalBallisticDefense -= other.ballisticDefense
+			totalMagicDefense -= other.magicDefense
 			totalAccuracy -= other.accuracy
 			totalEvade -= other.evade
 
 		return Stats(
 			totalHP,
 			totalMP,
-			totalMeleeAttack,
-			totalRangedAttack,
-			totalMeleeDefense,
-			totalRangedDefense,
+			totalBallisticAttack,
+			totalMagicAttack,
+			totalBallisticDefense,
+			totalMagicDefense,
 			totalAccuracy,
 			totalEvade
 		)
-
-
-class Equipment:
-	def __init__(self, slot, name, element, stats):
-		self.slot = slot
-		self.name = name
-		self.element = element
-		self.stats = stats
-	
-	# def __repr__(self):
-	# 	return str(self.slot) + "\n" + str(self.name) + "\nLV " + str(self.level) + "\n" + str(self.element) + "\n" + str(self.stats)
 
 
 class StatusEffect:
@@ -263,19 +236,20 @@ class StatusEffect:
 
 
 class Skill:
-	def __init__(self, name="Null", skillType=0, statType=0, element=0, mpChange=0, targetingTypeA=None, targetingTypeB=None, basePowerA=None, basePowerB=None, accuracyMod=0.00, critChance=0.00, randomMod=0.00, statusEffect=None, statusEffectDuration=0):
+	def __init__(self, name="Null", skillType=0, statType=0, element=0, mpChange=0, targetingTypeA=None, basePowerA=None, targetingTypeB=None, basePowerB=None, accuracyMod=0.00, critChance=0.00, randomMod=0.00, buffDebuff=None, statusEffect=None, statusEffectDuration=0):
 		self.name = str(name)
 		self.skillType = skillTypes[skillType]
 		self.statType = statTypes[statType]
 		self.element = elements[element]
 		self.mpChange = mpChange
 		self.targetingTypeA = targetingTypes[targetingTypeA] if (targetingTypeA != None) else None
-		self.targetingTypeB = targetingTypes[targetingTypeB] if (targetingTypeB != None) else None
 		self.basePowerA = basePowerA
+		self.targetingTypeB = targetingTypes[targetingTypeB] if (targetingTypeB != None) else None
 		self.basePowerB = basePowerB
 		self.accuracyMod = accuracyMod
 		self.critChance = critChance
 		self.randomMod = randomMod
+		self.buffDebuff = buffDebuff
 		if (statusEffect != None):
 			self.statusEffect = statusEffectsList[statusEffect]
 		else:
@@ -381,6 +355,8 @@ class PlayerCharacter:
 			int(inventory[10:12])
 		]
 
+		self.buffsDebuffs = Stats(100, 100, 100, 100, 100, 100, 100, 100)
+
 		self.statusEffects = []
 		self.statusEffectDurations = []
 
@@ -396,30 +372,19 @@ class PlayerCharacter:
 		healthRatio = self.curHP / self.totalStats.hp
 		manaRatio = self.curMP / self.totalStats.mp
 
-		self.statusEffectStats = Stats(
-			100,
-			100,
-			100,
-			100,
-			100,
-			100,
-			100,
-			100
-		)
-		for i in range(len(self.statusEffects)):
-			self.statusEffectStats += self.statusEffects[i].effect
-
 		self.totalStats = Stats(
-			round(self.leveledUpStats.hp * (self.statusEffectStats.hp / 100)),
-			round(self.leveledUpStats.mp * (self.statusEffectStats.mp / 100)),
-			round(self.leveledUpStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100)),
-			round(self.leveledUpStats.magicAttack * (self.statusEffectStats.magicAttack / 100)),
-			round(self.leveledUpStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100)),
-			round(self.leveledUpStats.magicDefense * (self.statusEffectStats.magicDefense / 100)),
-			round(self.leveledUpStats.accuracy * (self.statusEffectStats.accuracy / 100)),
-			round(self.leveledUpStats.evade * (self.statusEffectStats.evade / 100))
+			round(self.leveledUpStats.hp * (self.buffsDebuffs.hp / 100)),
+			round(self.leveledUpStats.mp * (self.buffsDebuffs.mp / 100)),
+			round(self.leveledUpStats.ballisticAttack * (self.buffsDebuffs.ballisticAttack / 100)),
+			round(self.leveledUpStats.magicAttack * (self.buffsDebuffs.magicAttack / 100)),
+			round(self.leveledUpStats.ballisticDefense * (self.buffsDebuffs.ballisticDefense / 100)),
+			round(self.leveledUpStats.magicDefense * (self.buffsDebuffs.magicDefense / 100)),
+			round(self.leveledUpStats.accuracy * (self.buffsDebuffs.accuracy / 100)),
+			round(self.leveledUpStats.evade * (self.buffsDebuffs.evade / 100))
 		)
 
+		self.maxHP = self.totalStats.hp
+		self.maxMP = self.totalStats.mp
 		self.curHP = int(self.totalStats.hp * healthRatio)
 		self.curMP = int(self.totalStats.mp * manaRatio)
 
@@ -457,6 +422,8 @@ class EnemyCharacter:
 
 		self.skills = skills
 
+		self.buffsDebuffs = Stats(100, 100, 100, 100, 100, 100, 100, 100)
+
 		self.statusEffects = []
 		self.statusEffectDurations = []
 
@@ -470,41 +437,18 @@ class EnemyCharacter:
 	def evaluateTotalStats(self):
 		healthRatio = self.curHP / self.totalStats.hp
 
-		self.statusEffectStats = Stats(
-			100,
-			0,
-			100,
-			100,
-			100,
-			100,
-			100,
-			100
-		)
-		for i in range(len(self.statusEffects)):
-			self.statusEffectStats += self.statusEffects[i].effect
-
-		# self.totalStats = Stats(
-		# 	superRound(self.baseStats.hp * (self.statusEffectStats.hp / 100), int),
-		# 	superRound(self.baseStats.mp * (self.statusEffectStats.mp / 100), int),
-		# 	superRound(self.baseStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100), int),
-		# 	superRound(self.baseStats.magicAttack * (self.statusEffectStats.magicAttack / 100), int),
-		# 	superRound(self.baseStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100), int),
-		# 	superRound(self.baseStats.magicDefense * (self.statusEffectStats.magicDefense / 100), int),
-		# 	superRound(self.baseStats.accuracy * (self.statusEffectStats.accuracy / 100), int),
-		# 	superRound(self.baseStats.evade * (self.statusEffectStats.evade / 100), int)
-		# )
-
 		self.totalStats = Stats(
-			round(self.leveledUpStats.hp * (self.statusEffectStats.hp / 100)),
+			round(self.leveledUpStats.hp * (self.buffsDebuffs.hp / 100)),
 			1,
-			round(self.leveledUpStats.ballisticAttack * (self.statusEffectStats.ballisticAttack / 100)),
-			round(self.leveledUpStats.magicAttack * (self.statusEffectStats.magicAttack / 100)),
-			round(self.leveledUpStats.ballisticDefense * (self.statusEffectStats.ballisticDefense / 100)),
-			round(self.leveledUpStats.magicDefense * (self.statusEffectStats.magicDefense / 100)),
-			round(self.leveledUpStats.accuracy * (self.statusEffectStats.accuracy / 100)),
-			round(self.leveledUpStats.evade * (self.statusEffectStats.evade / 100))
+			round(self.leveledUpStats.ballisticAttack * (self.buffsDebuffs.ballisticAttack / 100)),
+			round(self.leveledUpStats.magicAttack * (self.buffsDebuffs.magicAttack / 100)),
+			round(self.leveledUpStats.ballisticDefense * (self.buffsDebuffs.ballisticDefense / 100)),
+			round(self.leveledUpStats.magicDefense * (self.buffsDebuffs.magicDefense / 100)),
+			round(self.leveledUpStats.accuracy * (self.buffsDebuffs.accuracy / 100)),
+			round(self.leveledUpStats.evade * (self.buffsDebuffs.evade / 100))
 		)
 
+		self.maxHP = self.totalStats.hp
 		self.curHP = superRound(self.totalStats.hp * healthRatio, int)
 
 	def evaluateCurrentPoints(self):
@@ -620,16 +564,6 @@ resources = {
 	6: "% HP/MP"
 }
 
-hpResources = [
-	resources[1],
-	resources[4]
-]
-
-mpResources = [
-	resources[2],
-	resources[5]
-]
-
 flatResources = [
 	resources[2],
 	resources[3],
@@ -652,11 +586,6 @@ statusEffectsList = {
 	0: StatusEffect("Healthy I",Stats(15,0,0,0,0,0,0,0)),1: StatusEffect("Healthy II",Stats(30,0,0,0,0,0,0,0)),2: StatusEffect("Healthy III",Stats(45,0,0,0,0,0,0,0)),3: StatusEffect("Energetic I",Stats(0,15,0,0,0,0,0,0)),4: StatusEffect("Energetic II",Stats(0,30,0,0,0,0,0,0)),5: StatusEffect("Energetic III",Stats(0,45,0,0,0,0,0,0)),6: StatusEffect("Strengthened I",Stats(0,0,15,0,0,0,0,0)),7: StatusEffect("Strengthened II",Stats(0,0,30,0,0,0,0,0)),8: StatusEffect("Strengthened III",Stats(0,0,45,0,0,0,0,0)),9: StatusEffect("Sharpened I",Stats(0,0,0,15,0,0,0,0)),10: StatusEffect("Sharpened II",Stats(0,0,0,30,0,0,0,0)),11: StatusEffect("Sharpened III",Stats(0,0,0,45,0,0,0,0)),12: StatusEffect("Shielded I",Stats(0,0,0,0,15,0,0,0)),13: StatusEffect("Shielded II",Stats(0,0,0,0,30,0,0,0)),14: StatusEffect("Shielded III",Stats(0,0,0,0,45,0,0,0)),15: StatusEffect("Barriered I",Stats(0,0,0,0,0,15,0,0)),16: StatusEffect("Barriered II",Stats(0,0,0,0,0,30,0,0)),17: StatusEffect("Barriered III",Stats(0,0,0,0,0,45,0,0)),18: StatusEffect("Accurate I",Stats(0,0,0,0,0,0,15,0)),19: StatusEffect("Accurate II",Stats(0,0,0,0,0,0,30,0)),20: StatusEffect("Accurate III",Stats(0,0,0,0,0,0,45,0)),21: StatusEffect("Evasive I",Stats(0,0,0,0,0,0,0,15)),22: StatusEffect("Evasive II",Stats(0,0,0,0,0,0,0,30)),23: StatusEffect("Evasive III",Stats(0,0,0,0,0,0,0,45)),24: StatusEffect("Resourceful I",Stats(15,15,0,0,0,0,0,0)),25: StatusEffect("Resourceful II",Stats(30,30,0,0,0,0,0,0)),26: StatusEffect("Resourceful III",Stats(45,45,0,0,0,0,0,0)),27: StatusEffect("Offensive I",Stats(0,0,15,15,0,0,15,0)),28: StatusEffect("Offensive II",Stats(0,0,30,30,0,0,30,0)),29: StatusEffect("Offensive III",Stats(0,0,45,45,0,0,45,0)),30: StatusEffect("Defensive I",Stats(0,0,0,0,15,15,0,15)),31: StatusEffect("Defensive II",Stats(0,0,0,0,30,30,0,30)),32: StatusEffect("Defensive III",Stats(0,0,0,0,45,45,0,45)),33: StatusEffect("Agile I",Stats(0,0,0,0,0,0,15,15)),34: StatusEffect("Agile II",Stats(0,0,0,0,0,0,30,30)),35: StatusEffect("Agile III",Stats(0,0,0,0,0,0,45,45)),36: StatusEffect("Enhanced I",Stats(15,0,15,0,15,0,0,0)),37: StatusEffect("Enhanced II",Stats(30,0,30,0,30,0,0,0)),38: StatusEffect("Enhanced III",Stats(45,0,45,0,45,0,0,0)),39: StatusEffect("Enchanted I",Stats(0,15,0,15,0,15,0,0)),40: StatusEffect("Enchanted II",Stats(0,30,0,30,0,30,0,0)),41: StatusEffect("Enchanted III",Stats(0,45,0,45,0,45,0,0)),42: StatusEffect("Empowered I",Stats(15,15,15,15,15,15,15,15)),43: StatusEffect("Empowered II",Stats(30,30,30,30,30,30,30,30)),44: StatusEffect("Empowered III",Stats(45,45,45,45,45,45,45,45)),45: StatusEffect("Ill I",Stats(-15,0,0,0,0,0,0,0)),46: StatusEffect("Ill II",Stats(-30,0,0,0,0,0,0,0)),47: StatusEffect("Ill III",Stats(-45,0,0,0,0,0,0,0)),48: StatusEffect("Lethargic I",Stats(0,-15,0,0,0,0,0,0)),49: StatusEffect("Lethargic II",Stats(0,-30,0,0,0,0,0,0)),50: StatusEffect("Lethargic III",Stats(0,-45,0,0,0,0,0,0)),51: StatusEffect("Weakened I",Stats(0,0,-15,0,0,0,0,0)),52: StatusEffect("Weakened II",Stats(0,0,-30,0,0,0,0,0)),53: StatusEffect("Weakened III",Stats(0,0,-45,0,0,0,0,0)),54: StatusEffect("Dulled I",Stats(0,0,0,-15,0,0,0,0)),55: StatusEffect("Dulled II",Stats(0,0,0,-30,0,0,0,0)),56: StatusEffect("Dulled III",Stats(0,0,0,-45,0,0,0,0)),57: StatusEffect("Broken I",Stats(0,0,0,0,-15,0,0,0)),58: StatusEffect("Broken II",Stats(0,0,0,0,-30,0,0,0)),59: StatusEffect("Broken III",Stats(0,0,0,0,-45,0,0,0)),60: StatusEffect("Shattered I",Stats(0,0,0,0,0,-15,0,0)),61: StatusEffect("Shattered II",Stats(0,0,0,0,0,-30,0,0)),62: StatusEffect("Shattered III",Stats(0,0,0,0,0,-45,0,0)),63: StatusEffect("Blinded I",Stats(0,0,0,0,0,0,-15,0)),64: StatusEffect("Blinded II",Stats(0,0,0,0,0,0,-30,0)),65: StatusEffect("Blinded III",Stats(0,0,0,0,0,0,-45,0)),66: StatusEffect("Sluggish I",Stats(0,0,0,0,0,0,0,-15)),67: StatusEffect("Sluggish II",Stats(0,0,0,0,0,0,0,-30)),68: StatusEffect("Sluggish III",Stats(0,0,0,0,0,0,0,-45)),69: StatusEffect("Drained I",Stats(-15,-15,0,0,0,0,0,0)),70: StatusEffect("Drained II",Stats(-30,-30,0,0,0,0,0,0)),71: StatusEffect("Drained III",Stats(-45,-45,0,0,0,0,0,0)),72: StatusEffect("Distracted I",Stats(0,0,-15,-15,0,0,-15,0)),73: StatusEffect("Distracted II",Stats(0,0,-30,-30,0,0,-30,0)),74: StatusEffect("Distracted III",Stats(0,0,-45,-45,0,0,-45,0)),75: StatusEffect("Offguard I",Stats(0,0,0,0,-15,-15,0,-15)),76: StatusEffect("Offguard II",Stats(0,0,0,0,-30,-30,0,-30)),77: StatusEffect("Offguard III",Stats(0,0,0,0,-45,-45,0,-45)),78: StatusEffect("Clumsy I",Stats(0,0,0,0,0,0,-15,-15)),79: StatusEffect("Clumsy II",Stats(0,0,0,0,0,0,-30,-30)),80: StatusEffect("Clumsy III",Stats(0,0,0,0,0,0,-45,-45)),81: StatusEffect("Poisoned I",Stats(-15,0,-15,0,-15,0,0,0)),82: StatusEffect("Poisoned II",Stats(-30,0,-30,0,-30,0,0,0)),83: StatusEffect("Poisoned III",Stats(-45,0,-45,0,-45,0,0,0)),84: StatusEffect("Cursed I",Stats(0,-15,0,-15,0,-15,0,0)),85: StatusEffect("Cursed II",Stats(0,-30,0,-30,0,-30,0,0)),86: StatusEffect("Cursed III",Stats(0,-45,0,-45,0,-45,0,0)),87: StatusEffect("Empowered I",Stats(-15,-15,-15,-15,-15,-15,-15,-15)),88: StatusEffect("Empowered II",Stats(-30,-30,-30,-30,-30,-30,-30,-30)),89: StatusEffect("Empowered III",Stats(-45,-45,-45,-45,-45,-45,-45,-45)),90: StatusEffect("Defending",Stats(0,0,0,0,50,50,0,0)),91: StatusEffect("Evading",Stats(0,0,0,0,0,0,0,50)),92: StatusEffect("Burn",Stats(-1,0,0,0,0,0,0,0)),93: StatusEffect("Blaze",Stats(-2,0,0,0,0,0,0,0)),94: StatusEffect("Scorch",Stats(-3,0,0,0,0,0,0,0)),95: StatusEffect("Wet",Stats(0,0,0,0,-10,-10,0,0)),96: StatusEffect("Soak",Stats(0,0,0,0,-20,-20,0,0)),97: StatusEffect("Drench",Stats(0,0,0,0,-30,-30,0,0)),98: StatusEffect("Frozen",Stats(0,0,0,0,0,0,-2,-2)),99: StatusEffect("Frostbite",Stats(0,0,0,0,0,0,-4,-4)),100: StatusEffect("Frostburn",Stats(0,0,0,0,0,0,-6,-6)),101: StatusEffect("Refreshing",Stats(0,0,0,0,0,0,0,0)),102: StatusEffect("Regrowing",Stats(0,0,0,0,0,0,0,0)),103: StatusEffect("Renewing",Stats(0,0,0,0,0,0,0,0)),104: StatusEffect("Napping",Stats(0,0,0,0,0,0,0,0)),105: StatusEffect("Resting",Stats(0,0,0,0,0,0,0,0)),106: StatusEffect("Relaxing",Stats(0,0,0,0,0,0,0,0)),
 }
 
-# Contains the list for equipment.
-equipmentList = {
-	0:Equipment(equipmentSlots[0],"Empty-handed",elements[0],Stats(0,0,0,0,0,0,0,0)),1:Equipment(equipmentSlots[1],"Naked",elements[0],Stats(0,0,0,0,0,0,0,0)),2:Equipment(equipmentSlots[0],"Sword",elements[1],Stats(0,0,5,0,0,0,0,0)),3:Equipment(equipmentSlots[1],"Chestplate",elements[1],Stats(0,0,0,0,5,0,0,0)),4:Equipment(equipmentSlots[0],"Dagger",elements[1],Stats(0,0,0,0,0,0,1,1)),5:Equipment(equipmentSlots[1],"Tunic",elements[1],Stats(0,0,0,0,0,0,1,1)),6:Equipment(equipmentSlots[0],"Staff",elements[1],Stats(0,0,0,5,0,0,0,0)),7:Equipment(equipmentSlots[1],"Robes",elements[1],Stats(0,0,0,0,0,5,0,0)),
-}
-
 # Contains the list for skills.
 skillsList = {
 	0: Skill(),
@@ -667,12 +596,13 @@ skillsList = {
 		element = 0,
 		mpChange = 25,
 		targetingTypeA = 1,
-		targetingTypeB = None,
 		basePowerA = 0.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 100,
 		critChance = 0.00,
 		randomMod = 0.00,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -683,12 +613,13 @@ skillsList = {
 		element = 0,
 		mpChange = 0,
 		targetingTypeA = 1,
-		targetingTypeB = None,
 		basePowerA = 0.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 100.00,
 		critChance = 0.00,
 		randomMod = 0.00,
+		buffDebuff = None,
 		statusEffect = 90,
 		statusEffectDuration = 3
 	),
@@ -699,12 +630,13 @@ skillsList = {
 		element = 0,
 		mpChange = 0,
 		targetingTypeA = 1,
-		targetingTypeB = None,
 		basePowerA = 0.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 100.00,
 		critChance = 0.00,
 		randomMod = 0.00,
+		buffDebuff = None,
 		statusEffect = 91,
 		statusEffectDuration = 3
 	),
@@ -715,12 +647,13 @@ skillsList = {
 		element = 1,
 		mpChange = 10,
 		targetingTypeA = 2,
-		targetingTypeB = None,
 		basePowerA = 1.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
+		buffDebuff = Stats(hp = -50, every = 0),
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -731,12 +664,13 @@ skillsList = {
 		element = 1,
 		mpChange = -10,
 		targetingTypeA = 2,
-		targetingTypeB = 3,
 		basePowerA = 1.50,
+		targetingTypeB = 3,
 		basePowerB = 0.75,
 		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -747,12 +681,13 @@ skillsList = {
 		element = 1,
 		mpChange = 10,
 		targetingTypeA = 2,
-		targetingTypeB = None,
 		basePowerA = 1.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -763,12 +698,13 @@ skillsList = {
 		element = 1,
 		mpChange = -10,
 		targetingTypeA = 2,
-		targetingTypeB = 3,
 		basePowerA = 1.50,
+		targetingTypeB = 3,
 		basePowerB = 0.75,
 		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -779,12 +715,13 @@ skillsList = {
 		element = 1,
 		mpChange = 10,
 		targetingTypeA = 1,
-		targetingTypeB = None,
 		basePowerA = 1.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -795,12 +732,13 @@ skillsList = {
 		element = 1,
 		mpChange = 0,
 		targetingTypeA = 4,
-		targetingTypeB = None,
 		basePowerA = 1.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -811,12 +749,13 @@ skillsList = {
 		element = 1,
 		mpChange = -10,
 		targetingTypeA = 4,
-		targetingTypeB = 5,
 		basePowerA = 1.50,
+		targetingTypeB = 5,
 		basePowerB = 0.75,
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -827,12 +766,13 @@ skillsList = {
 		element = 1,
 		mpChange = -25,
 		targetingTypeA = 6,
-		targetingTypeB = None,
 		basePowerA = 1.00,
+		targetingTypeB = None,
 		basePowerB = None,
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -843,12 +783,13 @@ skillsList = {
 		element = 1,
 		mpChange = -100,
 		targetingTypeA = 6,
-		targetingTypeB = 7,
 		basePowerA = 1.50,
+		targetingTypeB = 7,
 		basePowerB = 0.75,
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
+		buffDebuff = None,
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -1116,7 +1057,7 @@ def renderDebugMenu():
 						currentStatusEffectDuration = int(currentStatusEffectDuration)
 					else:
 						currentStatusEffectDuration = 0
-					
+
 					skillsList[currentSkillID] = [
 						currentSkillForEntity,
 						currentSkillName,
@@ -1171,7 +1112,7 @@ def renderNewGameMenu():
 			elif (userInput.lower() == "q" and not all(flag == 0 for flag in selectedCharacters)):
 				for i in range(len(currentPlayers)):
 					if (selectedCharacters[i] != 0):
-						currentPlayers[i] = playersList[selectedCharacters[i]]
+						currentPlayers[i] = copy.deepcopy(playersList[selectedCharacters[i]])
 						playersAlive[i] = True
 						playersHaveMoved[i] = False
 				startGame()
@@ -1211,7 +1152,7 @@ def requestCharacterChange(currentCharacter, party):
 				changingCharacter = False
 		except:
 			continue
-	
+
 	return userInput
 
 
@@ -1242,7 +1183,7 @@ def startBattle():
 	# numOfEnemyCharacters = random.randint(1, 3)
 	numOfEnemyCharacters = 2
 	for i in range(numOfEnemyCharacters):
-		currentEnemies[i] = enemiesList[random.randint(1, 3)]
+		currentEnemies[i] = copy.deepcopy(enemiesList[random.randint(1, 3)])
 		enemiesAlive[i] = True
 		enemiesHaveMoved[i] = False
 
@@ -1263,7 +1204,7 @@ def startBattle():
 					else:
 						break
 				renderBattleActionMenu()
-				evaluateCharacterStatuses()
+				evaluateCharacterHP()
 
 		# Enemy turn on even numbers.
 		elif (battleTurn % 2 == 0):
@@ -1276,10 +1217,152 @@ def startBattle():
 					else:
 						break
 				initiateEnemyAttack()
-				evaluateCharacterStatuses()
+				evaluateCharacterHP()
 		progressBattleTurn()
-	
+
 	finishBattle()
+
+
+# Increment the turn in battle by 1.
+def progressBattleTurn():
+	global battleTurn
+	global selectedPlayer
+	global selectedEnemy
+	global playersHaveMoved
+	global enemiesHaveMoved
+
+	battleTurn += 1
+
+	# Enemy-to-player turn transition
+	if (battleTurn % 2 == 1):
+		selectedPlayer = 0
+		selectedEnemy = -1
+
+		for i in range(len(currentPlayers)):
+			if (currentPlayers[i] != None):
+				if (currentPlayers[i].buffsDebuffs.hp > 100):
+					currentPlayers[i].buffsDebuffs.hp -= 5
+				if (currentPlayers[i].buffsDebuffs.mp > 100):
+					currentPlayers[i].buffsDebuffs.mp -= 5
+				if (currentPlayers[i].buffsDebuffs.ballisticAttack > 100):
+					currentPlayers[i].buffsDebuffs.ballisticAttack -= 5
+				if (currentPlayers[i].buffsDebuffs.magicAttack > 100):
+					currentPlayers[i].buffsDebuffs.magicAttack -= 5
+				if (currentPlayers[i].buffsDebuffs.ballisticDefense > 100):
+					currentPlayers[i].buffsDebuffs.ballisticDefense -= 5
+				if (currentPlayers[i].buffsDebuffs.magicDefense > 100):
+					currentPlayers[i].buffsDebuffs.magicDefense -= 5
+				if (currentPlayers[i].buffsDebuffs.accuracy > 100):
+					currentPlayers[i].buffsDebuffs.accuracy -= 5
+				if (currentPlayers[i].buffsDebuffs.evade > 100):
+					currentPlayers[i].buffsDebuffs.evade -= 5
+
+		for i in range(len(currentEnemies)):
+			if (currentEnemies[i] != None):
+				if (currentEnemies[i].buffsDebuffs.hp < 100):
+					currentEnemies[i].buffsDebuffs.hp += 5
+				if (currentEnemies[i].buffsDebuffs.mp < 100):
+					currentEnemies[i].buffsDebuffs.mp += 5
+				if (currentEnemies[i].buffsDebuffs.ballisticAttack < 100):
+					currentEnemies[i].buffsDebuffs.ballisticAttack += 5
+				if (currentEnemies[i].buffsDebuffs.magicAttack < 100):
+					currentEnemies[i].buffsDebuffs.magicAttack += 5
+				if (currentEnemies[i].buffsDebuffs.ballisticDefense < 100):
+					currentEnemies[i].buffsDebuffs.ballisticDefense += 5
+				if (currentEnemies[i].buffsDebuffs.magicDefense < 100):
+					currentEnemies[i].buffsDebuffs.magicDefense += 5
+				if (currentEnemies[i].buffsDebuffs.accuracy < 100):
+					currentEnemies[i].buffsDebuffs.accuracy += 5
+				if (currentEnemies[i].buffsDebuffs.evade < 100):
+					currentEnemies[i].buffsDebuffs.evade += 5
+
+	# Player-to-enemy turn transition
+	elif (battleTurn % 2 == 0):
+		selectedPlayer = -1
+		selectedEnemy = 0
+
+		for i in range(len(currentPlayers)):
+			if (currentPlayers[i] != None):
+				if (currentPlayers[i].buffsDebuffs.hp < 100):
+					currentPlayers[i].buffsDebuffs.hp += 5
+				if (currentPlayers[i].buffsDebuffs.mp < 100):
+					currentPlayers[i].buffsDebuffs.mp += 5
+				if (currentPlayers[i].buffsDebuffs.ballisticAttack < 100):
+					currentPlayers[i].buffsDebuffs.ballisticAttack += 5
+				if (currentPlayers[i].buffsDebuffs.magicAttack < 100):
+					currentPlayers[i].buffsDebuffs.magicAttack += 5
+				if (currentPlayers[i].buffsDebuffs.ballisticDefense < 100):
+					currentPlayers[i].buffsDebuffs.ballisticDefense += 5
+				if (currentPlayers[i].buffsDebuffs.magicDefense < 100):
+					currentPlayers[i].buffsDebuffs.magicDefense += 5
+				if (currentPlayers[i].buffsDebuffs.accuracy < 100):
+					currentPlayers[i].buffsDebuffs.accuracy += 5
+				if (currentPlayers[i].buffsDebuffs.evade < 100):
+					currentPlayers[i].buffsDebuffs.evade += 5
+
+		for i in range(len(currentEnemies)):
+			if (currentEnemies[i] != None):
+				if (currentEnemies[i].buffsDebuffs.hp > 100):
+					currentEnemies[i].buffsDebuffs.hp -= 5
+				if (currentEnemies[i].buffsDebuffs.mp > 100):
+					currentEnemies[i].buffsDebuffs.mp -= 5
+				if (currentEnemies[i].buffsDebuffs.ballisticAttack > 100):
+					currentEnemies[i].buffsDebuffs.ballisticAttack -= 5
+				if (currentEnemies[i].buffsDebuffs.magicAttack > 100):
+					currentEnemies[i].buffsDebuffs.magicAttack -= 5
+				if (currentEnemies[i].buffsDebuffs.ballisticDefense > 100):
+					currentEnemies[i].buffsDebuffs.ballisticDefense -= 5
+				if (currentEnemies[i].buffsDebuffs.magicDefense > 100):
+					currentEnemies[i].buffsDebuffs.magicDefense -= 5
+				if (currentEnemies[i].buffsDebuffs.accuracy > 100):
+					currentEnemies[i].buffsDebuffs.accuracy -= 5
+				if (currentEnemies[i].buffsDebuffs.evade > 100):
+					currentEnemies[i].buffsDebuffs.evade -= 5
+
+	for i in range(len(playersHaveMoved)):
+		if (playersAlive[i]):
+			playersHaveMoved[i] = False
+		elif (not playersAlive[i] and playersAlive[i] != None):
+			playersHaveMoved[i] = True
+	for i in range(len(enemiesHaveMoved)):
+		if (enemiesAlive[i]):
+			enemiesHaveMoved[i] = False
+		elif (not enemiesAlive[i] and enemiesAlive[i] != None):
+			enemiesHaveMoved[i] = True
+		else:
+			continue
+
+	# for i in range(len(currentPlayers)):
+	# 	if (currentPlayers[i] != None):
+	# 		expiredPlayerStatusEffects = []
+	# 		for j in range(len(currentPlayers[i].statusEffects)):
+	# 			currentPlayers[i].statusEffectDurations[j] -= 1
+	# 			if (currentPlayers[i].statusEffectDurations[j] == 0):
+	# 				expiredPlayerStatusEffects.append(j)
+	# 		expiredPlayerStatusEffects.reverse()
+	# 		for j in expiredPlayerStatusEffects:
+	# 			currentPlayers[i].statusEffects.pop(j)
+	# 			currentPlayers[i].statusEffectDurations.pop(j)
+	# 		currentPlayers[i].evaluateTotalStats()
+	# 	else:
+	# 		continue
+
+	# for i in range(len(currentEnemies)):
+	# 	if (currentEnemies[i] != None):
+	# 		expiredEnemyStatusEffects = []
+	# 		for j in range(len(currentEnemies[i].statusEffects)):
+	# 			currentEnemies[i].statusEffectDurations[j] -= 1
+	# 			if (currentEnemies[i].statusEffectDurations[j] == 0):
+	# 				expiredEnemyStatusEffects.append(j)
+	# 		expiredEnemyStatusEffects.reverse()
+	# 		for j in expiredEnemyStatusEffects:
+	# 			currentEnemies[i].statusEffects.pop(j)
+	# 			currentEnemies[i].statusEffectDurations.pop(j)
+	# 		currentEnemies[i].evaluateTotalStats()
+	# 	else:
+	# 		continue
+
+	evaluateCharacterHP()
 
 
 # Determines what happens when a battle is finished.
@@ -1469,6 +1552,7 @@ def renderBattleStatusMenu():
 	print(battleUIRow(allPlayerBars[2], 0) + battleUIRow(allEnemyBars[2], 1))
 
 	print(battleUIRowDivider())
+	print(str(currentEnemies[0].buffsDebuffs.hp) + "%", str(currentEnemies[0].maxHP) + " HP")
 	print("|\t|\t|\t|\t|\t|\t|\t|\t|\t|\t|\t|")
 
 
@@ -1604,7 +1688,7 @@ def renderAttackDetails(skill):
 		elif (skill.targetingTypeA == targetingTypes[5]):
 			print(targetAButtons[0].upper() + ". " + targetingTypes[5])
 			hasAvailableTarget = True
-		
+
 		elif (skill.targetingTypeA == targetingTypes[6]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (not playersAlive[i]):
@@ -1640,7 +1724,7 @@ def renderAttackDetails(skill):
 		elif (skill.targetingTypeB == targetingTypes[5]):
 			print(targetBButtons[0].upper() + ". " + targetingTypes[5])
 			hasAvailableTarget = True
-		
+
 		elif (skill.targetingTypeB == targetingTypes[6]):
 			for i in range(len(currentPlayers) - playersAlive.count(None)):
 				if (not playersAlive[i]):
@@ -1651,7 +1735,7 @@ def renderAttackDetails(skill):
 			if (playersAlive.count(False) >= 1):
 				print(targetBButtons[0].upper() + ". " + targetingTypes[7])
 				hasAvailableTarget = True
-		
+
 		if (not hasAvailableTarget):
 			print("No targets available.")
 
@@ -1698,7 +1782,7 @@ def renderAttackDetails(skill):
 						userInput = targetAButtons.index(userInput)
 						if (not playersAlive[userInput]):
 							chosenTarget = [currentPlayers[userInput]]
-					
+
 					elif (skill.targetingTypeA == targetingTypes[7]):
 						if (userInput == targetAButtons[0]):
 							userInput = targetAButtons.index(userInput)
@@ -1749,7 +1833,7 @@ def renderAttackDetails(skill):
 						userInput = targetBButtons.index(userInput)
 						if (not playersAlive[userInput]):
 							chosenTarget = [currentPlayers[userInput]]
-					
+
 					elif (skill.targetingTypeB == targetingTypes[7]):
 						if (userInput == targetBButtons[0]):
 							userInput = targetBButtons.index(userInput)
@@ -1954,7 +2038,7 @@ def initiateEnemyAttack():
 
 
 # Check the status of all players and enemies.
-def evaluateCharacterStatuses():
+def evaluateCharacterHP():
 	global currentPlayers
 	global currentEnemies
 	global playersAlive
@@ -1966,69 +2050,6 @@ def evaluateCharacterStatuses():
 	for i in range(len(currentEnemies)):
 		if (currentEnemies[i] != None):
 			enemiesAlive[i] = currentEnemies[i].curHP > 0
-
-
-# Increment the turn in battle by 1.
-def progressBattleTurn():
-	global battleTurn
-	global selectedPlayer
-	global selectedEnemy
-	global playersHaveMoved
-	global enemiesHaveMoved
-
-	battleTurn += 1
-
-	if (battleTurn % 2 == 1):
-		selectedPlayer = 0
-		selectedEnemy = -1
-	elif (battleTurn % 2 == 0):
-		selectedPlayer = -1
-		selectedEnemy = 0
-
-	for i in range(len(playersHaveMoved)):
-		if (playersAlive[i]):
-			playersHaveMoved[i] = False
-		elif (not playersAlive[i] and playersAlive[i] != None):
-			playersHaveMoved[i] = True
-	for i in range(len(enemiesHaveMoved)):
-		if (enemiesAlive[i]):
-			enemiesHaveMoved[i] = False
-		elif (not enemiesAlive[i] and enemiesAlive[i] != None):
-			enemiesHaveMoved[i] = True
-		else:
-			continue
-
-	for i in range(len(currentPlayers)):
-		if (currentPlayers[i] != None):
-			expiredPlayerStatusEffects = []
-			for j in range(len(currentPlayers[i].statusEffects)):
-				currentPlayers[i].statusEffectDurations[j] -= 1
-				if (currentPlayers[i].statusEffectDurations[j] == 0):
-					expiredPlayerStatusEffects.append(j)
-			expiredPlayerStatusEffects.reverse()
-			for j in expiredPlayerStatusEffects:
-				currentPlayers[i].statusEffects.pop(j)
-				currentPlayers[i].statusEffectDurations.pop(j)
-			currentPlayers[i].evaluateTotalStats()
-		else:
-			continue
-
-	for i in range(len(currentEnemies)):
-		if (currentEnemies[i] != None):
-			expiredEnemyStatusEffects = []
-			for j in range(len(currentEnemies[i].statusEffects)):
-				currentEnemies[i].statusEffectDurations[j] -= 1
-				if (currentEnemies[i].statusEffectDurations[j] == 0):
-					expiredEnemyStatusEffects.append(j)
-			expiredEnemyStatusEffects.reverse()
-			for j in expiredEnemyStatusEffects:
-				currentEnemies[i].statusEffects.pop(j)
-				currentEnemies[i].statusEffectDurations.pop(j)
-			currentEnemies[i].evaluateTotalStats()
-		else:
-			continue
-
-	evaluateCharacterStatuses()
 
 
 # Render a menu that prints out the status of the player when in town (such as level, HP, MP, and money).
@@ -2366,8 +2387,19 @@ def castSkill(target, user, skill, version):
 				else:
 					proceduralPrint((" " * len(userName)) + " dealt " + str(totalDealtDamage[i]) + str(criticalString) + " damage to " + str(targetName[i]) + ".", "")
 
+				if (skill.buffDebuff != None):
+					# target[i].buffsDebuffs += skill.buffDebuff
+					target[i].buffsDebuffs.hp = min(max(target[i].buffsDebuffs.hp + skill.buffDebuff.hp, 50), 200)
+					target[i].buffsDebuffs.mp = min(max(target[i].buffsDebuffs.mp + skill.buffDebuff.mp, 50), 200)
+					target[i].buffsDebuffs.ballisticAttack = min(max(target[i].buffsDebuffs.ballisticAttack + skill.buffDebuff.ballisticAttack, 50), 200)
+					target[i].buffsDebuffs.magicAttack = min(max(target[i].buffsDebuffs.magicAttack + skill.buffDebuff.magicAttack, 50), 200)
+					target[i].buffsDebuffs.ballisticDefense = min(max(target[i].buffsDebuffs.ballisticDefense + skill.buffDebuff.ballisticDefense, 50), 200)
+					target[i].buffsDebuffs.magicDefense = min(max(target[i].buffsDebuffs.magicDefense + skill.buffDebuff.magicDefense, 50), 200)
+					target[i].buffsDebuffs.accuracy = min(max(target[i].buffsDebuffs.accuracy + skill.buffDebuff.hp, 50), 200)
+					target[i].buffsDebuffs.evade = min(max(target[i].buffsDebuffs.evade + skill.buffDebuff.evade, 50), 200)
 				if (skill.statusEffect != None):
 					applyStatusEffect(target[i], user, skill.statusEffect, skill.statusEffectDuration)
+				target[i].evaluateTotalStats()
 			else:
 				if (i == 0 and len(target) == 1):
 					proceduralPrint(str(userName) + " missed their attack on " + str(targetName[i]) + ".", "")
