@@ -43,7 +43,7 @@ def generalUIBar(length, alignment, characterString, currentValue, maxValue):
 # Returns a row of the battle UI based on the provided string and the alignment (0 for left align, 1 for right align).
 def battleUIRow(string, alignment):
 	if (len(string) > 37):
-		string = string[0:37]
+		string = string[0:34] + "..."
 
 	if (alignment == 0):
 		currentRow = "| {:<37} |".format(string)
@@ -670,7 +670,7 @@ skillsList = {
 		accuracyMod = 1.00,
 		critChance = 0.10,
 		randomMod = 0.10,
-		buffDebuff = None,
+		buffDebuff = Stats(hp = -20, every = 0),
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -738,7 +738,7 @@ skillsList = {
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
-		buffDebuff = None,
+		buffDebuff = Stats(every = 50),
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -755,7 +755,7 @@ skillsList = {
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
-		buffDebuff = None,
+		buffDebuff = Stats(every = 20),
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
@@ -1490,8 +1490,12 @@ def renderBattleStatusMenu():
 
 	allPlayerTexts = []
 	allPlayerBars = []
+	allPlayerBuffsDebuffs1 = []
+	allPlayerBuffsDebuffs2 = []
 	allEnemyTexts = []
 	allEnemyBars = []
+	allEnemyBuffsDebuffs1 = []
+	allEnemyBuffsDebuffs2 = []
 	for i in range(3):
 		if (currentPlayers[i] != None):
 			currentPlayerName = currentPlayers[i].name
@@ -1509,9 +1513,47 @@ def renderBattleStatusMenu():
 			else:
 				currentPlayerText = "  " + currentPlayerText
 			currentPlayerBar = generalUIBar(22, 0, "=", currentPlayerCurHP, currentPlayerMaxHP) + generalUIBar(10, 0, "—", currentPlayerCurMP, currentPlayerMaxMP)
+			currentPlayerBuffsDebuffs1 = " | "
+			if (currentPlayers[i].buffsDebuffs.hp != 100):
+				currentPlayerBuffsDebuffs1 += "HP" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.hp - 100)) + "  "
+			else:
+				currentPlayerBuffsDebuffs1 += "        "
+			if (currentPlayers[i].buffsDebuffs.ballisticAttack != 100):
+				currentPlayerBuffsDebuffs1 += "BA" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.ballisticAttack - 100)) + "  "
+			else:
+				currentPlayerBuffsDebuffs1 += "        "
+			if (currentPlayers[i].buffsDebuffs.ballisticDefense != 100):
+				currentPlayerBuffsDebuffs1 += "BD" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.ballisticDefense - 100)) + "  "
+			else:
+				currentPlayerBuffsDebuffs1 += "        "
+			if (currentPlayers[i].buffsDebuffs.accuracy != 100):
+				currentPlayerBuffsDebuffs1 += "AC" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.accuracy - 100))
+			else:
+				currentPlayerBuffsDebuffs1 += "      "
+			currentPlayerBuffsDebuffs1 += " |"
+			currentPlayerBuffsDebuffs2 = " | "
+			if (currentPlayers[i].buffsDebuffs.mp != 100):
+				currentPlayerBuffsDebuffs2 += "MP" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.mp - 100)) + "  "
+			else:
+				currentPlayerBuffsDebuffs2 += "        "
+			if (currentPlayers[i].buffsDebuffs.magicAttack != 100):
+				currentPlayerBuffsDebuffs2 += "MA" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.magicAttack - 100)) + "  "
+			else:
+				currentPlayerBuffsDebuffs2 += "        "
+			if (currentPlayers[i].buffsDebuffs.magicDefense != 100):
+				currentPlayerBuffsDebuffs2 += "MD" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.magicDefense - 100)) + "  "
+			else:
+				currentPlayerBuffsDebuffs2 += "        "
+			if (currentPlayers[i].buffsDebuffs.evade != 100):
+				currentPlayerBuffsDebuffs2 += "EV" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.evade - 100))
+			else:
+				currentPlayerBuffsDebuffs2 += "      "
+			currentPlayerBuffsDebuffs2 += " |"
 		else:
 			currentPlayerText = ""
 			currentPlayerBar = ""
+			currentPlayerBuffsDebuffs1 = ""
+			currentPlayerBuffsDebuffs2 = ""
 
 		if (currentEnemies[i] != None and enemiesAlive[i]):
 			currentEnemyName = "LV " + str(currentEnemies[i].currentLevel) + " " + currentEnemies[i].name
@@ -1527,14 +1569,56 @@ def renderBattleStatusMenu():
 			else:
 				currentEnemyText += "  "
 			currentEnemyBar = generalUIBar(34, 1, "=", currentEnemyCurHP, currentEnemyMaxHP)
+			currentEnemyBuffsDebuffs1 = "| "
+			if (currentEnemies[i].buffsDebuffs.hp != 100):
+				currentEnemyBuffsDebuffs1 += "HP" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.hp - 100)) + "  "
+			else:
+				currentEnemyBuffsDebuffs1 += "        "
+			if (currentEnemies[i].buffsDebuffs.ballisticAttack != 100):
+				currentEnemyBuffsDebuffs1 += "BA" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.ballisticAttack - 100)) + "  "
+			else:
+				currentEnemyBuffsDebuffs1 += "        "
+			if (currentEnemies[i].buffsDebuffs.ballisticDefense != 100):
+				currentEnemyBuffsDebuffs1 += "BD" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.ballisticDefense - 100)) + "  "
+			else:
+				currentEnemyBuffsDebuffs1 += "        "
+			if (currentEnemies[i].buffsDebuffs.accuracy != 100):
+				currentEnemyBuffsDebuffs1 += "AC" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.accuracy - 100))
+			else:
+				currentEnemyBuffsDebuffs1 += "      "
+			currentEnemyBuffsDebuffs1 += " | "
+			currentEnemyBuffsDebuffs2 = "| "
+			if (currentEnemies[i].buffsDebuffs.mp != 100):
+				currentEnemyBuffsDebuffs2 += "MP" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.mp - 100)) + "  "
+			else:
+				currentEnemyBuffsDebuffs2 += "        "
+			if (currentEnemies[i].buffsDebuffs.magicAttack != 100):
+				currentEnemyBuffsDebuffs2 += "MA" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.magicAttack - 100)) + "  "
+			else:
+				currentEnemyBuffsDebuffs2 += "        "
+			if (currentEnemies[i].buffsDebuffs.magicDefense != 100):
+				currentEnemyBuffsDebuffs2 += "MD" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.magicDefense - 100)) + "  "
+			else:
+				currentEnemyBuffsDebuffs2 += "        "
+			if (currentEnemies[i].buffsDebuffs.evade != 100):
+				currentEnemyBuffsDebuffs2 += "EV" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.evade - 100))
+			else:
+				currentEnemyBuffsDebuffs2 += "      "
+			currentEnemyBuffsDebuffs2 += " | "
 		else:
 			currentEnemyText = ""
 			currentEnemyBar = ""
+			currentEnemyBuffsDebuffs1 = ""
+			currentEnemyBuffsDebuffs2 = ""
 
 		allPlayerTexts.append(currentPlayerText)
 		allPlayerBars.append(currentPlayerBar)
+		allPlayerBuffsDebuffs1.append(currentPlayerBuffsDebuffs1)
+		allPlayerBuffsDebuffs2.append(currentPlayerBuffsDebuffs2)
 		allEnemyTexts.append(currentEnemyText)
 		allEnemyBars.append(currentEnemyBar)
+		allEnemyBuffsDebuffs1.append(currentEnemyBuffsDebuffs1)
+		allEnemyBuffsDebuffs2.append(currentEnemyBuffsDebuffs2)
 
 	print(battleUIRowDivider())
 
@@ -1544,15 +1628,20 @@ def renderBattleStatusMenu():
 
 	print(battleUIRow(allPlayerTexts[0], 0) + battleUIRow(allEnemyTexts[0], 1))
 	print(battleUIRow(allPlayerBars[0], 0) + battleUIRow(allEnemyBars[0], 1))
+	print(battleUIRow(allPlayerBuffsDebuffs1[0], 0) + battleUIRow(allEnemyBuffsDebuffs1[0], 1))
+	print(battleUIRow(allPlayerBuffsDebuffs2[0], 0) + battleUIRow(allEnemyBuffsDebuffs2[0], 1))
 	# print("|\t–––––––––––––––––––––––––\t|\t–––––––––––––––––––––––––\t|")
 	print(battleUIRow(allPlayerTexts[1], 0) + battleUIRow(allEnemyTexts[1], 1))
 	print(battleUIRow(allPlayerBars[1], 0) + battleUIRow(allEnemyBars[1], 1))
+	print(battleUIRow(allPlayerBuffsDebuffs1[1], 0) + battleUIRow(allEnemyBuffsDebuffs1[1], 1))
+	print(battleUIRow(allPlayerBuffsDebuffs2[1], 0) + battleUIRow(allEnemyBuffsDebuffs2[1], 1))
 	# print("|\t–––––––––––––––––––––––––\t|\t–––––––––––––––––––––––––\t|")
 	print(battleUIRow(allPlayerTexts[2], 0) + battleUIRow(allEnemyTexts[2], 1))
 	print(battleUIRow(allPlayerBars[2], 0) + battleUIRow(allEnemyBars[2], 1))
+	print(battleUIRow(allPlayerBuffsDebuffs1[2], 0) + battleUIRow(allEnemyBuffsDebuffs1[2], 1))
+	print(battleUIRow(allPlayerBuffsDebuffs2[2], 0) + battleUIRow(allEnemyBuffsDebuffs2[2], 1))
 
 	print(battleUIRowDivider())
-	print(str(currentEnemies[0].buffsDebuffs.hp) + "%", str(currentEnemies[0].maxHP) + " HP")
 	print("|\t|\t|\t|\t|\t|\t|\t|\t|\t|\t|\t|")
 
 
@@ -1563,7 +1652,10 @@ def renderBattleActionMenu():
 	quickSwitchButtons = ["q", "w", "e"]
 
 	while (playersHaveMoved[selectedPlayer] != True):
-		renderBattleStatusMenu()
+		try:
+			renderBattleStatusMenu()
+		except Exception as e:
+			input(e)
 
 		print("\n" + str(currentPlayers[selectedPlayer].name))
 		print("-" * len(currentPlayers[selectedPlayer].name))
@@ -2388,17 +2480,18 @@ def castSkill(target, user, skill, version):
 					proceduralPrint((" " * len(userName)) + " dealt " + str(totalDealtDamage[i]) + str(criticalString) + " damage to " + str(targetName[i]) + ".", "")
 
 				if (skill.buffDebuff != None):
-					# target[i].buffsDebuffs += skill.buffDebuff
 					target[i].buffsDebuffs.hp = min(max(target[i].buffsDebuffs.hp + skill.buffDebuff.hp, 50), 200)
 					target[i].buffsDebuffs.mp = min(max(target[i].buffsDebuffs.mp + skill.buffDebuff.mp, 50), 200)
 					target[i].buffsDebuffs.ballisticAttack = min(max(target[i].buffsDebuffs.ballisticAttack + skill.buffDebuff.ballisticAttack, 50), 200)
 					target[i].buffsDebuffs.magicAttack = min(max(target[i].buffsDebuffs.magicAttack + skill.buffDebuff.magicAttack, 50), 200)
 					target[i].buffsDebuffs.ballisticDefense = min(max(target[i].buffsDebuffs.ballisticDefense + skill.buffDebuff.ballisticDefense, 50), 200)
 					target[i].buffsDebuffs.magicDefense = min(max(target[i].buffsDebuffs.magicDefense + skill.buffDebuff.magicDefense, 50), 200)
-					target[i].buffsDebuffs.accuracy = min(max(target[i].buffsDebuffs.accuracy + skill.buffDebuff.hp, 50), 200)
+					target[i].buffsDebuffs.accuracy = min(max(target[i].buffsDebuffs.accuracy + skill.buffDebuff.accuracy, 50), 200)
 					target[i].buffsDebuffs.evade = min(max(target[i].buffsDebuffs.evade + skill.buffDebuff.evade, 50), 200)
+
 				if (skill.statusEffect != None):
 					applyStatusEffect(target[i], user, skill.statusEffect, skill.statusEffectDuration)
+
 				target[i].evaluateTotalStats()
 			else:
 				if (i == 0 and len(target) == 1):
@@ -2447,9 +2540,20 @@ def castSkill(target, user, skill, version):
 			else:
 				proceduralPrint((" " * len(userName)) + " dealt " + str(totalDealtHealing[i]) + " healing to " + str(targetName[i]) + ".", "")
 
-		for i in range(len(target)):
+			if (skill.buffDebuff != None):
+				target[i].buffsDebuffs.hp = min(max(target[i].buffsDebuffs.hp + skill.buffDebuff.hp, 50), 200)
+				target[i].buffsDebuffs.mp = min(max(target[i].buffsDebuffs.mp + skill.buffDebuff.mp, 50), 200)
+				target[i].buffsDebuffs.ballisticAttack = min(max(target[i].buffsDebuffs.ballisticAttack + skill.buffDebuff.ballisticAttack, 50), 200)
+				target[i].buffsDebuffs.magicAttack = min(max(target[i].buffsDebuffs.magicAttack + skill.buffDebuff.magicAttack, 50), 200)
+				target[i].buffsDebuffs.ballisticDefense = min(max(target[i].buffsDebuffs.ballisticDefense + skill.buffDebuff.ballisticDefense, 50), 200)
+				target[i].buffsDebuffs.magicDefense = min(max(target[i].buffsDebuffs.magicDefense + skill.buffDebuff.magicDefense, 50), 200)
+				target[i].buffsDebuffs.accuracy = min(max(target[i].buffsDebuffs.accuracy + skill.buffDebuff.accuracy, 50), 200)
+				target[i].buffsDebuffs.evade = min(max(target[i].buffsDebuffs.evade + skill.buffDebuff.evade, 50), 200)
+
 			if (skill.statusEffect != None):
 				applyStatusEffect(target[i], user, skill.statusEffect, skill.statusEffectDuration)
+
+			target[i].evaluateTotalStats()
 
 	elif (skill.skillType == skillTypes[3]):
 		for i in range(len(target)):
