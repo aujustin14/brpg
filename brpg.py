@@ -5,6 +5,8 @@ import math
 import openpyxl
 import pyperclip
 import copy
+import textwrap
+import time
 
 """
 todo:
@@ -12,6 +14,8 @@ todo:
 		- refactor combat logic
 		- rework inventory
 		- rework status effects
+		- refactor text printing
+		- better animations for text
 	low priority
 """
 
@@ -19,6 +23,22 @@ todo:
 # Prints out a message and requires the user to press enter to continue. End determines where the cursor is placed (empty space is at the end of the string, \n is on a new line).
 def proceduralPrint(string, end):
 	print(string, end = end)
+	input()
+
+
+def scrollingPrint(text):
+	sentences = text.split("\n")
+
+	for sentence in sentences:
+		for word in sentence:
+			for character in word:
+				sys.stdout.write(character)
+				sys.stdout.flush()
+				if (character in [",", "."]):
+					time.sleep(0.10)
+		if (sentence != sentences[-1]):
+			sys.stdout.write("\n")
+			sys.stdout.flush()
 	input()
 
 
@@ -125,8 +145,9 @@ def formatText(text, alignment, length):
 	elif (alignment == 2):
 		alignment = ">"
 
-	if (len(str(text)) > length):
-		text = text[0:(length - 3)] + "..."
+	# if (len(str(text)) > length):
+	# 	text = text[0:(length - 3)] + "..."
+	text = textwrap.shorten(text, width = length)
 
 	return str("{:" + alignment + str(length) + "}").format(text)
 
@@ -156,6 +177,9 @@ class Stats:
 			self.magicDefense = magicDefense
 			self.accuracy = accuracy
 			self.evade = evade
+
+	def __str__(self):
+		return ("hp: " + formatText(self.hp, 0, 6) + "mp: " + formatText(self.mp, 0, 6) + "ballisticAttack: " + formatText(self.ballisticAttack, 0, 6) + "ballisticAttack: " + formatText(self.ballisticAttack, 0, 6) + "magicAttack: " + formatText(self.magicAttack, 0, 6) + "ballisticDefense: " + formatText(self.ballisticDefense, 0, 6) + "magicDefense: " + formatText(self.magicDefense, 0, 6) + "accuracy: " + formatText(self.accuracy, 0, 6) + "evade: " + formatText(self.evade, 0, 6))
 
 	def __add__(self, other):
 		totalHP = self.hp
@@ -188,14 +212,14 @@ class Stats:
 			totalEvade += other.evade
 
 		return Stats(
-			totalHP,
-			totalMP,
-			totalBallisticAttack,
-			totalMagicAttack,
-			totalBallisticDefense,
-			totalMagicDefense,
-			totalAccuracy,
-			totalEvade
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
 		)
 
 	def __sub__(self, other):
@@ -229,19 +253,236 @@ class Stats:
 			totalEvade -= other.evade
 
 		return Stats(
-			totalHP,
-			totalMP,
-			totalBallisticAttack,
-			totalMagicAttack,
-			totalBallisticDefense,
-			totalMagicDefense,
-			totalAccuracy,
-			totalEvade
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
+		)
+
+	def __mul__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
+		if (type(other) is int):
+			totalHP *= other
+			totalMP *= other
+			totalBallisticAttack *= other
+			totalMagicAttack *= other
+			totalBallisticDefense *= other
+			totalMagicDefense *= other
+			totalAccuracy *= other
+			totalEvade *= other
+
+		elif (type(other) is Stats):
+			totalHP *= other.hp
+			totalMP *= other.mp
+			totalBallisticAttack *= other.ballisticAttack
+			totalMagicAttack *= other.magicAttack
+			totalBallisticDefense *= other.ballisticDefense
+			totalMagicDefense *= other.magicDefense
+			totalAccuracy *= other.accuracy
+			totalEvade *= other.evade
+
+		return Stats(
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
+		)
+
+	def __truediv__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
+		if (type(other) is int):
+			totalHP /= other
+			totalMP /= other
+			totalBallisticAttack /= other
+			totalMagicAttack /= other
+			totalBallisticDefense /= other
+			totalMagicDefense /= other
+			totalAccuracy /= other
+			totalEvade /= other
+
+		elif (type(other) is Stats):
+			totalHP /= other.hp
+			totalMP /= other.mp
+			totalBallisticAttack /= other.ballisticAttack
+			totalMagicAttack /= other.magicAttack
+			totalBallisticDefense /= other.ballisticDefense
+			totalMagicDefense /= other.magicDefense
+			totalAccuracy /= other.accuracy
+			totalEvade /= other.evade
+
+		return Stats(
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
+		)
+
+	def __floordiv__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
+		if (type(other) is int):
+			totalHP //= other
+			totalMP //= other
+			totalBallisticAttack //= other
+			totalMagicAttack //= other
+			totalBallisticDefense //= other
+			totalMagicDefense //= other
+			totalAccuracy //= other
+			totalEvade //= other
+
+		elif (type(other) is Stats):
+			totalHP //= other.hp
+			totalMP //= other.mp
+			totalBallisticAttack //= other.ballisticAttack
+			totalMagicAttack //= other.magicAttack
+			totalBallisticDefense //= other.ballisticDefense
+			totalMagicDefense //= other.magicDefense
+			totalAccuracy //= other.accuracy
+			totalEvade //= other.evade
+
+		return Stats(
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
+		)
+
+	def __mod__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
+		if (type(other) is int):
+			totalHP %= other
+			totalMP %= other
+			totalBallisticAttack %= other
+			totalMagicAttack %= other
+			totalBallisticDefense %= other
+			totalMagicDefense %= other
+			totalAccuracy %= other
+			totalEvade %= other
+
+		elif (type(other) is Stats):
+			totalHP %= other.hp
+			totalMP %= other.mp
+			totalBallisticAttack %= other.ballisticAttack
+			totalMagicAttack %= other.magicAttack
+			totalBallisticDefense %= other.ballisticDefense
+			totalMagicDefense %= other.magicDefense
+			totalAccuracy %= other.accuracy
+			totalEvade %= other.evade
+
+		return Stats(
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
+		)
+
+	def __pow__(self, other):
+		totalHP = self.hp
+		totalMP = self.mp
+		totalBallisticAttack = self.ballisticAttack
+		totalMagicAttack = self.magicAttack
+		totalBallisticDefense = self.ballisticDefense
+		totalMagicDefense = self.magicDefense
+		totalAccuracy = self.accuracy
+		totalEvade = self.evade
+
+		if (type(other) is int):
+			totalHP **= other
+			totalMP **= other
+			totalBallisticAttack **= other
+			totalMagicAttack **= other
+			totalBallisticDefense **= other
+			totalMagicDefense **= other
+			totalAccuracy **= other
+			totalEvade **= other
+
+		elif (type(other) is Stats):
+			totalHP **= other.hp
+			totalMP **= other.mp
+			totalBallisticAttack **= other.ballisticAttack
+			totalMagicAttack **= other.magicAttack
+			totalBallisticDefense **= other.ballisticDefense
+			totalMagicDefense **= other.magicDefense
+			totalAccuracy **= other.accuracy
+			totalEvade **= other.evade
+
+		return Stats(
+			hp = totalHP,
+			mp = totalMP,
+			ballisticAttack = totalBallisticAttack,
+			magicAttack = totalMagicAttack,
+			ballisticDefense = totalBallisticDefense,
+			magicDefense = totalMagicDefense,
+			accuracy = totalAccuracy,
+			evade = totalEvade
+		)
+	
+	def __round__(self, n):
+		return Stats(
+			hp = int(round(self.hp, n)),
+			mp = int(round(self.mp, n)),
+			ballisticAttack = int(round(self.ballisticAttack, n)),
+			magicAttack = int(round(self.magicAttack, n)),
+			ballisticDefense = int(round(self.ballisticDefense, n)),
+			magicDefense = int(round(self.magicDefense, n)),
+			accuracy = int(round(self.accuracy, n)),
+			evade = int(round(self.evade, n))
 		)
 
 
 class StatusEffect:
-	def __init__(self, name, effect):
+	def __init__(self, name="Null", effect=Stats(every=0)):
 		self.name = name
 		self.effect = effect
 
@@ -251,7 +492,7 @@ class StatusEffect:
 
 class Skill:
 	def __init__(self, name="Null", skillType=0, statType=0, element=0, mpChange=0, accuracyMod=0.00, critChance=0.00, randomMod=0.00, targetingTypeA=None, basePowerA=None, buffDebuffA=None, targetingTypeB=None, basePowerB=None, buffDebuffB=None, statusEffect=None, statusEffectDuration=0):
-		self.name = str(name)
+		self.name = textwrap.shorten(str(name), width = 50, placeholder = "")
 		self.skillType = skillTypes[skillType]
 		self.statType = statTypes[statType]
 		self.element = elements[element]
@@ -266,21 +507,24 @@ class Skill:
 		self.basePowerB = basePowerB
 		self.buffDebuffB = buffDebuffB
 
-		if (self.targetingTypeA == None or self.basePowerA == None):
-			self.targetingTypeA = None
-			self.basePowerA = None
-			self.buffDebuffA = None
-		if (self.targetingTypeB == None or self.basePowerB == None):
-			self.targetingTypeB = None
-			self.basePowerB = None
-			self.buffDebuffB = None
-		if ((self.targetingTypeA == None or self.basePowerA == None) and self.targetingTypeB != None and self.basePowerB != None):
-			self.targetingTypeA = self.targetingTypeB
-			self.basePowerA = self.basePowerB
-			self.buffDebuffA = self.buffDebuffB
-			self.targetingTypeB = None
-			self.basePowerB = None
-			self.buffDebuffB = None
+		if (self.skillType == skillTypes[4]):
+			pass
+		else:
+			if (self.targetingTypeA == None or self.basePowerA == None):
+				self.targetingTypeA = None
+				self.basePowerA = None
+				self.buffDebuffA = None
+			if (self.targetingTypeB == None or self.basePowerB == None):
+				self.targetingTypeB = None
+				self.basePowerB = None
+				self.buffDebuffB = None
+			if ((self.targetingTypeA == None or self.basePowerA == None) and self.targetingTypeB != None and self.basePowerB != None):
+				self.targetingTypeA = self.targetingTypeB
+				self.basePowerA = self.basePowerB
+				self.buffDebuffA = self.buffDebuffB
+				self.targetingTypeB = None
+				self.basePowerB = None
+				self.buffDebuffB = None
 
 		if (self.buffDebuffA != None):
 			currentBuffDebuffA = self.buffDebuffA
@@ -326,10 +570,12 @@ class Skill:
 
 
 	def __repr__(self):
-		costString = superRound(self.mpChange, str) if (self.mpChange < 0) else "+" + superRound(self.mpChange, str)
-		powerAString = superRound((self.basePowerA * 100), str) + "%" if (self.basePowerA != None) else "None"
-		powerBString = superRound((self.basePowerB * 100), str) + "%" if (self.basePowerB != None) else "None"
-		accuracyString = "Guaranteed" if (self.accuracyMod >= 100) else superRound((self.accuracyMod * 100), str) + "%"
+		mpChangeString = "{0:+}".format(self.mpChange)
+		statTypeString = self.statType if (self.statType != statTypes[0]) else "---"
+		elementString = self.element if (self.element != elements[0]) else "---"
+		powerAString = "{0}%".format(round(self.basePowerA * 100)) if (self.basePowerA != None) else "---"
+		powerBString = "{0}%".format(round(self.basePowerB * 100)) if (self.basePowerB != None) else "---"
+		accuracyString = "Guaranteed" if (self.accuracyMod == math.inf) else "{0}%".format(round(self.accuracyMod * 100))
 		if (self.buffDebuffA != None):
 			if (self.buffDebuffA.hasAllStats):
 				effectAString = "All Stats {0:+}%".format(self.buffDebuffA.hp)
@@ -357,14 +603,14 @@ class Skill:
 		else:
 			effectBString = "None"
 
-		if (self.targetingTypeA != None and self.targetingTypeB != None and self.basePowerA != None and self.basePowerB != None):
+		if (self.targetingTypeA != None and self.targetingTypeB != None):
 			return (
 				"+–––––––––––––––––––––––––––––––+"
 				+ "\n| " + formatText(self.name, 0, 29) + " |"
 				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
-				+ "\n| " + formatText("MP", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
-				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
-				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
+				+ "\n| " + formatText("MP", 0, 5) + " | " + formatText(mpChangeString, 0, 45) + " |"
+				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(statTypeString, 0, 45) + " |"
+				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(elementString, 0, 45) + " |"
 				+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 45) + " |"
 				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 21) + " | " + formatText(self.targetingTypeB, 0, 21) + " |"
 				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(powerAString, 0, 21) + " | " + formatText(powerBString, 0, 21) + " |"
@@ -376,9 +622,9 @@ class Skill:
 				"+–––––––––––––––––––––––––––––––+"
 				+ "\n| " + formatText(self.name, 0, 29) + " |"
 				+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
-				+ "\n| " + formatText("MP", 0, 5) + " | " + formatText(costString, 0, 45) + " |"
-				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(self.statType, 0, 45) + " |"
-				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element, 0, 45) + " |"
+				+ "\n| " + formatText("MP", 0, 5) + " | " + formatText(mpChangeString, 0, 45) + " |"
+				+ "\n| " + formatText("Type", 0, 5) + " | " + formatText(statTypeString, 0, 45) + " |"
+				+ "\n| " + formatText("Elmnt", 0, 5) + " | " + formatText(self.element if (self.element != elements[0]) else "---", 0, 45) + " |"
 				+ "\n| " + formatText("Acc.", 0, 5) + " | " + formatText(accuracyString, 0, 45) + " |"
 				+ "\n| " + formatText("Trgt", 0, 5) + " | " + formatText(self.targetingTypeA, 0, 45) + " |"
 				+ "\n| " + formatText("Power", 0, 5) + " | " + formatText(powerAString, 0, 45) + " |"
@@ -388,25 +634,42 @@ class Skill:
 
 
 class Item:
-	def __init__(self, name, itemType, primaryPower, secondaryPower, value):
-		self.name = name
-		self.itemType = itemType
-		self.primaryPower = primaryPower
-		self.secondaryPower = secondaryPower
+	def __init__(self, name="Null", itemType=0, targetingType=0, rawPower=0, relativePower=0, value=0):
+		self.name = str(name)
+		self.targetingType = targetingTypes[targetingType]
+		self.itemType = itemTypes[itemType]
+		self.rawPower = rawPower
+		self.relativePower = relativePower
 		self.value = value
 
 	def __repr__(self):
 		if (self.itemType == itemTypes[0]):
-			powerString = str(self.primaryPower) + " HP or " + str(self.secondaryPower) + "% HP (whichever is higher)"
+			descString = "Heals an ally for " + str(self.rawPower) + " HP or " + str(self.relativePower) + "% HP, whichever is higher."
+		elif (self.itemType == itemTypes[1]):
+			descString = "Heals an ally for " + str(self.relativePower) + "% MP."
 		else:
-			powerString = str(self.primaryPower) + " MP or " + str(self.secondaryPower) + "% MP (whichever is higher)"
+			descString = "Null"
 
-		return "+–––––––+–––––––––––––––––––––––––––––––+\n|Name\t| " + str(self.name) + "\n|Type\t| " + str(self.itemType) + "\n|Power\t| " + powerString + "\n+–––––––+–––––––––––––––––––––––––––––––+"
+		descString = textwrap.wrap(descString, width = 45, max_lines = 3, placeholder = "...")
+		if (len(descString) < 3):
+			temp = len(descString)
+			for i in range(3 - temp):
+				descString.append("")
+
+		return (
+			"+–––––––––––––––––––––––––––––––+"
+			+ "\n| " + formatText(self.name, 0, 29) + " |"
+			+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
+			+ "\n| " + formatText("Desc.", 0, 5) + " | " + formatText(descString[0], 0, 45) + " |"
+			+ "\n| " + formatText("", 0, 5) + " | " + formatText(descString[1], 0, 45) + " |"
+			+ "\n| " + formatText("", 0, 5) + " | " + formatText(descString[2], 0, 45) + " |"
+			+ "\n+–––––––+–––––––––––––––––––––––––––––––––––––––––––––––+"
+		)
 
 
 class PlayerCharacter:
-	def __init__(self, name="Null", stats=Stats(), skills=[], inventory="050100050100"):
-		self.name = name
+	def __init__(self, name="Null", stats=Stats(), skills=[]):
+		self.name = textwrap.shorten(str(name), width = 50, placeholder = "")
 		self.curHP = 1
 		self.curMP = 1
 
@@ -425,16 +688,7 @@ class PlayerCharacter:
 
 		self.skills = skills
 
-		self.itemInventory = [
-			int(inventory[0:2]),
-			int(inventory[2:4]),
-			int(inventory[4:6]),
-			int(inventory[6:8]),
-			int(inventory[8:10]),
-			int(inventory[10:12])
-		]
-
-		self.buffsDebuffs = Stats(hp = 100, mp = 100, ballisticAttack = 100, magicAttack = 100, ballisticDefense = 100, magicDefense = 100, accuracy = 100, evade = 100)
+		self.buffsDebuffs = Stats(every = 100)
 
 		self.statusEffects = []
 		self.statusEffectDurations = []
@@ -451,16 +705,11 @@ class PlayerCharacter:
 		healthRatio = self.curHP / self.totalStats.hp
 		manaRatio = self.curMP / self.totalStats.mp
 
-		self.totalStats = Stats(
-			hp = round(self.leveledUpStats.hp * (self.buffsDebuffs.hp / 100)),
-			mp = round(self.leveledUpStats.mp * (self.buffsDebuffs.mp / 100)),
-			ballisticAttack = round(self.leveledUpStats.ballisticAttack * (self.buffsDebuffs.ballisticAttack / 100)),
-			magicAttack = round(self.leveledUpStats.magicAttack * (self.buffsDebuffs.magicAttack / 100)),
-			ballisticDefense = round(self.leveledUpStats.ballisticDefense * (self.buffsDebuffs.ballisticDefense / 100)),
-			magicDefense = round(self.leveledUpStats.magicDefense * (self.buffsDebuffs.magicDefense / 100)),
-			accuracy = round(self.leveledUpStats.accuracy * (self.buffsDebuffs.accuracy / 100)),
-			evade = round(self.leveledUpStats.evade * (self.buffsDebuffs.evade / 100))
-		)
+		allStats = [currentStat for currentStat in dir(self.buffsDebuffs) if not currentStat.startswith('__') and not callable(getattr(self.buffsDebuffs, currentStat))]
+		for currentStat in allStats:
+			setattr(self.buffsDebuffs, currentStat, min(max(getattr(self.buffsDebuffs, currentStat), 50), 200))
+
+		self.totalStats = round(self.leveledUpStats * self.buffsDebuffs / 100, 0)
 
 		self.maxHP = self.totalStats.hp
 		self.maxMP = self.totalStats.mp
@@ -468,15 +717,8 @@ class PlayerCharacter:
 		self.curMP = int(self.totalStats.mp * manaRatio)
 
 	def evaluateCurrentPoints(self):
-		if (self.curHP > self.maxHP):
-			self.curHP = self.maxHP
-		elif (self.curHP < 0):
-			self.curHP = 0
-
-		if (self.curMP > self.maxMP):
-			self.curMP = self.maxMP
-		elif (self.curMP < 0):
-			self.curMP = 0
+		self.curHP = min(max(self.curHP, 0), self.maxHP)
+		self.curMP = min(max(self.curMP, 0), self.maxMP)
 
 
 class EnemyCharacter:
@@ -501,7 +743,7 @@ class EnemyCharacter:
 
 		self.skills = skills
 
-		self.buffsDebuffs = Stats(hp = 100, mp = 100, ballisticAttack = 100, magicAttack = 100, ballisticDefense = 100, magicDefense = 100, accuracy = 100, evade = 100)
+		self.buffsDebuffs = Stats(every = 100)
 
 		self.statusEffects = []
 		self.statusEffectDurations = []
@@ -516,25 +758,14 @@ class EnemyCharacter:
 	def evaluateTotalStats(self):
 		healthRatio = self.curHP / self.totalStats.hp
 
-		self.totalStats = Stats(
-			hp = round(self.leveledUpStats.hp * (self.buffsDebuffs.hp / 100)),
-			mp = 1,
-			ballisticAttack = round(self.leveledUpStats.ballisticAttack * (self.buffsDebuffs.ballisticAttack / 100)),
-			magicAttack = round(self.leveledUpStats.magicAttack * (self.buffsDebuffs.magicAttack / 100)),
-			ballisticDefense = round(self.leveledUpStats.ballisticDefense * (self.buffsDebuffs.ballisticDefense / 100)),
-			magicDefense = round(self.leveledUpStats.magicDefense * (self.buffsDebuffs.magicDefense / 100)),
-			accuracy = round(self.leveledUpStats.accuracy * (self.buffsDebuffs.accuracy / 100)),
-			evade = round(self.leveledUpStats.evade * (self.buffsDebuffs.evade / 100))
-		)
+		self.totalStats = self.leveledUpStats * (self.buffsDebuffs / 100)
 
 		self.maxHP = self.totalStats.hp
 		self.curHP = superRound(self.totalStats.hp * healthRatio, int)
 
 	def evaluateCurrentPoints(self):
-		if (self.curHP > self.maxHP):
-			self.curHP = self.maxHP
-		elif (self.curHP < 0):
-			self.curHP = 0
+		self.curHP = min(max(self.curHP, 0), self.maxHP)
+
 
 	# def checkForLevelUp(self):
 	# 	self.baseStats = Stats(
@@ -565,6 +796,7 @@ partyMaxFocus = 1.00
 
 currentPlayers = [None, None, None]
 currentEnemies = [None, None, None]
+currentInventory = []
 
 selectedPlayer = -1
 selectedEnemy = -1
@@ -575,13 +807,6 @@ enemiesAlive = [None, None, None]
 playersHaveMoved = [None, None, None]
 enemiesHaveMoved = [None, None, None]
 
-playerClasses = {
-	0: "None",
-	1: "Class A",
-	2: "Class B",
-	3: "Class C",
-}
-
 regions = {
 	0: "None",
 	1: "Green Grasslands",
@@ -589,18 +814,13 @@ regions = {
 	3: "Dark Depths",
 }
 
-equipmentSlots = {
-	0: "Weapon",
-	1: "Armor"
-}
-
 skillTypes = {
 	0: "–",
 	1: "Attack",
 	2: "Heal",
 	3: "Revive",
-	4: "Buff",
-	5: "Debuff",
+	4: "Buff/Debuff",
+	5: "Status Effect"
 }
 
 statTypes = {
@@ -627,10 +847,6 @@ elements = {
 	3: "Water",
 	4: "Ice",
 	5: "Inherited",
-	6: "Heal",
-	7: "Revive",
-	8: "Buff",
-	9: "Debuff"
 }
 
 resources = {
@@ -644,14 +860,14 @@ resources = {
 }
 
 flatResources = [
+	resources[1],
 	resources[2],
-	resources[3],
-	resources[4]
+	resources[3]
 ]
 
 percentageResources = [
+	resources[4],
 	resources[5],
-	resources[6],
 	resources[6]
 ]
 
@@ -662,7 +878,15 @@ itemTypes = {
 
 # Contains the list for status effects.
 statusEffectsList = {
-	0: StatusEffect("Healthy I",Stats(15,0,0,0,0,0,0,0)),1: StatusEffect("Healthy II",Stats(30,0,0,0,0,0,0,0)),2: StatusEffect("Healthy III",Stats(45,0,0,0,0,0,0,0)),3: StatusEffect("Energetic I",Stats(0,15,0,0,0,0,0,0)),4: StatusEffect("Energetic II",Stats(0,30,0,0,0,0,0,0)),5: StatusEffect("Energetic III",Stats(0,45,0,0,0,0,0,0)),6: StatusEffect("Strengthened I",Stats(0,0,15,0,0,0,0,0)),7: StatusEffect("Strengthened II",Stats(0,0,30,0,0,0,0,0)),8: StatusEffect("Strengthened III",Stats(0,0,45,0,0,0,0,0)),9: StatusEffect("Sharpened I",Stats(0,0,0,15,0,0,0,0)),10: StatusEffect("Sharpened II",Stats(0,0,0,30,0,0,0,0)),11: StatusEffect("Sharpened III",Stats(0,0,0,45,0,0,0,0)),12: StatusEffect("Shielded I",Stats(0,0,0,0,15,0,0,0)),13: StatusEffect("Shielded II",Stats(0,0,0,0,30,0,0,0)),14: StatusEffect("Shielded III",Stats(0,0,0,0,45,0,0,0)),15: StatusEffect("Barriered I",Stats(0,0,0,0,0,15,0,0)),16: StatusEffect("Barriered II",Stats(0,0,0,0,0,30,0,0)),17: StatusEffect("Barriered III",Stats(0,0,0,0,0,45,0,0)),18: StatusEffect("Accurate I",Stats(0,0,0,0,0,0,15,0)),19: StatusEffect("Accurate II",Stats(0,0,0,0,0,0,30,0)),20: StatusEffect("Accurate III",Stats(0,0,0,0,0,0,45,0)),21: StatusEffect("Evasive I",Stats(0,0,0,0,0,0,0,15)),22: StatusEffect("Evasive II",Stats(0,0,0,0,0,0,0,30)),23: StatusEffect("Evasive III",Stats(0,0,0,0,0,0,0,45)),24: StatusEffect("Resourceful I",Stats(15,15,0,0,0,0,0,0)),25: StatusEffect("Resourceful II",Stats(30,30,0,0,0,0,0,0)),26: StatusEffect("Resourceful III",Stats(45,45,0,0,0,0,0,0)),27: StatusEffect("Offensive I",Stats(0,0,15,15,0,0,15,0)),28: StatusEffect("Offensive II",Stats(0,0,30,30,0,0,30,0)),29: StatusEffect("Offensive III",Stats(0,0,45,45,0,0,45,0)),30: StatusEffect("Defensive I",Stats(0,0,0,0,15,15,0,15)),31: StatusEffect("Defensive II",Stats(0,0,0,0,30,30,0,30)),32: StatusEffect("Defensive III",Stats(0,0,0,0,45,45,0,45)),33: StatusEffect("Agile I",Stats(0,0,0,0,0,0,15,15)),34: StatusEffect("Agile II",Stats(0,0,0,0,0,0,30,30)),35: StatusEffect("Agile III",Stats(0,0,0,0,0,0,45,45)),36: StatusEffect("Enhanced I",Stats(15,0,15,0,15,0,0,0)),37: StatusEffect("Enhanced II",Stats(30,0,30,0,30,0,0,0)),38: StatusEffect("Enhanced III",Stats(45,0,45,0,45,0,0,0)),39: StatusEffect("Enchanted I",Stats(0,15,0,15,0,15,0,0)),40: StatusEffect("Enchanted II",Stats(0,30,0,30,0,30,0,0)),41: StatusEffect("Enchanted III",Stats(0,45,0,45,0,45,0,0)),42: StatusEffect("Empowered I",Stats(15,15,15,15,15,15,15,15)),43: StatusEffect("Empowered II",Stats(30,30,30,30,30,30,30,30)),44: StatusEffect("Empowered III",Stats(45,45,45,45,45,45,45,45)),45: StatusEffect("Ill I",Stats(-15,0,0,0,0,0,0,0)),46: StatusEffect("Ill II",Stats(-30,0,0,0,0,0,0,0)),47: StatusEffect("Ill III",Stats(-45,0,0,0,0,0,0,0)),48: StatusEffect("Lethargic I",Stats(0,-15,0,0,0,0,0,0)),49: StatusEffect("Lethargic II",Stats(0,-30,0,0,0,0,0,0)),50: StatusEffect("Lethargic III",Stats(0,-45,0,0,0,0,0,0)),51: StatusEffect("Weakened I",Stats(0,0,-15,0,0,0,0,0)),52: StatusEffect("Weakened II",Stats(0,0,-30,0,0,0,0,0)),53: StatusEffect("Weakened III",Stats(0,0,-45,0,0,0,0,0)),54: StatusEffect("Dulled I",Stats(0,0,0,-15,0,0,0,0)),55: StatusEffect("Dulled II",Stats(0,0,0,-30,0,0,0,0)),56: StatusEffect("Dulled III",Stats(0,0,0,-45,0,0,0,0)),57: StatusEffect("Broken I",Stats(0,0,0,0,-15,0,0,0)),58: StatusEffect("Broken II",Stats(0,0,0,0,-30,0,0,0)),59: StatusEffect("Broken III",Stats(0,0,0,0,-45,0,0,0)),60: StatusEffect("Shattered I",Stats(0,0,0,0,0,-15,0,0)),61: StatusEffect("Shattered II",Stats(0,0,0,0,0,-30,0,0)),62: StatusEffect("Shattered III",Stats(0,0,0,0,0,-45,0,0)),63: StatusEffect("Blinded I",Stats(0,0,0,0,0,0,-15,0)),64: StatusEffect("Blinded II",Stats(0,0,0,0,0,0,-30,0)),65: StatusEffect("Blinded III",Stats(0,0,0,0,0,0,-45,0)),66: StatusEffect("Sluggish I",Stats(0,0,0,0,0,0,0,-15)),67: StatusEffect("Sluggish II",Stats(0,0,0,0,0,0,0,-30)),68: StatusEffect("Sluggish III",Stats(0,0,0,0,0,0,0,-45)),69: StatusEffect("Drained I",Stats(-15,-15,0,0,0,0,0,0)),70: StatusEffect("Drained II",Stats(-30,-30,0,0,0,0,0,0)),71: StatusEffect("Drained III",Stats(-45,-45,0,0,0,0,0,0)),72: StatusEffect("Distracted I",Stats(0,0,-15,-15,0,0,-15,0)),73: StatusEffect("Distracted II",Stats(0,0,-30,-30,0,0,-30,0)),74: StatusEffect("Distracted III",Stats(0,0,-45,-45,0,0,-45,0)),75: StatusEffect("Offguard I",Stats(0,0,0,0,-15,-15,0,-15)),76: StatusEffect("Offguard II",Stats(0,0,0,0,-30,-30,0,-30)),77: StatusEffect("Offguard III",Stats(0,0,0,0,-45,-45,0,-45)),78: StatusEffect("Clumsy I",Stats(0,0,0,0,0,0,-15,-15)),79: StatusEffect("Clumsy II",Stats(0,0,0,0,0,0,-30,-30)),80: StatusEffect("Clumsy III",Stats(0,0,0,0,0,0,-45,-45)),81: StatusEffect("Poisoned I",Stats(-15,0,-15,0,-15,0,0,0)),82: StatusEffect("Poisoned II",Stats(-30,0,-30,0,-30,0,0,0)),83: StatusEffect("Poisoned III",Stats(-45,0,-45,0,-45,0,0,0)),84: StatusEffect("Cursed I",Stats(0,-15,0,-15,0,-15,0,0)),85: StatusEffect("Cursed II",Stats(0,-30,0,-30,0,-30,0,0)),86: StatusEffect("Cursed III",Stats(0,-45,0,-45,0,-45,0,0)),87: StatusEffect("Empowered I",Stats(-15,-15,-15,-15,-15,-15,-15,-15)),88: StatusEffect("Empowered II",Stats(-30,-30,-30,-30,-30,-30,-30,-30)),89: StatusEffect("Empowered III",Stats(-45,-45,-45,-45,-45,-45,-45,-45)),90: StatusEffect("Defending",Stats(0,0,0,0,50,50,0,0)),91: StatusEffect("Evading",Stats(0,0,0,0,0,0,0,50)),92: StatusEffect("Burn",Stats(-1,0,0,0,0,0,0,0)),93: StatusEffect("Blaze",Stats(-2,0,0,0,0,0,0,0)),94: StatusEffect("Scorch",Stats(-3,0,0,0,0,0,0,0)),95: StatusEffect("Wet",Stats(0,0,0,0,-10,-10,0,0)),96: StatusEffect("Soak",Stats(0,0,0,0,-20,-20,0,0)),97: StatusEffect("Drench",Stats(0,0,0,0,-30,-30,0,0)),98: StatusEffect("Frozen",Stats(0,0,0,0,0,0,-2,-2)),99: StatusEffect("Frostbite",Stats(0,0,0,0,0,0,-4,-4)),100: StatusEffect("Frostburn",Stats(0,0,0,0,0,0,-6,-6)),101: StatusEffect("Refreshing",Stats(0,0,0,0,0,0,0,0)),102: StatusEffect("Regrowing",Stats(0,0,0,0,0,0,0,0)),103: StatusEffect("Renewing",Stats(0,0,0,0,0,0,0,0)),104: StatusEffect("Napping",Stats(0,0,0,0,0,0,0,0)),105: StatusEffect("Resting",Stats(0,0,0,0,0,0,0,0)),106: StatusEffect("Relaxing",Stats(0,0,0,0,0,0,0,0)),
+	0: StatusEffect(),
+	1: StatusEffect(
+		name = "Defend",
+		effect = Stats(ballisticDefense = 50, magicDefense = 50)
+	),
+	2: StatusEffect(
+		name = "Evade",
+		effect = Stats(evade = 50)
+	)
 }
 
 # Contains the list for skills.
@@ -674,7 +898,7 @@ skillsList = {
 		statType = 0,
 		element = 0,
 		mpChange = 25,
-		accuracyMod = 100,
+		accuracyMod = 0.00,
 		critChance = 0.00,
 		randomMod = 0.00,
 		targetingTypeA = 1,
@@ -688,11 +912,11 @@ skillsList = {
 	),
 	2: Skill(
 		name = "Defend",
-		skillType = 4,
+		skillType = 5,
 		statType = 0,
 		element = 0,
 		mpChange = 0,
-		accuracyMod = 100.00,
+		accuracyMod = math.inf,
 		critChance = 0.00,
 		randomMod = 0.00,
 		targetingTypeA = 1,
@@ -701,16 +925,16 @@ skillsList = {
 		targetingTypeB = None,
 		basePowerB = None,
 		buffDebuffB = None,
-		statusEffect = 90,
+		statusEffect = 1,
 		statusEffectDuration = 3
 	),
 	3: Skill(
 		name = "Evade",
-		skillType = 4,
+		skillType = 5,
 		statType = 0,
 		element = 0,
 		mpChange = 0,
-		accuracyMod = 100.00,
+		accuracyMod = math.inf,
 		critChance = 0.00,
 		randomMod = 0.00,
 		targetingTypeA = 1,
@@ -719,11 +943,11 @@ skillsList = {
 		targetingTypeB = None,
 		basePowerB = None,
 		buffDebuffB = None,
-		statusEffect = 91,
+		statusEffect = 2,
 		statusEffectDuration = 3
 	),
 	4: Skill(
-		name = "Basic Attack A",
+		name = "Attack A",
 		skillType = 1,
 		statType = 1,
 		element = 1,
@@ -741,7 +965,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	5: Skill(
-		name = "Basic Attack B",
+		name = "Attack B",
 		skillType = 1,
 		statType = 1,
 		element = 1,
@@ -759,7 +983,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	6: Skill(
-		name = "Basic Attack C",
+		name = "Attack C",
 		skillType = 1,
 		statType = 2,
 		element = 1,
@@ -777,7 +1001,7 @@ skillsList = {
 		statusEffectDuration = 0
 	),
 	7: Skill(
-		name = "Basic Attack D",
+		name = "Attack D",
 		skillType = 1,
 		statType = 2,
 		element = 1,
@@ -835,7 +1059,7 @@ skillsList = {
 		skillType = 2,
 		statType = 2,
 		element = 1,
-		mpChange = -10,
+		mpChange = -100,
 		accuracyMod = 1.00,
 		critChance = 0.00,
 		randomMod = 0.10,
@@ -884,11 +1108,173 @@ skillsList = {
 		statusEffect = None,
 		statusEffectDuration = 0
 	),
+	13: Skill(
+		name = "Buff A",
+		skillType = 4,
+		statType = 0,
+		element = 0,
+		mpChange = 0,
+		accuracyMod = math.inf,
+		critChance = 0.00,
+		randomMod = 0.00,
+		targetingTypeA = 4,
+		basePowerA = None,
+		buffDebuffA = Stats(ballisticAttack = 50),
+		targetingTypeB = 5,
+		basePowerB = None,
+		buffDebuffB = Stats(ballisticAttack = 20),
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	14: Skill(
+		name = "Buff B",
+		skillType = 4,
+		statType = 0,
+		element = 0,
+		mpChange = 0,
+		accuracyMod = math.inf,
+		critChance = 0.00,
+		randomMod = 0.00,
+		targetingTypeA = 4,
+		basePowerA = None,
+		buffDebuffA = Stats(magicAttack = 50),
+		targetingTypeB = 5,
+		basePowerB = None,
+		buffDebuffB = Stats(magicAttack = 20),
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	15: Skill(
+		name = "Debuff A",
+		skillType = 4,
+		statType = 0,
+		element = 0,
+		mpChange = 0,
+		accuracyMod = math.inf,
+		critChance = 0.00,
+		randomMod = 0.00,
+		targetingTypeA = 2,
+		basePowerA = None,
+		buffDebuffA = Stats(ballisticAttack = -50),
+		targetingTypeB = 3,
+		basePowerB = None,
+		buffDebuffB = Stats(ballisticAttack = -20),
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
+	16: Skill(
+		name = "Debuff B",
+		skillType = 4,
+		statType = 0,
+		element = 0,
+		mpChange = 0,
+		accuracyMod = math.inf,
+		critChance = 0.00,
+		randomMod = 0.00,
+		targetingTypeA = 2,
+		basePowerA = None,
+		buffDebuffA = Stats(magicAttack = -50),
+		targetingTypeB = 3,
+		basePowerB = None,
+		buffDebuffB = Stats(magicAttack = -20),
+		statusEffect = None,
+		statusEffectDuration = 0
+	),
 }
 
 # Contains the list for items.
 itemsList = {
-	0:Item("Lesser Health Potion",itemTypes[0],400,40,150),1:Item("Health Potion",itemTypes[0],2000,70,750),2:Item("Greater Health Potion",itemTypes[0],10000,100,3750),3:Item("Lesser Mana Potion",itemTypes[1],400,40,150),4:Item("Mana Potion",itemTypes[1],2000,70,750),5:Item("Greater Mana Potion",itemTypes[1],10000,100,3750)
+	0: Item(),
+	1: Item(
+		name = "HP Recovery Item A",
+		itemType = 0,
+		targetingType = 4,
+		rawPower = 400,
+		relativePower = 40,
+		value = 150
+	),
+	2: Item(
+		name = "HP Recovery Item B",
+		itemType = 0,
+		targetingType = 4,
+		rawPower = 2000,
+		relativePower = 70,
+		value = 750
+	),
+	3: Item(
+		name = "HP Recovery Item C",
+		itemType = 0,
+		targetingType = 4,
+		rawPower = 10000,
+		relativePower = 100,
+		value = 3750
+	),
+	4: Item(
+		name = "HP Recovery Item D",
+		itemType = 0,
+		targetingType = 5,
+		rawPower = 400,
+		relativePower = 40,
+		value = 150
+	),
+	5: Item(
+		name = "HP Recovery Item E",
+		itemType = 0,
+		targetingType = 5,
+		rawPower = 2000,
+		relativePower = 70,
+		value = 750
+	),
+	6: Item(
+		name = "HP Recovery Item F",
+		itemType = 0,
+		targetingType = 5,
+		rawPower = 10000,
+		relativePower = 100,
+		value = 3750
+	),
+	7: Item(
+		name = "MP Recovery Item A",
+		itemType = 1,
+		targetingType = 4,
+		relativePower = 40,
+		value = 150
+	),
+	8: Item(
+		name = "MP Recovery Item B",
+		itemType = 1,
+		targetingType = 4,
+		relativePower = 70,
+		value = 750
+	),
+	9: Item(
+		name = "MP Recovery Item C",
+		itemType = 1,
+		targetingType = 4,
+		relativePower = 100,
+		value = 3750
+	),
+	10: Item(
+		name = "MP Recovery Item D",
+		itemType = 1,
+		targetingType = 5,
+		relativePower = 40,
+		value = 150
+	),
+	11: Item(
+		name = "MP Recovery Item E",
+		itemType = 1,
+		targetingType = 5,
+		relativePower = 70,
+		value = 750
+	),
+	12: Item(
+		name = "MP Recovery Item F",
+		itemType = 1,
+		targetingType = 5,
+		relativePower = 100,
+		value = 3750
+	),
 }
 
 # Contains the list for players.
@@ -906,8 +1292,7 @@ playersList = {
 			accuracy = 20,
 			evade = 20
 		),
-		skills = [4, 5],
-		inventory = "050100050100"
+		skills = [4, 5, 13, 15]
 	),
 	2: PlayerCharacter(
 		name = "Monkey B",
@@ -921,8 +1306,7 @@ playersList = {
 			accuracy = 25,
 			evade = 25
 		),
-		skills = [6, 7],
-		inventory = "050100050100"
+		skills = [6, 7, 14, 16]
 	),
 	3: PlayerCharacter(
 		name = "Monkey C",
@@ -936,8 +1320,7 @@ playersList = {
 			accuracy = 20,
 			evade = 20
 		),
-		skills = [8, 9, 10, 11, 12],
-		inventory = "050100050100"
+		skills = [8, 9, 10, 11, 12]
 	),
 }
 
@@ -1260,6 +1643,8 @@ def renderNewGameMenu():
 						currentPlayers[i] = copy.deepcopy(playersList[selectedCharacters[i]])
 						playersAlive[i] = True
 						playersHaveMoved[i] = False
+				for i in range(len(itemsList)):
+					currentInventory.append(0) if (i == 0) else currentInventory.append(10)
 				startGame()
 				inNewGameMenu = False
 			elif (userInput == "`"):
@@ -1326,7 +1711,7 @@ def startBattle():
 	global selectedEnemy
 
 	# numOfEnemyCharacters = random.randint(1, 3)
-	numOfEnemyCharacters = 2
+	numOfEnemyCharacters = 3
 	for i in range(numOfEnemyCharacters):
 		currentEnemies[i] = copy.deepcopy(enemiesList[random.randint(1, 3)])
 		enemiesAlive[i] = True
@@ -1349,7 +1734,7 @@ def startBattle():
 					else:
 						break
 				renderBattleActionMenu()
-				evaluateCharacterHP()
+				evaluateCharacterStatus()
 
 		# Enemy turn on even numbers.
 		elif (battleTurn % 2 == 0):
@@ -1362,7 +1747,7 @@ def startBattle():
 					else:
 						break
 				initiateEnemyAttack()
-				evaluateCharacterHP()
+				evaluateCharacterStatus()
 		progressBattleTurn()
 
 	finishBattle()
@@ -1463,7 +1848,7 @@ def progressBattleTurn():
 	# 	else:
 	# 		continue
 
-	evaluateCharacterHP()
+	evaluateCharacterStatus()
 
 
 # Determines what happens when a battle is finished.
@@ -1737,6 +2122,7 @@ def renderBattleStatusMenu():
 
 	print(battleUIRowDivider())
 	print("|\t|\t|\t|\t|\t|\t|\t|\t|\t|\t|\t|")
+	print()
 
 
 # Render a menu that shows the player their general actions when in battle (such as use a skill or an item).
@@ -1751,7 +2137,7 @@ def renderBattleActionMenu():
 		except Exception as e:
 			input(e)
 
-		print("\n" + str(currentPlayers[selectedPlayer].name))
+		print(currentPlayers[selectedPlayer].name)
 		print("-" * len(currentPlayers[selectedPlayer].name))
 		print("1. Attack")
 		# print("1. Skills")
@@ -1796,7 +2182,7 @@ def renderAttackMenu():
 	while (pickingSkill):
 		renderBattleStatusMenu()
 
-		print("\n" + currentPlayers[selectedPlayer].name + " > Attack")
+		print(currentPlayers[selectedPlayer].name + " > Attack")
 		print("-" * len(currentPlayers[selectedPlayer].name) + "---------")
 		for i in range(len(currentPlayers[selectedPlayer].skills)):
 			count = i + 1
@@ -1808,10 +2194,8 @@ def renderAttackMenu():
 
 			if (currentSkill == skillsList[0]):
 				continue
-			elif (currentSkill.mpChange < 0):
-				print(str(count) + ". " + currentSkill.name + " (" + str(currentSkillMPChange) + " MP)")
 			else:
-				print(str(count) + ". " + currentSkill.name + " (+" + str(currentSkillMPChange) + " MP)")
+				print("{0}. {1} ({2:+} MP)".format(count, currentSkill.name, currentSkillMPChange))
 		print("`. Back")
 
 		try:
@@ -1844,7 +2228,7 @@ def renderAttackDetails(skill):
 	while (viewingSkillDetails):
 		renderBattleStatusMenu()
 
-		print("\n" + currentPlayers[selectedPlayer].name + " > Attack > Targeting")
+		print(currentPlayers[selectedPlayer].name + " > Attack > Targeting")
 		print("-" * len(currentPlayers[selectedPlayer].name) + "---------------------")
 		print(skill)
 
@@ -2048,27 +2432,20 @@ def renderItemMenu():
 	while (pickingItem):
 		renderBattleStatusMenu()
 
-		print("\n" + currentPlayers[selectedPlayer].name + " > Items")
+		print(currentPlayers[selectedPlayer].name + " > Items")
 		print("-" * len(currentPlayers[selectedPlayer].name) + "--------")
-		for i in range(len(itemsList)):
-			currentItemAmount = currentPlayers[selectedPlayer].itemInventory[i]
-			if (currentItemAmount > 0):
-				print(str(i + 1) + ". ", end="")
-				print(itemsList[i].name + " (" + str(currentItemAmount) + ")")
+		for i in range(1, len(itemsList)):
+			print("{0}. {1} ({2})".format(i, itemsList[i].name, currentInventory[i]))
 		print("`. Back")
 
 		try:
 			userInput = input("> ")
 			if (userInput.isdecimal()):
 				userInput = int(userInput)
-				if (1 <= userInput <= len(itemsList) and sum(currentPlayers[selectedPlayer].itemInventory) > 0):
-					userInput -= 1
-					chosenItemAmount = currentPlayers[selectedPlayer].itemInventory[userInput]
-
-					if (chosenItemAmount > 0):
-						renderItemDetails(userInput)
-						if (playersHaveMoved[selectedPlayer]):
-							pickingItem = False
+				if (1 <= userInput <= len(itemsList)):
+					renderItemDetails(userInput)
+					if (playersHaveMoved[selectedPlayer]):
+						pickingItem = False
 			elif (userInput == "`"):
 				pickingItem = False
 		except:
@@ -2083,19 +2460,49 @@ def renderItemDetails(itemIndex):
 	while (viewingItemDetails):
 		renderBattleStatusMenu()
 
-		print("\n" + currentPlayers[selectedPlayer].name + " > Items > Use")
+		print(currentPlayers[selectedPlayer].name + " > Items > Use")
 		print("-" * len(currentPlayers[selectedPlayer].name) + "--------------")
 		print(chosenItem)
-		print("1. Confirm")
-		print("`. Back")
+
+		hasAvailableTarget = False
+
+		if (currentInventory[itemIndex] > 0):
+			if (chosenItem.targetingType == targetingTypes[4]):
+				for i in range(len(currentPlayers) - playersAlive.count(None)):
+					if (playersAlive[i]):
+						print(str(i + 1) + ". " + currentPlayers[i].name)
+						hasAvailableTarget = True
+
+			if (chosenItem.targetingType == targetingTypes[5]):
+				print("1. " + targetingTypes[5])
+				hasAvailableTarget = True
+
+
+			if (not hasAvailableTarget):
+				print("No targets available.")
+		else:
+			print("No " + chosenItem.name + "s in inventory.")
+
+		print("`. Cancel")
 
 		try:
 			userInput = input("> ")
 			if (userInput.isdecimal()):
 				userInput = int(userInput)
-				if (userInput == 1):
-					useItem(currentPlayers[selectedPlayer], currentPlayers[selectedPlayer], itemIndex)
-					viewingItemDetails = False
+				if (chosenItem.targetingType == targetingTypes[4]):
+					if (playersAlive[userInput - 1]):
+						chosenTarget = [currentPlayers[userInput - 1]]
+				elif (chosenItem.targetingType == targetingTypes[5]):
+					if (userInput == 1):
+						chosenTarget = []
+						for i in range(len(currentPlayers)):
+							if (playersAlive[i] and currentPlayers[i] != None):
+								chosenTarget.append(currentPlayers[i])
+				else:
+					chosenTarget = []
+
+				useItem(chosenTarget, currentPlayers[selectedPlayer], itemIndex)
+				viewingItemDetails = False
 			elif (userInput == "`"):
 				viewingItemDetails = False
 		except:
@@ -2108,7 +2515,7 @@ def renderScanMenu():
 
 	while (scanningCharacters):
 		renderBattleStatusMenu()
-		print("\n" + currentPlayers[selectedPlayer].name + " > Scan")
+		print(currentPlayers[selectedPlayer].name + " > Scan")
 		print("-" * len(currentPlayers[selectedPlayer].name) + "-------")
 		print("1. " + str(currentPlayers[0].name))
 		print("2. " + str(currentEnemies[0].name))
@@ -2135,7 +2542,7 @@ def renderPlayerScanMenu():
 	while (scanningPlayerCharacter):
 		renderBattleStatusMenu()
 
-		print("\n" + currentPlayers[selectedPlayer].name + " > Scan > " + currentPlayers[selectedPlayer].name)
+		print(currentPlayers[selectedPlayer].name + " > Scan > " + currentPlayers[selectedPlayer].name)
 		print("-" * len(currentPlayers[selectedPlayer].name) + "----------" + "-" * len(currentPlayers[selectedPlayer].name))
 		print("1. Base Stats")
 		print("2. Status Effects")
@@ -2224,7 +2631,7 @@ def initiateEnemyAttack():
 
 
 # Check the status of all players and enemies.
-def evaluateCharacterHP():
+def evaluateCharacterStatus():
 	global currentPlayers
 	global currentEnemies
 	global playersAlive
@@ -2317,7 +2724,7 @@ def renderShopDetails(itemIndex):
 	while (viewingItemDetails):
 		renderTownStatusMenu()
 
-		print("\nTown > Shop > Item Details")
+		print("Town > Shop > Item Details")
 		print("--------------------------")
 		print(chosenItem)
 		print(">0. Buy current item at 100% value")
@@ -2363,7 +2770,7 @@ def renderInnMenu():
 	while (inInn):
 		renderTownStatusMenu()
 
-		print("\nTown > Inn")
+		print("Town > Inn")
 		print("----------")
 		print("1. " + str(innActions[0]) + " (50% HP) ($" + str(innCosts[0]) + ")")
 		print("2. " + str(innActions[1]) + " (100% HP) ($" + str(innCosts[1]) + ")")
@@ -2396,7 +2803,7 @@ def renderInnDetails(action):
 
 	while (viewingActionDetails):
 		renderTownStatusMenu()
-		print("\nTown > Inn > Action Details")
+		print("Town > Inn > Action Details")
 		print("---------------------------")
 		print("+–––––––+–––––––––––––––––––––––––––––––+")
 		print("|Action\t| " + str(innActions[action]))
@@ -2470,8 +2877,8 @@ def applyStatusEffect(target, user, statusEffect, statusEffectDuration):
 		proceduralPrint(str(target[i].name) + " received " + str(statusEffect.name) + ".", "")
 
 
-# The user casts a specified skill onto the target.
-def castSkill(target, user, skill, version):
+# The user casts a specified skill onto the target(s).
+def castSkill(targets, user, skill, version):
 	global battleTurn
 	global playersHaveMoved
 	global enemiesHaveMoved
@@ -2481,9 +2888,9 @@ def castSkill(target, user, skill, version):
 
 	# Get user text for strings
 	userName = user.name
-	targetName = []
-	for i in range(len(target)):
-		targetName.append(target[i].name)
+	targetNames = []
+	for i in range(len(targets)):
+		targetNames.append(targets[i].name)
 
 	if (type(user) is PlayerCharacter):
 		user.curMP += skill.mpChange
@@ -2497,8 +2904,8 @@ def castSkill(target, user, skill, version):
 
 	userAccuracyStat = user.totalStats.accuracy
 	targetEvadeStat = []
-	for i in range(len(target)):
-		targetEvadeStat.append(target[i].totalStats.evade)
+	for i in range(len(targets)):
+		targetEvadeStat.append(targets[i].totalStats.evade)
 
 	proceduralPrint("\n" + userName + " casted " + skill.name + ".", "")
 
@@ -2510,87 +2917,116 @@ def castSkill(target, user, skill, version):
 
 		if (skill.statType == statTypes[1]):
 			userAttackStat = user.totalStats.ballisticAttack
-			for i in range(len(target)):
-				targetDefenseStat.append(target[i].totalStats.ballisticDefense)
+			for i in range(len(targets)):
+				targetDefenseStat.append(targets[i].totalStats.ballisticDefense)
 		elif (skill.statType == statTypes[2]):
 			userAttackStat = user.totalStats.magicAttack
-			for i in range(len(target)):
-				targetDefenseStat.append(target[i].totalStats.magicDefense)
+			for i in range(len(targets)):
+				targetDefenseStat.append(targets[i].totalStats.magicDefense)
 		else:
 			userAttackStat = 1
-			for i in range(len(target)):
+			for i in range(len(targets)):
 				targetDefenseStat.append(1)
 
-		totalPotentialDamage = []
-		totalHitRequirement = []
-		totalCritRequirement = []
-		for i in range(len(target)):
-			currentPotentialDamage = math.ceil(4 * (userAttackStat ** 2) / (userAttackStat + targetDefenseStat[i]) * skillPower)
-			if (currentPotentialDamage <= 0):
-				currentPotentialDamage = 1
-			totalPotentialDamage.append(currentPotentialDamage)
+		allPotDamage = []
+		allHitRequirements = []
+		allCritRequirements = []
+		for i in range(len(targets)):
+			currentPotDamage = math.ceil(4 * userAttackStat ** 2 / (userAttackStat + targetDefenseStat[i]) * skillPower)
+			if (currentPotDamage <= 0):
+				currentPotDamage = 1
+			allPotDamage.append(currentPotDamage)
 
-			hitRequirement = random.randint(0, 99)
-			totalHitRequirement.append(hitRequirement)
+			currentHitRequirement = random.randint(0, 99)
+			allHitRequirements.append(currentHitRequirement)
 
-			critRequirement = random.randint(0, 99)
-			totalCritRequirement.append(critRequirement)
+			currentCritRequirement = random.randint(0, 99)
+			allCritRequirements.append(currentCritRequirement)
 
-		currentAccuracy = []
-		for i in range(len(target)):
-			currentAccuracy.append(userAccuracyStat / targetEvadeStat[i] * skill.accuracyMod * 100)
+		allRegAccuracy = []
+		for i in range(len(targets)):
+			allRegAccuracy.append(userAccuracyStat / targetEvadeStat[i] * skill.accuracyMod * 100)
 
-		criticalAccuracy = []
-		for i in range(len(target)):
-			criticalAccuracy.append(skill.critChance * 100)
+		allCritAccuracy = []
+		for i in range(len(targets)):
+			allCritAccuracy.append(skill.critChance * 100)
 
-		totalDealtDamage = []
-		for i in range(len(target)):
-			currentDamage = round(totalPotentialDamage[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
+		allDamageDealt = []
+		affectedTargets = []
+		missedTargets = []
+		for i in range(len(targets)):
+			currentDamage = round(allPotDamage[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
 
-			if (currentAccuracy[i] > totalHitRequirement[i]):
-				if (criticalAccuracy[i] > totalCritRequirement[i]):
+			if (allRegAccuracy[i] > allHitRequirements[i]):
+				if (allCritAccuracy[i] > allCritRequirements[i]):
 					currentDamage = round(currentDamage * 1.5)
 					criticalString = " critical"
 				else:
 					criticalString = ""
 
-				target[i].curHP -= currentDamage
+				targets[i].curHP -= currentDamage
 
-				totalDealtDamage.append(currentDamage)
+				allDamageDealt.append(currentDamage)
 			else:
-				totalDealtDamage.append(None)
+				allDamageDealt.append(None)
 
-		for i in range(len(target)):
-			if (totalDealtDamage[i] != None):
-				if (i == 0 and len(target) == 1):
-					proceduralPrint(str(userName) + " dealt " + str(totalDealtDamage[i]) + str(criticalString) + " damage to " + str(targetName[i]) + ".", "")
-				elif (i == 0 and len(target) > 1):
-					print(str(userName) + " dealt " + str(totalDealtDamage[i]) + str(criticalString) + " damage to " + str(targetName[i]) + ",")
-				elif (i > 0 and i < (len(target) - 1)):
-					print((" " * len(userName)) + " dealt " + str(totalDealtDamage[i]) + str(criticalString) + " damage to " + str(targetName[i]) + ",")
-				else:
-					proceduralPrint((" " * len(userName)) + " dealt " + str(totalDealtDamage[i]) + str(criticalString) + " damage to " + str(targetName[i]) + ".", "")
+		currentEventText = ""
+		for i in range(len(targets)):
+			currentUserName = userName if (i == 0) else formatText("and ", 2, len(userName)) if (i + 1 == len(targets)) else " " * len(userName)
 
-				if (skillBuffDebuff != None):
-					targetBuffsDebuffs = target[i].buffsDebuffs
-					allStats = [currentStat for currentStat in dir(targetBuffsDebuffs) if not currentStat.startswith('__') and not callable(getattr(targetBuffsDebuffs, currentStat))]
-					for currentStat in allStats:
-						setattr(targetBuffsDebuffs, currentStat, min(max(getattr(targetBuffsDebuffs, currentStat) + getattr(skillBuffDebuff, currentStat), 50), 200))
-
-				if (skill.statusEffect != None):
-					applyStatusEffect(target[i], user, skill.statusEffect, skill.statusEffectDuration)
-
-				target[i].evaluateTotalStats()
+			if (allDamageDealt[i] != None):
+				currentEventText += "{0} dealt {1}{2} damage to {3}".format(currentUserName, allDamageDealt[i], criticalString, targetNames[i])
 			else:
-				if (i == 0 and len(target) == 1):
-					proceduralPrint(str(userName) + " missed their attack on " + str(targetName[i]) + ".", "")
-				elif (i == 0 and len(target) > 1):
-					print(str(userName) + " missed their attack on " + str(targetName[i]) + ",")
-				elif (i > 0 and i < (len(target) - 1)):
-					print((" " * len(userName)) + " missed their attack on " + str(targetName[i]) + ",")
-				else:
-					proceduralPrint((" " * len(userName)) + " missed their attack on " + str(targetName[i]) + ".", "")
+				currentEventText += "{0} missed their attack on {1}".format(currentUserName, targetNames[i])
+
+			if (i + 1 < len(targets)):
+				currentEventText += ",\n"
+			else:
+				currentEventText += "."
+		scrollingPrint(currentEventText)
+
+		if (skillBuffDebuff != None):
+			currentEventText = ""
+			count = 0
+
+			if (skillBuffDebuff.hasAllStats):
+				buffDebuffActionString = "buffed" if (skillBuffDebuff.hp >= 0) else "debuffed"
+				buffDebuffStatString = "All Stats"
+				buffDebuffStrengthString = "{0}%".format(abs(skillBuffDebuff.hp))
+			else:
+				statsText = ["Accuracy", "Ballistic Attack", "Ballistic Defense", "Evade", "HP", "Magic Attack", "Magic Defense", "MP"]
+				allStats = [currentStat for currentStat in dir(skillBuffDebuff) if not currentStat.startswith('__') and not callable(getattr(skillBuffDebuff, currentStat))]
+				allStats.remove("hasAllStats")
+				for currentStat in allStats:
+					if (getattr(skillBuffDebuff, currentStat) != 0):
+						buffDebuffActionString = "buffed" if (getattr(skillBuffDebuff, currentStat) >= 0) else "debuffed"
+						buffDebuffStatString = statsText[allStats.index(currentStat)]
+						buffDebuffStrengthString = "{0}%".format(abs(getattr(skillBuffDebuff, currentStat)))
+						break
+
+			for i in range(len(targets)):
+				if (allDamageDealt[i] != None):
+					lastDamageDealt = i
+
+			for i in range(len(targets)):
+				if (allDamageDealt[i] != None):
+					targets[i].buffsDebuffs += skillBuffDebuff
+
+					currentUserName = userName if (count == 0) else formatText("and ", 2, len(userName)) if (i == lastDamageDealt) else " " * len(userName)
+
+					currentEventText += "{0} {1} {2}'s {3} by {4}".format(currentUserName, buffDebuffActionString, targetNames[i], buffDebuffStatString, buffDebuffStrengthString)
+
+					if (i < lastDamageDealt):
+						currentEventText += ",\n"
+					else:
+						currentEventText += "."
+
+					count += 1
+			scrollingPrint(currentEventText)
+
+		if (skill.statusEffect != None):
+			for i in range(len(targets)):
+				applyStatusEffect(targets[i], user, skill.statusEffect, skill.statusEffectDuration)
 
 	elif (skill.skillType == skillTypes[2]):
 		if (skill.statType == statTypes[1]):
@@ -2600,51 +3036,88 @@ def castSkill(target, user, skill, version):
 		else:
 			userHealStat = 1
 
-		totalPotentialHealing = []
-		for i in range(len(target)):
-			currentPotentialHealing = math.ceil((userHealStat ** 2) / (userHealStat) * skillPower)
-			if (type(target[0]) is PlayerCharacter):
-				currentPotentialHealing *= 4
+		allPotHealing = []
+		for i in range(len(targets)):
+			currentHealing = math.ceil(userHealStat ** 2 / userHealStat * skillPower)
+			if (type(targets[0]) is PlayerCharacter):
+				currentHealing *= 4
 			else:
-				currentPotentialHealing *= 1.5
-			if currentPotentialHealing < 0:
-				currentPotentialHealing = 1
-			totalPotentialHealing.append(currentPotentialHealing)
+				currentHealing *= 1.5
+			if currentHealing < 0:
+				currentHealing = 1
+			allPotHealing.append(currentHealing)
 
-		totalDealtHealing = []
-		for i in range(len(target)):
-			currentHealing = round(totalPotentialHealing[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
+		allHealingDealt = []
+		for i in range(len(targets)):
+			currentHealing = round(allPotHealing[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
 
-			target[i].curHP += currentHealing
+			targets[i].curHP += currentHealing
 
-			totalDealtHealing.append(currentHealing)
+			allHealingDealt.append(currentHealing)
 
-		for i in range(len(target)):
-			if (i == 0 and len(target) == 1):
-				proceduralPrint(str(userName) + " dealt " + str(totalDealtHealing[i]) + " healing to " + str(targetName[i]) + ".", "")
-			elif (i == 0 and len(target) > 1):
-				print(str(userName) + " dealt " + str(totalDealtHealing[i]) + " healing to " + str(targetName[i]) + ",")
-			elif (i > 0 and i < (len(target) - 1)):
-				print((" " * len(userName)) + " dealt " + str(totalDealtHealing[i]) + " healing to " + str(targetName[i]) + ",")
+		currentEventText = ""
+		for i in range(len(targets)):
+			currentUserName = userName if (i == 0) else formatText("and ", 2, len(userName)) if (i + 1 == len(targets)) else " " * len(userName)
+
+			if (allHealingDealt[i] != None):
+				currentEventText += "{0} dealt {1} healing to {2}".format(currentUserName, allHealingDealt[i], targetNames[i])
 			else:
-				proceduralPrint((" " * len(userName)) + " dealt " + str(totalDealtHealing[i]) + " healing to " + str(targetName[i]) + ".", "")
+				currentEventText += "{0} missed their heal on {1}".format(currentUserName, targetNames[i])
 
-			if (skillBuffDebuff != None):
-				targetBuffsDebuffs = target[i].buffsDebuffs
-				allStats = [currentStat for currentStat in dir(targetBuffsDebuffs) if not currentStat.startswith('__') and not callable(getattr(targetBuffsDebuffs, currentStat))]
+			if (i + 1 < len(targets)):
+				currentEventText += ",\n"
+			else:
+				currentEventText += "."
+		scrollingPrint(currentEventText)
+
+		if (skillBuffDebuff != None):
+			currentEventText = ""
+			count = 0
+
+			if (skillBuffDebuff.hasAllStats):
+				buffDebuffActionString = "buffed" if (skillBuffDebuff.hp >= 0) else "debuffed"
+				buffDebuffStatString = "All Stats"
+				buffDebuffStrengthString = "{0}%".format(abs(skillBuffDebuff.hp))
+			else:
+				statsText = ["Accuracy", "Ballistic Attack", "Ballistic Defense", "Evade", "HP", "Magic Attack", "Magic Defense", "MP"]
+				allStats = [currentStat for currentStat in dir(skillBuffDebuff) if not currentStat.startswith('__') and not callable(getattr(skillBuffDebuff, currentStat))]
+				allStats.remove("hasAllStats")
 				for currentStat in allStats:
-					setattr(targetBuffsDebuffs, currentStat, min(max(getattr(targetBuffsDebuffs, currentStat) + getattr(skillBuffDebuff, currentStat), 50), 200))
+					if (getattr(skillBuffDebuff, currentStat) != 0):
+						buffDebuffActionString = "buffed" if (getattr(skillBuffDebuff, currentStat) >= 0) else "debuffed"
+						buffDebuffStatString = statsText[allStats.index(currentStat)]
+						buffDebuffStrengthString = "{0}%".format(abs(getattr(skillBuffDebuff, currentStat)))
+						break
 
-			if (skill.statusEffect != None):
-				applyStatusEffect(target[i], user, skill.statusEffect, skill.statusEffectDuration)
+			for i in range(len(targets)):
+				if (allHealingDealt[i] != None):
+					lastDamageDealt = i
 
-			target[i].evaluateTotalStats()
+			for i in range(len(targets)):
+				if (allHealingDealt[i] != None):
+					targets[i].buffsDebuffs += skillBuffDebuff
+
+					currentUserName = userName if (count == 0) else formatText("and ", 2, len(userName)) if (i == lastDamageDealt) else " " * len(userName)
+
+					currentEventText += "{0} {1} {2}'s {3} by {4}".format(currentUserName, buffDebuffActionString, targetNames[i], buffDebuffStatString, buffDebuffStrengthString)
+
+					if (i < lastDamageDealt):
+						currentEventText += ",\n"
+					else:
+						currentEventText += "."
+
+					count += 1
+			scrollingPrint(currentEventText)
+
+		if (skill.statusEffect != None):
+			for i in range(len(targets)):
+				applyStatusEffect(targets[i], user, skill.statusEffect, skill.statusEffectDuration)
 
 	elif (skill.skillType == skillTypes[3]):
-		for i in range(len(target)):
-			if (target[i].curHP > 0):
-				target.pop(target[i])
-				targetName.pop(targetName[i])
+		for i in range(len(targets)):
+			if (targets[i].curHP > 0):
+				targets.pop(targets[i])
+				targetNames.pop(targetNames[i])
 				targetEvadeStat.pop(targetEvadeStat[i])
 
 		if (skill.statType == statTypes[1]):
@@ -2654,50 +3127,92 @@ def castSkill(target, user, skill, version):
 		else:
 			userHealStat = 1
 
-		totalPotentialHealing = []
-		for i in range(len(target)):
-			currentPotentialHealing = round(((userHealStat ** 2) / (userHealStat)) * skillPower)
-			if currentPotentialHealing < 0:
-				currentPotentialHealing = 0
-			totalPotentialHealing.append(currentPotentialHealing)
+		allPotHealing = []
+		for i in range(len(targets)):
+			currentHealing = round(((userHealStat ** 2) / (userHealStat)) * skillPower)
+			if currentHealing < 0:
+				currentHealing = 0
+			allPotHealing.append(currentHealing)
 
-		totalDealtHealing = []
-		for i in range(len(target)):
-			currentHealing = round(totalPotentialHealing[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
+		allHealingDealt = []
+		for i in range(len(targets)):
+			currentHealing = round(allPotHealing[i] * random.uniform((1.00 - (skill.randomMod / 2)), (1.00 + (skill.randomMod / 2))))
 
-			target[i].curHP += currentHealing
+			targets[i].curHP += currentHealing
 			if (user in currentPlayers):
-				playersHaveMoved[currentPlayers.index(target[i])] = False
+				playersHaveMoved[currentPlayers.index(targets[i])] = False
 			elif (user in currentEnemies):
-				enemiesHaveMoved[currentEnemies.index(target[i])] = False
+				enemiesHaveMoved[currentEnemies.index(targets[i])] = False
 
-			totalDealtHealing.append(currentHealing)
+			allHealingDealt.append(currentHealing)
 
-		for i in range(len(target)):
-			if (i == 0 and len(target) == 1):
-				proceduralPrint(str(userName) + " revived " + str(targetName[i]) + " with " +  str(totalDealtHealing[i]) + " healing.", "")
-			elif (i == 0 and len(target) > 1):
-				print(str(userName) + " revived " + str(targetName[i]) + " with " +  str(totalDealtHealing[i]) + " healing,")
-			elif (i > 0 and i < (len(target) - 1)):
-				print((" " * len(userName)) + " revived " + str(targetName[i]) + " with " +  str(totalDealtHealing[i]) + " healing,")
+		currentEventText = ""
+		for i in range(len(targets)):
+			currentUserName = userName if (i == 0) else formatText("and ", 2, len(userName)) if (i + 1 == len(targets)) else " " * len(userName)
+
+			if (allHealingDealt[i] != None):
+				currentEventText += "{0} revived {1} with {2} health".format(currentUserName, targetNames[i], allHealingDealt[i])
 			else:
-				proceduralPrint((" " * len(userName)) + " revived " + str(targetName[i]) + " with " +  str(totalDealtHealing[i]) + " healing.", "")
+				currentEventText += "{0} missed their revival on {1}".format(currentUserName, targetNames[i])
+
+			if (i + 1 < len(targets)):
+				currentEventText += ",\n"
+			else:
+				currentEventText += "."
+		scrollingPrint(currentEventText)
 
 	elif (skill.skillType == skillTypes[4]):
-		applyStatusEffect(target, user, skill.statusEffect, skill.statusEffectDuration)
+		allHitRequirements = []
+		for i in range(len(targets)):
+			currentHitRequirement = random.randint(0, 99)
+			allHitRequirements.append(currentHitRequirement)
+
+		allRegAccuracy = []
+		for i in range(len(targets)):
+			allRegAccuracy.append(userAccuracyStat / targetEvadeStat[i] * skill.accuracyMod * 100)
+
+		for i in range(len(targets)):
+			if (allRegAccuracy[i] >= allHitRequirements[i]):
+				targets[i].buffsDebuffs += skillBuffDebuff
+
+		if (skillBuffDebuff.hasAllStats):
+			buffDebuffActionString = "buffed" if (skillBuffDebuff.hp >= 0) else "debuffed"
+			buffDebuffStatString = "All Stats"
+			buffDebuffStrengthString = "{0}%".format(abs(skillBuffDebuff.hp))
+		else:
+			statsText = ["Accuracy", "Ballistic Attack", "Ballistic Defense", "Evade", "HP", "Magic Attack", "Magic Defense", "MP"]
+			allStats = [currentStat for currentStat in dir(skillBuffDebuff) if not currentStat.startswith('__') and not callable(getattr(skillBuffDebuff, currentStat))]
+			allStats.remove("hasAllStats")
+			for currentStat in allStats:
+				if (getattr(skillBuffDebuff, currentStat) != 0):
+					buffDebuffActionString = "buffed" if (getattr(skillBuffDebuff, currentStat) >= 0) else "debuffed"
+					buffDebuffStatString = statsText[allStats.index(currentStat)]
+					buffDebuffStrengthString = "{0}%".format(abs(getattr(skillBuffDebuff, currentStat)))
+					break
+
+		currentEventText = ""
+		for i in range(len(targets)):
+			currentUserName = userName if (i == 0) else formatText("and ", 2, len(userName)) if (i + 1 == len(targets)) else " " * len(userName)
+
+			if (allRegAccuracy[i] >= allHitRequirements[i]):
+				currentEventText += "{0} {1} {2}'s {3} by {4}".format(currentUserName, buffDebuffActionString, targetNames[i], buffDebuffStatString, buffDebuffStrengthString)
+			else:
+				currentEventText += "{0} missed their {1} on {2}".format(currentUserName, buffDebuffActionString, targetNames[i])
+
+			if (i + 1 < len(targets)):
+				currentEventText += ",\n"
+			else:
+				currentEventText += "."
+		scrollingPrint(currentEventText)
 
 	elif (skill.skillType == skillTypes[5]):
-		hitChance = random.randint(1, 100)
-		normalAccuracy = userAccuracyStat / targetEvadeStat * skill.accuracyMod * 100
+		applyStatusEffect(targets, user, skill.statusEffect, skill.statusEffectDuration)
 
-		if (normalAccuracy >= hitChance):
-			applyStatusEffect(target, user, skill.statusEffect, skill.statusEffectDuration)
-		else:
-			proceduralPrint(userName + " missed.", "")
-
+	user.evaluateTotalStats()
 	user.evaluateCurrentPoints()
-	for i in range(len(target)):
-		target[i].evaluateCurrentPoints()
+	for i in range(len(targets)):
+		targets[i].evaluateTotalStats()
+		targets[i].evaluateCurrentPoints()
 
 	if (user in currentPlayers):
 		playersHaveMoved[selectedPlayer] = True
@@ -2705,38 +3220,66 @@ def castSkill(target, user, skill, version):
 		enemiesHaveMoved[selectedEnemy] = True
 
 
-# The user uses an item onto the target (usually on itself).
-def useItem(user, target, itemIndex):
+# The user uses an item onto the target(s).
+def useItem(targets, user, itemIndex):
 	global battleTurn
 	global playersHaveMoved
 	global enemiesHaveMoved
 
+	clearScreen()
+	renderBattleStatusMenu()
+
 	# Get user text for strings
 	userName = user.name
+	targetNames = []
+	for i in range(len(targets)):
+		targetNames.append(targets[i].name)
 
 	chosenItem = itemsList[itemIndex]
 
 	# Reduce item amount by 1
-	user.itemInventory[itemIndex] -= 1
+	currentInventory[itemIndex] -= 1
 
 	# String error checking
-	if chosenItem.name[0].lower() in ["a", "e", "i", "o", "u"]:
-		print("\n" + userName + " used an " + chosenItem.name + ".", end="")
-	else:
-		print("\n" + userName + " used a " + chosenItem.name + ".", end="")
-	input()
+	indefiniteArticle = "an" if (chosenItem.name[0].lower() in ["a", "e", "i", "o", "u"]) else "a"
+	scrollingPrint("{0} used {1} {2}.".format(userName, indefiniteArticle, chosenItem.name))
 
+	currentEventText = ""
 	# If item is of health type
-	if chosenItem.itemType == itemTypes[0]:
-		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.maxHP), 0)))
-		user.curHP += currentHealing
-		print(userName + " recovered " + str(currentHealing) + " HP.", end="")
+	if (chosenItem.itemType == itemTypes[0]):
+		allRecovery = []
+		for i in range(len(targets)):
+			currentRecovery = max(chosenItem.rawPower, round((chosenItem.relativePower / 100) * targets[i].maxHP))
+			targets[i].curHP += currentRecovery
+			allRecovery.append(currentRecovery)
+
+		for i in range(len(targets)):
+			currentUserName = userName if (i == 0) else formatText("and ", 2, len(userName)) if (i + 1 == len(targets)) else " " * len(userName)
+
+			currentEventText += "{0} recovered {1} HP for {2}".format(currentUserName, allRecovery[i], targetNames[i])
+
+			if (i + 1 < len(targets)):
+				currentEventText += ",\n"
+			else:
+				currentEventText += "."
 
 	# Else, if item is of mana type
-	elif chosenItem.itemType == itemTypes[1]:
-		currentHealing = max(chosenItem.primaryPower, int(round(((chosenItem.secondaryPower / 100) * user.maxMP), 0)))
-		user.curMP += currentHealing
-		print(userName + " recovered " + str(currentHealing) + " MP.", end="")
+	elif (chosenItem.itemType == itemTypes[1]):
+		allRecovery = []
+		for i in range(len(targets)):
+			currentRecovery = round((chosenItem.relativePower / 100) * targets[i].maxMP)
+			targets[i].curMP += currentRecovery
+			allRecovery.append(currentRecovery)
+
+		for i in range(len(targets)):
+			currentUserName = userName if (i == 0) else formatText("and ", 2, len(userName)) if (i + 1 == len(targets)) else " " * len(userName)
+
+			currentEventText += "{0} recovered {1} MP for {2}".format(currentUserName, allRecovery[i], targetNames[i])
+
+			if (i + 1 < len(targets)):
+				currentEventText += ",\n"
+			else:
+				currentEventText += "."
 
 	# # Else, item is of damage type
 	# else:
@@ -2748,10 +3291,11 @@ def useItem(user, target, itemIndex):
 	# 	elif skill.statType == statTypes[2]:
 	# 		userAttackStat = user.totalStats.magicAttack
 	# 		targetDefenseStat = target.totalStats.magicDefense
-	input()
+	scrollingPrint(currentEventText)
 
 	user.evaluateCurrentPoints()
-	target.evaluateCurrentPoints()
+	for i in range(len(targets)):
+		targets[i].evaluateCurrentPoints()
 
 	if (user in currentPlayers):
 		playersHaveMoved[selectedPlayer] = True
