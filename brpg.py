@@ -1982,6 +1982,8 @@ def renderBattleStatusMenu():
 	allEnemyBars = []
 	allEnemyBuffsDebuffs1 = []
 	allEnemyBuffsDebuffs2 = []
+	statAttributes = ["hp", "ballisticAttack", "ballisticDefense", "accuracy", "mp", "magicAttack", "magicDefense", "evade"]
+	statNames = ["HP", "BA", "BD", "AC", "MP", "MA", "MD", "EV"]
 	for i in range(3):
 		if (currentPlayers[i] != None):
 			currentPlayerName = currentPlayers[i].name
@@ -2000,40 +2002,22 @@ def renderBattleStatusMenu():
 				currentPlayerText = "  " + currentPlayerText
 			currentPlayerBar = generalUIBar(22, 0, "=", currentPlayerCurHP, currentPlayerMaxHP) + generalUIBar(10, 0, "—", currentPlayerCurMP, currentPlayerMaxMP)
 			currentPlayerBuffsDebuffs1 = " | "
-			if (currentPlayers[i].buffsDebuffs.hp != 100):
-				currentPlayerBuffsDebuffs1 += "HP" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.hp - 100)) + "  "
-			else:
-				currentPlayerBuffsDebuffs1 += "        "
-			if (currentPlayers[i].buffsDebuffs.ballisticAttack != 100):
-				currentPlayerBuffsDebuffs1 += "BA" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.ballisticAttack - 100)) + "  "
-			else:
-				currentPlayerBuffsDebuffs1 += "        "
-			if (currentPlayers[i].buffsDebuffs.ballisticDefense != 100):
-				currentPlayerBuffsDebuffs1 += "BD" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.ballisticDefense - 100)) + "  "
-			else:
-				currentPlayerBuffsDebuffs1 += "        "
-			if (currentPlayers[i].buffsDebuffs.accuracy != 100):
-				currentPlayerBuffsDebuffs1 += "AC" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.accuracy - 100))
-			else:
-				currentPlayerBuffsDebuffs1 += "      "
+			for j in range(4):
+				if (getattr(currentPlayers[i].buffsDebuffs, statAttributes[j]) != 100):
+					currentPlayerBuffsDebuffs1 += "{0}{1:>4}".format(statNames[j], "{0:+}".format(getattr(currentPlayers[i].buffsDebuffs, statAttributes[j]) - 100))
+				else:
+					currentPlayerBuffsDebuffs1 += "      "
+				if (j < 3):
+					currentPlayerBuffsDebuffs1 += "  "
 			currentPlayerBuffsDebuffs1 += " |"
 			currentPlayerBuffsDebuffs2 = " | "
-			if (currentPlayers[i].buffsDebuffs.mp != 100):
-				currentPlayerBuffsDebuffs2 += "MP" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.mp - 100)) + "  "
-			else:
-				currentPlayerBuffsDebuffs2 += "        "
-			if (currentPlayers[i].buffsDebuffs.magicAttack != 100):
-				currentPlayerBuffsDebuffs2 += "MA" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.magicAttack - 100)) + "  "
-			else:
-				currentPlayerBuffsDebuffs2 += "        "
-			if (currentPlayers[i].buffsDebuffs.magicDefense != 100):
-				currentPlayerBuffsDebuffs2 += "MD" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.magicDefense - 100)) + "  "
-			else:
-				currentPlayerBuffsDebuffs2 += "        "
-			if (currentPlayers[i].buffsDebuffs.evade != 100):
-				currentPlayerBuffsDebuffs2 += "EV" + "{:>4}".format("{0:+}".format(currentPlayers[i].buffsDebuffs.evade - 100))
-			else:
-				currentPlayerBuffsDebuffs2 += "      "
+			for j in range(4, 8):
+				if (getattr(currentPlayers[i].buffsDebuffs, statAttributes[j]) != 100):
+					currentPlayerBuffsDebuffs2 += "{0}{1:>4}".format(statNames[j], "{0:+}".format(getattr(currentPlayers[i].buffsDebuffs, statAttributes[j]) - 100))
+				else:
+					currentPlayerBuffsDebuffs2 += "      "
+				if (j < 7):
+					currentPlayerBuffsDebuffs2 += "  "
 			currentPlayerBuffsDebuffs2 += " |"
 		else:
 			currentPlayerText = ""
@@ -2056,40 +2040,22 @@ def renderBattleStatusMenu():
 				currentEnemyText += "  "
 			currentEnemyBar = generalUIBar(34, 1, "=", currentEnemyCurHP, currentEnemyMaxHP)
 			currentEnemyBuffsDebuffs1 = "| "
-			if (currentEnemies[i].buffsDebuffs.hp != 100):
-				currentEnemyBuffsDebuffs1 += "HP" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.hp - 100)) + "  "
-			else:
-				currentEnemyBuffsDebuffs1 += "        "
-			if (currentEnemies[i].buffsDebuffs.ballisticAttack != 100):
-				currentEnemyBuffsDebuffs1 += "BA" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.ballisticAttack - 100)) + "  "
-			else:
-				currentEnemyBuffsDebuffs1 += "        "
-			if (currentEnemies[i].buffsDebuffs.ballisticDefense != 100):
-				currentEnemyBuffsDebuffs1 += "BD" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.ballisticDefense - 100)) + "  "
-			else:
-				currentEnemyBuffsDebuffs1 += "        "
-			if (currentEnemies[i].buffsDebuffs.accuracy != 100):
-				currentEnemyBuffsDebuffs1 += "AC" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.accuracy - 100))
-			else:
-				currentEnemyBuffsDebuffs1 += "      "
+			for j in range(4):
+				if (getattr(currentEnemies[i].buffsDebuffs, statAttributes[j]) != 100):
+					currentEnemyBuffsDebuffs1 += "{0}{1:>4}".format(statNames[j], "{0:+}".format(getattr(currentEnemies[i].buffsDebuffs, statAttributes[j]) - 100))
+				else:
+					currentEnemyBuffsDebuffs1 += "      "
+				if (j < 3):
+					currentEnemyBuffsDebuffs1 += "  "
 			currentEnemyBuffsDebuffs1 += " | "
 			currentEnemyBuffsDebuffs2 = "| "
-			if (currentEnemies[i].buffsDebuffs.mp != 100):
-				currentEnemyBuffsDebuffs2 += "MP" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.mp - 100)) + "  "
-			else:
-				currentEnemyBuffsDebuffs2 += "        "
-			if (currentEnemies[i].buffsDebuffs.magicAttack != 100):
-				currentEnemyBuffsDebuffs2 += "MA" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.magicAttack - 100)) + "  "
-			else:
-				currentEnemyBuffsDebuffs2 += "        "
-			if (currentEnemies[i].buffsDebuffs.magicDefense != 100):
-				currentEnemyBuffsDebuffs2 += "MD" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.magicDefense - 100)) + "  "
-			else:
-				currentEnemyBuffsDebuffs2 += "        "
-			if (currentEnemies[i].buffsDebuffs.evade != 100):
-				currentEnemyBuffsDebuffs2 += "EV" + "{:>4}".format("{0:+}".format(currentEnemies[i].buffsDebuffs.evade - 100))
-			else:
-				currentEnemyBuffsDebuffs2 += "      "
+			for j in range(4, 8):
+				if (getattr(currentEnemies[i].buffsDebuffs, statAttributes[j]) != 100):
+					currentEnemyBuffsDebuffs2 += "{0}{1:>4}".format(statNames[j], "{0:+}".format(getattr(currentEnemies[i].buffsDebuffs, statAttributes[j]) - 100))
+				else:
+					currentEnemyBuffsDebuffs2 += "      "
+				if (j < 7):
+					currentEnemyBuffsDebuffs2 += "  "
 			currentEnemyBuffsDebuffs2 += " | "
 		else:
 			currentEnemyText = ""
